@@ -4,9 +4,9 @@ package
 
 	public class Field extends DisplayObjectContainer
 	{
-		public static const CELL_SIZE:Number = 95;
-		public static const ROW_NUM:uint = 9;
-		public static const COLUM_NUM:uint = 9;
+		public static const CELL_SIZE:Number = 125;
+		public static const ROW_NUM:uint = 7;
+		public static const COLUM_NUM:uint = 7;
 		
 		private var _cells:Array;
 		

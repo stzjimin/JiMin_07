@@ -18,7 +18,7 @@ package
 			addChild(_block);
 			
 			addEventListener("blockTriggered", onBlockTriggered);
-			addEventListener("removeBlock", onRemoveBlock);
+			addEventListener("swapBlock", onRemoveBlock);
 		}
 
 		private function onBlockTriggered(event:Event):void
@@ -26,56 +26,54 @@ package
 			_block.removeFromParent();
 			_block.distroy();
 			_block = null;
-			dispatchEvent(new Event("removeBlock"));
+			dispatchEvent(new Event("swapBlock"));
 		}
 		
 		private function onRemoveBlock(event:Event):void
 		{
-			if(_neigbor[NeigborType.TOP] == null)
-				return;
-			
-			if(_neigbor[NeigborType.TOP].block != null)
+			if(GravityManager.gravity == GravityType.DOWN)
 			{
-				swapTopBlock();
+				if(_neigbor[NeigborType.TOP] == null)
+					return;
+				
+				if(_neigbor[NeigborType.TOP].block != null)
+				{
+					swapBlock(_neigbor[NeigborType.TOP]);
+//					swapTopBlock();
+				}
+				else if(_neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT] != null && _neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT].block != null)
+				{
+					swapBlock(_neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT]);
+//					swapTopLeftBlock();
+				}
+				else if(_neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT] != null && _neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT].block != null)
+				{
+					swapBlock(_neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT]);
+//					swapTopRightBlock();
+				}
 			}
-			else if(_neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT] != null && _neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT].block != null)
+			else if(GravityManager.gravity == GravityType.UP)
 			{
-				swapTopLeftBlock();
+				
 			}
-			else if(_neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT] != null && _neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT].block != null)
+			else if(GravityManager.gravity == GravityType.LEFT)
 			{
-				swapTopRightBlock();
+				
+			}
+			else if(GravityManager.gravity == GravityType.RIGHT)
+			{
+				
 			}
 		}
 		
-		private function swapTopLeftBlock():void
+		private function swapBlock(cell:Cell):void
 		{
-			var block:Block = _neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT].block;
+			var block:Block = cell.block;
 			block.removeFromParent();
-			_neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT].block = null;
+			cell.block = _block;
 			addChild(block);
 			_block = block;
-			_neigbor[NeigborType.TOP].neigbor[NeigborType.LEFT].dispatchEvent(new Event("removeBlock"));
-		}
-		
-		private function swapTopRightBlock():void
-		{
-			var block:Block = _neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT].block;
-			block.removeFromParent();
-			_neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT].block = null;
-			addChild(block);
-			_block = block;
-			_neigbor[NeigborType.TOP].neigbor[NeigborType.RIGHT].dispatchEvent(new Event("removeBlock"));
-		}
-		
-		private function swapTopBlock():void
-		{
-			var block:Block = _neigbor[NeigborType.TOP].block;
-			block.removeFromParent();
-			_neigbor[NeigborType.TOP].block = null;
-			addChild(block);
-			_block = block;
-			_neigbor[NeigborType.TOP].dispatchEvent(new Event("removeBlock"));
+			cell.dispatchEvent(new Event("swapBlock"));
 		}
 
 		public function get neigbor():Dictionary

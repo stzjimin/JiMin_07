@@ -8,6 +8,8 @@ package
 		
 		public function Game()
 		{
+			GravityManager.gravity = GravityType.DOWN;
+			
 			_field = new Field();
 			addChild(_field);
 //			_field.getCell(5,5).block.removeFromParent();

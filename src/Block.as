@@ -19,10 +19,17 @@ package
 			super(_blockTexture);
 			
 			addEventListener(Event.TRIGGERED, onTriggered);
+			addEventListener(Distroyer.DISTROY, onDistroy);
 		}
 		
-		public function distroy():void
+		private function onDistroy(event:Event):void
 		{
+			distroy();
+		}
+		
+		private function distroy():void
+		{
+			removeFromParent();
 			removeEventListener(Event.TRIGGERED, onTriggered);
 			dispose();
 		}

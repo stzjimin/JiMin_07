@@ -1,6 +1,7 @@
 package
-{
+{	
 	import starling.display.DisplayObjectContainer;
+	import starling.events.Event;
 
 	public class Field extends DisplayObjectContainer
 	{
@@ -9,9 +10,17 @@ package
 		public static const COLUM_NUM:uint = 7;
 		
 		private var _cells:Array;
+		private var _distroyer:Distroyer;
 		
 		public function Field()
 		{
+			init();
+		}
+		
+		public function init():void
+		{
+			_distroyer = new Distroyer();
+			
 			_cells = new Array();
 			for(var i:int = 0; i < COLUM_NUM; i++)
 			{
@@ -20,6 +29,8 @@ package
 				for(var j:int = 0; j < ROW_NUM; j++)
 				{
 					var cell:Cell = new Cell();
+					cell.addEventListener(Distroyer.ADD_DISTROYER, onAddDistroyer);
+					cell.addEventListener(SwapType.COMPLETE_SWAP, onCompleteSwap);
 					cell.width = cell.height = CELL_SIZE;
 					cell.y = i * CELL_SIZE;
 					cell.x = j * CELL_SIZE;
@@ -37,6 +48,16 @@ package
 					}
 				}
 			}
+		}
+		
+		private function onCompleteSwap(event:Event):void
+		{
+			_distroyer.distroy();
+		}
+		
+		private function onAddDistroyer(event:Event):void
+		{
+			_distroyer.add(event.data as Block);
 		}
 		
 //		public function get cells():Array

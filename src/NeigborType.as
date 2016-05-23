@@ -3,10 +3,10 @@ package
 	public class NeigborType
 	{		
 		
-		public static const TOP:String = "top";
-		public static const LEFT:String = "left";
-		public static const RIGHT:String = "right";
-		public static const BOTTOM:String = "bottom";
+		public static const TOP:int = 1;
+		public static const LEFT:int = 2;
+		public static const RIGHT:int = -2;
+		public static const BOTTOM:int = -1;
 		
 //		public static const TOP_LEFT:String = "topLeft";
 //		public static const TOP_RIGHT:String = "topRight";
@@ -17,9 +17,9 @@ package
 		{
 		}
 		
-		public static function get TYPES():Vector.<String>
+		public static function get TYPES():Vector.<int>
 		{
-			var types:Vector.<String> = new Vector.<String>();
+			var types:Vector.<int> = new Vector.<int>();
 			types.push(TOP);
 			types.push(LEFT);
 			types.push(RIGHT);

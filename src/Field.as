@@ -20,6 +20,7 @@ package
 		public function init():void
 		{
 			_distroyer = new Distroyer();
+			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
 			
 			_cells = new Array();
 			for(var i:int = 0; i < COLUM_NUM; i++)
@@ -34,6 +35,7 @@ package
 					cell.width = cell.height = CELL_SIZE;
 					cell.y = i * CELL_SIZE;
 					cell.x = j * CELL_SIZE;
+					cell.init();
 					addChild(cell);
 					row.push(cell);
 					if(i != 0)
@@ -48,11 +50,24 @@ package
 					}
 				}
 			}
+			
+			addEventListener("testButton", onTriggeredTestButton);
+		}
+		
+		private function onCompleteDistroy(event:Event):void
+		{
+			
+		}
+		
+		private function onTriggeredTestButton(event:Event):void
+		{
+			_distroyer.distroy();
 		}
 		
 		private function onCompleteSwap(event:Event):void
 		{
-			_distroyer.distroy();
+			trace("a");
+//			_distroyer.distroy();
 		}
 		
 		private function onAddDistroyer(event:Event):void

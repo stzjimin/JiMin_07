@@ -1,11 +1,13 @@
 package
 {
 	import starling.events.Event;
+	import starling.events.EventDispatcher;
 
-	public class Distroyer
+	public class Distroyer extends EventDispatcher
 	{
 		public static const ADD_DISTROYER:String = "addDistroyer";
 		public static const DISTROY:String = "distroy";
+		public static const COMPLETE_DISTROY:String = "completeDistroy";
 		
 		private var _blocks:Vector.<Block>;
 		
@@ -24,6 +26,7 @@ package
 		public function add(block:Block):void
 		{
 			_blocks.push(block);
+			block.distroyed = true;
 		}
 		
 		public function distroy():void
@@ -31,10 +34,11 @@ package
 			var block:Block;
 			for(var i:int = 0; i < _blocks.length; i++)
 			{
-				block = _blocks.pop();
+				block = _blocks[i];
 				block.dispatchEvent(new Event(Distroyer.DISTROY));
 			}
 			init();
+			dispatchEvent(new Event(Distroyer.COMPLETE_DISTROY));
 		}
 	}
 }

@@ -48,12 +48,12 @@ package
 		private function onDistroy(event:Event):void
 		{
 			Cell(parent).block = null;
-			parent.dispatchEvent(new Event(SwapType.SWAP_BLOCK));
 			distroy();
 		}
 		
 		private function distroy():void
 		{
+			parent.dispatchEvent(new Event(SwapType.SWAP_BLOCK));
 			removeFromParent(true);
 			removeEventListener(Distroyer.DISTROY, onDistroy);
 			removeEventListener(Event.TRIGGERED, onTriggered);

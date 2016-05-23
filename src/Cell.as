@@ -7,16 +7,21 @@ package
 	import starling.events.Event;
 
 	public class Cell extends DisplayObjectContainer
-	{	
+	{
 		private var _neigbor:Dictionary;
 		private var _block:Block;
 		
 		private var _width:Number;
 		private var _height:Number;
 		
+		private var _swaped:Boolean;
+		
+		private var _frameCheck:uint;
+		
 		public function Cell()
 		{
 			_neigbor = new Dictionary();
+			_swaped = false;
 		}
 		
 		public function init():void
@@ -111,11 +116,28 @@ package
 			cell.block = _block;
 			addChild(block);
 			_block = block;
+			_swaped = true;
+//			checkNeigbor();
+//			_frameCheck = 0;
+//			addEventListener(Event.ENTER_FRAME, onCheckTime);
 			cell.dispatchEvent(new Event(SwapType.SWAP_BLOCK));
 		}
 		
-		private function checkNeigbor():void
+		private function onCheckTime(event:Event):void
 		{
+//			_frameCheck++;
+//			if(_frameCheck >= 60)
+//			{
+//				checkNeigbor();
+//				removeEventListener(Event.ENTER_FRAME, onCheckTime);
+//			}
+		}
+		
+		public function checkNeigbor():void
+		{
+			if(_block == null)
+				return;
+			
 			var neigborTypes:Vector.<int> = NeigborType.TYPES;
 			
 			var neigbor:Cell;
@@ -219,6 +241,14 @@ package
 			super.height = _height;
 		}
 
+		public function get swaped():Boolean
+		{
+			return _swaped;
+		}
 
+		public function set swaped(value:Boolean):void
+		{
+			_swaped = value;
+		}
 	}
 }

@@ -38,6 +38,7 @@ package
 					cell.init();
 					addChild(cell);
 					row.push(cell);
+					_cells[i][j].name = i.toString() + "/" + j.toString();
 					if(i != 0)
 					{
 						_cells[i][j].neigbor[NeigborType.TOP] = _cells[i-1][j];
@@ -56,7 +57,22 @@ package
 		
 		private function onCompleteDistroy(event:Event):void
 		{
-			
+			checkSwapedCell();
+		}
+		
+		private function checkSwapedCell():void
+		{
+			for(var i:int = 0; i < COLUM_NUM; i++)
+			{
+				for(var j:int = 0; j < ROW_NUM; j++)
+				{
+					if(_cells[i][j].swaped)
+					{
+						_cells[i][j].swaped = false;
+						_cells[i][j].checkNeigbor();
+					}
+				}
+			}
 		}
 		
 		private function onTriggeredTestButton(event:Event):void

@@ -4,7 +4,7 @@ package
 	
 	import starling.core.Starling;
 	
-	[SWF(frameRate = "60", width="900", height="1600")]
+	[SWF(frameRate = "60", width="576", height="1024")]
 	public class PuzzleGameTest extends Sprite
 	{
 		public function PuzzleGameTest()

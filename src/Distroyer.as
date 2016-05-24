@@ -35,7 +35,7 @@ package
 			for(var i:int = 0; i < _blocks.length; i++)
 			{
 				block = _blocks[i];
-				block.dispatchEvent(new Event(Distroyer.DISTROY));
+				block.distroy();
 			}
 			init();
 			dispatchEvent(new Event(Distroyer.COMPLETE_DISTROY));

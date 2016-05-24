@@ -11,7 +11,7 @@ package
 	import starling.events.TouchPhase;
 	import starling.textures.Texture;
 
-	public class Block extends Image
+	public class Block extends Button
 	{
 		[Embed(source="19.png")]
 		private const testImage0:Class;
@@ -25,28 +25,26 @@ package
 		
 		private var _distroyed:Boolean = false;
 		
-		private var _dragFlag:int = 0;
-		private var _originParentIndex:int;
 		private var _clicked:Boolean;
 		
-		public function Block(rand:int)
+		public function Block(type:String)
 		{
 			_attribute = new Attribute();
 			_clicked = false;
 			
-			if(rand == 0)
+			if(type == AttributeType.RED)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage0() as Bitmap);
 				_attribute.type = AttributeType.RED;
 				this.name = "19";
 			}
-			else if(rand == 1)
+			else if(type == AttributeType.GREEN)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage1() as Bitmap);
 				_attribute.type = AttributeType.GREEN;
 				this.name = "iu";
 			}			
-			else if(rand == 2)
+			else if(type == AttributeType.BLUE)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage2() as Bitmap);
 				_attribute.type = AttributeType.BLUE;
@@ -54,10 +52,44 @@ package
 			}
 			super(_blockTexture);
 			
-//			addEventListener(Event.TRIGGERED, onTriggered);
-			addEventListener(Distroyer.DISTROY, onDistroy);
-			addEventListener(TouchEvent.TOUCH, onTouch);
+			addEventListener(Event.TRIGGERED, onTriggered);
+//			addEventListener(TouchEvent.TOUCH, onTouch);
 		}
+		
+		public function init():void
+		{
+			this.pivotX = this.width/2;
+			this.pivotY = this.height/2;
+			this.x = this.width/2;
+			this.y = this.height/2;
+		}
+		
+		public function onTriggered():void
+		{
+			_clicked = !_clicked;
+			if(_clicked)
+			{
+				this.scale = 0.9;
+				parent.dispatchEvent(new Event(CheckEvent.ADD_PREV));
+			}
+			else
+			{
+				parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
+//				this.scale = 1.0;
+			}
+		}
+		
+		public function pullPrev():void
+		{
+			_clicked = false;
+			this.scale = 1.0;
+		}
+		
+//		public function init():void
+//		{
+//			this.pivotX = this.width/2;
+//			this.pivotY = this.height/2;
+//		}
 		
 		private function onTouch(event:TouchEvent):void
 		{
@@ -65,94 +97,51 @@ package
 			if(touch == null)
 				return;
 			
-			if(touch.phase == TouchPhase.BEGAN)
+			if(touch.phase == TouchPhase.ENDED)
 			{
-				this.x = 0;
-				this.y = 0;
-				_originParentIndex = parent.parent.getChildIndex(parent);
-				parent.parent.setChildIndex(parent, parent.parent.numChildren);
 				_clicked = true;
 			}
-			else if(touch.phase == TouchPhase.MOVED && _clicked)
-			{
-				var moveMent:Point = touch.getMovement(stage);
-				
-				if(_dragFlag == 0)
-				{
-					this.x += moveMent.x;
-					this.y += moveMent.y;
-					
-					if(Math.abs(this.x) >= 5)
-					{
-						this.y = 0;
-						_dragFlag = 1;
-					}
-					if(Math.abs(this.y) >= 5)
-					{
-						this.x = 0;
-						_dragFlag = -1;
-					}
-				}
-				else if(_dragFlag == 1)
-				{
-					if(Math.abs(this.x) < Field.CELL_SIZE)
-						this.x += moveMent.x;
-				}
-				else if(_dragFlag == -1)
-				{
-					if(Math.abs(this.y) < Field.CELL_SIZE)
-						this.y += moveMent.y;
-				}
-			}
-			else if(touch.phase == TouchPhase.ENDED)
-			{
-				if(this.x >= Field.CELL_SIZE*2/3)
-				{
-					Cell(parent).dispatchEvent(new Event(SwapType.CONTAINS, false, NeigborType.RIGHT));
-				}
-				else if(-this.x >= Field.CELL_SIZE*2/3)
-				{
-					Cell(parent).dispatchEvent(new Event(SwapType.CONTAINS, false, NeigborType.LEFT));
-				}
-				else if(this.y >= Field.CELL_SIZE*2/3)
-				{
-					Cell(parent).dispatchEvent(new Event(SwapType.CONTAINS, false, NeigborType.BOTTOM));
-				}
-				else if(-this.y >= Field.CELL_SIZE*2/3)
-				{
-					Cell(parent).dispatchEvent(new Event(SwapType.CONTAINS, false, NeigborType.TOP));
-				}
-				this.x = 0;
-				this.y = 0;
-				_dragFlag = 0;
-				parent.parent.setChildIndex(parent, _originParentIndex);
-				_clicked = false;
-			}
+			
+//			if(touch.phase == TouchPhase.BEGAN)
+//			{
+//				this.x = 0;
+//				this.y = 0;
+//				_prevPoint = touch.getLocation(stage);
+//				_clicked = true;
+//			}
+//			else if(touch.phase == TouchPhase.MOVED && _clicked)
+//			{
+//				
+//			}
+//			else if(touch.phase == TouchPhase.ENDED)
+//			{	
+//				var movementPoint:Point = _prevPoint.subtract(touch.getLocation(stage));
+//				if(Math.abs(movementPoint.x) > Math.abs(movementPoint.y))
+//				{
+//					if(movementPoint.x < 0)
+//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.RIGHT));
+//					else
+//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.LEFT));
+//				}
+//				else
+//				{
+//					if(movementPoint.y < 0)
+//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.BOTTOM));
+//					else
+//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.TOP));
+//				}
+//				_clicked = false;
+//			}
 		}
 		
-		private function onDistroy(event:Event):void
+		public function distroy():void
 		{
 			var parent:Cell = Cell(this.parent);
 			parent.block = null;
 			parent.blanked = true;
 			removeFromParent(true);
-//			parent.dispatchEvent(new Event(SwapType.DISTORYED_BLOCK));
-//			parent.dispatchEvent(new Event(SwapType.SWAP_BLOCK));
-			distroy();
-		}
-		
-		private function distroy():void
-		{
-//			removeFromParent(true);
-			removeEventListener(Distroyer.DISTROY, onDistroy);
-			removeEventListener(Event.TRIGGERED, onTriggered);
+			
 			dispose();
-		}
-		
-		public function onTriggered():void
-		{
-			if(this.parent != null)
-				this.parent.dispatchEvent(new Event("blockTriggered"));
 		}
 
 		public function get distroyed():Boolean

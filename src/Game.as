@@ -21,8 +21,8 @@ package
 			
 			_field = new Field();
 			addChild(_field);
-//			_field.getCell(5,5).block.removeFromParent();
-//			_field.getCell(5,5).block = null;
+//			_field.getCell(3,3).block.removeFromParent();
+//			_field.getCell(3,3).block = null;
 			
 			_button = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
 			_button.x = 10;

@@ -138,7 +138,6 @@ package
 		{
 			var parent:Cell = Cell(this.parent);
 			parent.block = null;
-			parent.blanked = true;
 			removeFromParent(true);
 			
 			dispose();

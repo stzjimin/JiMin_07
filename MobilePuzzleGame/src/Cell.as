@@ -21,19 +21,19 @@ package
 		private var _row:int;
 		private var _colum:int;
 		
-		private var _blanked:Boolean;
+		private var _possibleCell:Vector.<Cell>;
 		
 		private var _frameCheck:uint;
 		
 		public function Cell()
 		{
-			_neigbor = new Dictionary();
-			_blanked = false;
+			addEventListener(CheckEvent.PULL_PREV, onPullPrev);
 		}
 		
 		public function init():void
-		{	
-			addEventListener(CheckEvent.PULL_PREV, onPullPrev);
+		{
+			_neigbor = new Dictionary();
+			_possibleCell = new Vector.<Cell>();
 		}
 		
 		public function createBlock(type:String):void
@@ -53,6 +53,24 @@ package
 			if(_block == null)
 				return;
 			_block.pullPrev();
+		}
+		
+		public function addPossibleCell(cell:Cell):void
+		{
+			_possibleCell.push(cell);
+		}
+		
+		public function checkPossibleCell(cell:Cell):Boolean
+		{
+			if(_possibleCell == null || _possibleCell.length == 0)
+				return false;
+			
+			for(var i:int = 0; i < _possibleCell.length; i++)
+			{
+				if(cell == _possibleCell[i])
+					return true;
+			}
+			return false;
 		}
 		
 		public function distroy():void
@@ -107,16 +125,6 @@ package
 			super.height = _height;
 		}
 
-		public function get blanked():Boolean
-		{
-			return _blanked;
-		}
-
-		public function set blanked(value:Boolean):void
-		{
-			_blanked = value;
-		}
-
 		public function get row():int
 		{
 			return _row;
@@ -136,7 +144,6 @@ package
 		{
 			_colum = value;
 		}
-
-
+		
 	}
 }

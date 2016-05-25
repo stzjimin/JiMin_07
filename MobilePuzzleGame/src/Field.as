@@ -30,11 +30,11 @@ package
 //			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
 			
 			_cells = new Vector.<Cell>();
-			var colum:int = 0;
+			var row:int = 0;
 			for(var i:int = 0; i < COLUM_NUM*ROW_NUM; i++)
 			{
 				var cell:Cell = new Cell();
-				var row:int = i%ROW_NUM;
+				var colum:int = i%ROW_NUM;
 				_cells.push(cell);
 				cell.addEventListener(CheckEvent.ADD_PREV, onAddPrev);
 				cell.addEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
@@ -42,21 +42,23 @@ package
 				cell.height = Cell.CELL_HEIGHT_SIZE;
 				cell.x = row * Cell.CELL_WIDTH_SIZE;
 				cell.y = colum * Cell.CELL_HEIGHT_SIZE;
-				_cells[i].name = row.toString() + "/" + colum.toString();
+				cell.row = row;
+				cell.colum = colum;
+				_cells[i].name = colum.toString() + "/" + row.toString();
 				cell.init();
 				addChild(cell);
-				if(colum != 0)
+				if(row != 0)
 				{
 					_cells[i].neigbor[NeigborType.TOP] = _cells[i-ROW_NUM];
 					_cells[i-ROW_NUM].neigbor[NeigborType.BOTTOM] = _cells[i];
 				}
-				if(row != 0)
+				if(colum != 0)
 				{
 					_cells[i].neigbor[NeigborType.LEFT] = _cells[i-1];
 					_cells[i-1].neigbor[NeigborType.RIGHT] = _cells[i];
 				}
-				if(row == (ROW_NUM-1))
-					colum++;
+				if(colum == (ROW_NUM-1))
+					row++;
 			}
 			
 //			_cells = new Array();
@@ -93,6 +95,11 @@ package
 //			}
 		}
 		
+		public function checkPossibleCell():void
+		{
+			_pathChecker.checkPossibleCell(_cells);
+		}
+		
 		public function freeCells():void
 		{
 			for(var i:int = 0; i < _cells.length; i++)
@@ -122,6 +129,8 @@ package
 		
 		private function onAddPrev(event:Event):void
 		{
+			trace(Cell(event.currentTarget).row);
+			trace(Cell(event.currentTarget).block.attribute.type);
 			_pathChecker.setPrev(event.currentTarget as Cell);
 		}
 		

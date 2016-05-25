@@ -1,5 +1,7 @@
 package
 {
+	import flash.utils.Dictionary;
+	
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
@@ -16,6 +18,8 @@ package
 		private var _currentSearchNode:Cell;
 		private var _path:Vector.<Cell>;
 		
+		private var _possible:Dictionary;
+		
 		public function PathChecker()
 		{
 			init();
@@ -23,6 +27,13 @@ package
 		
 		public function init():void
 		{
+			if(_possible != null)
+			{
+				for(var key:String in _possible)
+					delete _possible[key];
+			}
+			_possible = new Dictionary();
+			
 			if(_openNodes != null)
 				_openNodes.splice(0, _openNodes.length);
 			if(_closeNodes != null)
@@ -43,10 +54,13 @@ package
 				if(_currentCell.block.attribute.type == _prevCell.block.attribute.type)
 				{
 //					checkPath();
-					var array:Array = new Array();
-					array.push(_prevCell);
-					array.push(_currentCell);
-					dispatchEvent(new Event(CheckEvent.SAME, false, array));
+					if(_currentCell.checkPossibleCell(_prevCell))
+					{
+						var array:Array = new Array();
+						array.push(_prevCell);
+						array.push(_currentCell);
+						dispatchEvent(new Event(CheckEvent.SAME, false, array));
+					}
 				}
 				outChecker(_prevCell);
 				outChecker(_currentCell);
@@ -59,11 +73,82 @@ package
 		
 		public function checkPossibleCell(cells:Vector.<Cell>):void
 		{
-			for(var i:int = 0; i < cells.length; i++)
+			var dist:int;
+			var k:int;
+			var isBlocked:Boolean;
+			
+			for(var i:int = 0; i < cells.length-1; i++)
 			{
-				for(var j:int = 0; j < cells[i].length; j++)
+				if(cells[i].block == null)
+					continue;	//블록이 없는 경우는 검사할 필요가 없으니 제외
+				
+				for(var j:int = i+1; j < cells.length; j++)
 				{
+					if(cells[j].block == null)
+						continue;	//블록이 없는 경우는 검사할 필요가 없으니 제외
 					
+					if(cells[i].row == cells[j].row)
+					{
+						//일직선상에 있는 경우
+						if(Math.abs(cells[i].colum - cells[j].colum) == 1)
+						{
+							//붙어있는 경우
+							cells[i].addPossibleCell(cells[j]);
+							cells[j].addPossibleCell(cells[i]);
+						}
+						else
+						{
+							dist = j-i;
+							isBlocked = false;
+							for(k = 1; k < dist; k++)
+							{
+								if(cells[j-k].block != null)
+								{
+									isBlocked = true;
+									break;
+								}
+							}
+							if(!isBlocked)
+							{
+								cells[i].addPossibleCell(cells[j]);
+								cells[j].addPossibleCell(cells[i]);
+							}
+						}
+					}
+					else if(cells[i].colum == cells[j].colum)
+					{
+						trace("i = " + i);
+						trace("j = " + j);
+						//일직선상에 있는 경우
+						if(Math.abs(cells[i].row - cells[j].row) == 1)
+						{
+							//붙어있는 경우
+							cells[i].addPossibleCell(cells[j]);
+							cells[j].addPossibleCell(cells[i]);
+						}
+						else
+						{
+							dist = j-i;
+							isBlocked = false;
+							for(k = Field.ROW_NUM; k < dist; k+=Field.ROW_NUM)
+							{
+								if(cells[j-k].block != null)
+								{
+									isBlocked = true;
+									break;
+								}
+							}
+							if(!isBlocked)
+							{
+								cells[i].addPossibleCell(cells[j]);
+								cells[j].addPossibleCell(cells[i]);
+							}
+						}
+					}
+					else
+					{
+						//row, colum 모두가 다를 때
+					}
 				}
 			}
 		}

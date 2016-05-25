@@ -20,14 +20,14 @@ package
 		public function Game()
 		{
 			_blockDatas = new Vector.<BlockData>();
-			_blockDatas.push(new BlockData(0, 0, AttributeType.BLUE));
-			_blockDatas.push(new BlockData(0, 1, AttributeType.GREEN));
+			_blockDatas.push(new BlockData(1, 9, AttributeType.BLUE));
+			_blockDatas.push(new BlockData(1, 1, AttributeType.GREEN));
 			_blockDatas.push(new BlockData(2, 2, AttributeType.RED));
 			_blockDatas.push(new BlockData(4, 3, AttributeType.RED));
 			_blockDatas.push(new BlockData(6, 4, AttributeType.GREEN));
 			_blockDatas.push(new BlockData(2, 5, AttributeType.BLUE));
-			_blockDatas.push(new BlockData(0, 4, AttributeType.GREEN));
-			_blockDatas.push(new BlockData(0, 5, AttributeType.GREEN));
+			_blockDatas.push(new BlockData(1, 4, AttributeType.GREEN));
+			_blockDatas.push(new BlockData(1, 5, AttributeType.GREEN));
 			_blockDatas.push(new BlockData(1, 2, AttributeType.BLUE));
 			_blockDatas.push(new BlockData(5, 1, AttributeType.BLUE));
 			_blockDatas.push(new BlockData(4, 2, AttributeType.RED));
@@ -44,7 +44,7 @@ package
 			}
 			blockData = null;
 			
-			_field.freeCells();
+//			_field.freeCells();
 //			_field.getCell(3,3).block.removeFromParent();
 //			_field.getCell(3,3).block = null;
 		}

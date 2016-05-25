@@ -5,6 +5,8 @@ package
 
 	public class PathChecker extends EventDispatcher
 	{
+		private const FINDPATH_LIMIT:int = 20;
+		
 		private var _prevCell:Cell;
 		private var _currentCell:Cell;
 		
@@ -22,9 +24,11 @@ package
 		public function init():void
 		{
 			if(_openNodes != null)
-				_openNodes.slice(0, _openNodes.length);
+				_openNodes.splice(0, _openNodes.length);
 			if(_closeNodes != null)
-				_closeNodes.slice(0, _closeNodes.length);
+				_closeNodes.splice(0, _closeNodes.length);
+			if(_path != null)
+				_path.splice(0, _path.length);
 			
 			_openNodes = new Vector.<Cell>();
 			_closeNodes = new Vector.<Cell>();
@@ -38,7 +42,7 @@ package
 				
 				if(_currentCell.block.attribute.type == _prevCell.block.attribute.type)
 				{
-					checkPath();
+//					checkPath();
 					var array:Array = new Array();
 					array.push(_prevCell);
 					array.push(_currentCell);
@@ -53,20 +57,62 @@ package
 				_prevCell = cell;
 		}
 		
+		public function checkPossibleCell(cells:Vector.<Cell>):void
+		{
+			for(var i:int = 0; i < cells.length; i++)
+			{
+				for(var j:int = 0; j < cells[i].length; j++)
+				{
+					
+				}
+			}
+		}
+		
+		private function findPath(startNode:Cell, destNode:Cell):void
+		{
+			var count:int = 0;
+			var priority:int;
+			var currentNode:Cell = startNode;
+			
+			if(Math.abs(startNode.row - destNode.row) > Math.abs(startNode.colum - destNode.colum))
+			{
+				if((startNode.row - destNode.row) > 0)
+					priority = NeigborType.LEFT;
+				else
+					priority = NeigborType.RIGHT;
+			}
+			else
+			{
+				if((startNode.colum - destNode.colum) > 0)
+					priority = NeigborType.TOP;
+				else
+					priority = NeigborType.BOTTOM;
+			}
+			
+			checkPath(currentNode);
+			
+			while(count < FINDPATH_LIMIT)
+			{
+				if(_openNodes.length == 0)
+					return;
+			}
+		}
+		
 		public function outChecker(cell:Cell):void
 		{
 			cell.dispatchEvent(new Event(CheckEvent.PULL_PREV));
 		}
 		
-		private function checkPath():void
+		private function checkPath(node:Cell):void
 		{
-			goNode(_prevCell);
+			goNode(node);
 		}
 		
 		private function goNode(node:Cell):void
 		{
 			addCloseNode(node);
 			addOpenNodes(node);
+			_path.push(node);
 		}
 		
 		private function checkAvailable(node:Cell):Boolean

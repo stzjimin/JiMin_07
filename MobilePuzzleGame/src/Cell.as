@@ -9,6 +9,9 @@ package
 
 	public class Cell extends DisplayObjectContainer
 	{
+		public static const CELL_WIDTH_SIZE:Number = 55;
+		public static const CELL_HEIGHT_SIZE:Number = 72;
+		
 		private var _neigbor:Dictionary;
 		private var _block:Block;
 		
@@ -20,16 +23,12 @@ package
 		
 		private var _blanked:Boolean;
 		
-		private var _swaped:Boolean;
-		private var _swapBlock:Block;
-		
 		private var _frameCheck:uint;
 		
 		public function Cell()
 		{
 			_neigbor = new Dictionary();
 			_blanked = false;
-			_swaped = false;
 		}
 		
 		public function init():void
@@ -54,6 +53,11 @@ package
 			if(_block == null)
 				return;
 			_block.pullPrev();
+		}
+		
+		public function distroy():void
+		{
+			removeEventListener(CheckEvent.PULL_PREV, onPullPrev);
 		}
 		
 		private function onEnterFrame(event:Event):void
@@ -101,26 +105,6 @@ package
 		{
 			_height = value;
 			super.height = _height;
-		}
-
-		public function get swaped():Boolean
-		{
-			return _swaped;
-		}
-
-		public function set swaped(value:Boolean):void
-		{
-			_swaped = value;
-		}
-
-		public function get swapedBlock():Block
-		{
-			return _swapBlock;
-		}
-
-		public function set swapedBlock(value:Block):void
-		{
-			_swapBlock = value;
 		}
 
 		public function get blanked():Boolean

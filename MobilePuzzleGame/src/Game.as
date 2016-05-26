@@ -46,10 +46,21 @@ package
 			}
 			blockData = null;
 			
-			_field.checkPossibleCell();
+//			_field.checkPossibleCell();
 //			_field.freeCells();
 //			_field.getCell(3,3).block.removeFromParent();
 //			_field.getCell(3,3).block = null;
+			
+			_button = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
+			_button.x = 10;
+			_button.y = 800;
+			_button.addEventListener(Event.TRIGGERED, onTriggered);
+			addChild(_button);
+		}
+		
+		private function onTriggered(event:Event):void
+		{
+			_field.checkPossibleCell();
 		}
 	}
 }

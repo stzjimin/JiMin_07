@@ -21,6 +21,14 @@ package
 		private var _row:int;
 		private var _colum:int;
 		
+		private var _f:Number;
+		private var _g:Number;
+		private var _h:Number;
+		
+//		private var _check:Boolean = false;
+		
+		private var _pathParent:Cell;
+		
 		private var _possibleCell:Vector.<Cell>;
 		
 		private var _frameCheck:uint;
@@ -34,6 +42,13 @@ package
 		{
 			_neigbor = new Dictionary();
 			_possibleCell = new Vector.<Cell>();
+		}
+		
+		public function initFGH():void
+		{
+			_f = 0;
+			_g = 0;
+			_h = 0;
 		}
 		
 		public function createBlock(type:String):void
@@ -144,6 +159,57 @@ package
 		{
 			_colum = value;
 		}
+
+		public function get f():Number
+		{
+			return _f;
+		}
+
+		public function set f(value:Number):void
+		{
+			_f = value;
+		}
+
+		public function get g():Number
+		{
+			return _g;
+		}
+
+		public function set g(value:Number):void
+		{
+			_g = value;
+		}
+
+		public function get h():Number
+		{
+			return _h;
+		}
+
+		public function set h(value:Number):void
+		{
+			_h = value;
+		}
+
+		public function get pathParent():Cell
+		{
+			return _pathParent;
+		}
+
+		public function set pathParent(value:Cell):void
+		{
+			_pathParent = value;
+		}
+
+//		public function get check():Boolean
+//		{
+//			return _check;
+//		}
+//
+//		public function set check(value:Boolean):void
+//		{
+//			_check = value;
+//		}
+
 		
 	}
 }

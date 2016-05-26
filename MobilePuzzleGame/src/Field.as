@@ -9,6 +9,7 @@ package
 		public static const COLUM_NUM:uint = 10;
 		
 		private var _cells:Vector.<Cell>;
+		private var _arrayCells:Array;
 		private var _distroyer:Distroyer;
 		
 		private var _finAniQueue:Array = new Array();
@@ -30,38 +31,38 @@ package
 //			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
 			
 			_cells = new Vector.<Cell>();
-			var row:int = 0;
+			var colum:int = 0;
 			for(var i:int = 0; i < COLUM_NUM*ROW_NUM; i++)
 			{
 				var cell:Cell = new Cell();
-				var colum:int = i%ROW_NUM;
+				var row:int = i%ROW_NUM;
 				_cells.push(cell);
 				cell.addEventListener(CheckEvent.ADD_PREV, onAddPrev);
 				cell.addEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
 				cell.width = Cell.CELL_WIDTH_SIZE;
 				cell.height = Cell.CELL_HEIGHT_SIZE;
-				cell.x = row * Cell.CELL_WIDTH_SIZE;
-				cell.y = colum * Cell.CELL_HEIGHT_SIZE;
+				cell.x = colum * Cell.CELL_WIDTH_SIZE;
+				cell.y = row * Cell.CELL_HEIGHT_SIZE;
 				cell.row = row;
 				cell.colum = colum;
-				_cells[i].name = colum.toString() + "/" + row.toString();
+				_cells[i].name = row.toString() + "/" + colum.toString();
 				cell.init();
 				addChild(cell);
-				if(row != 0)
+				if(colum != 0)
 				{
 					_cells[i].neigbor[NeigborType.TOP] = _cells[i-ROW_NUM];
 					_cells[i-ROW_NUM].neigbor[NeigborType.BOTTOM] = _cells[i];
 				}
-				if(colum != 0)
+				if(row != 0)
 				{
 					_cells[i].neigbor[NeigborType.LEFT] = _cells[i-1];
 					_cells[i-1].neigbor[NeigborType.RIGHT] = _cells[i];
 				}
-				if(colum == (ROW_NUM-1))
-					row++;
+				if(row == (ROW_NUM-1))
+					colum++;
 			}
 			
-//			_cells = new Array();
+//			_arrayCells = new Array();
 //			for(var i:int = 0; i < COLUM_NUM; i++)
 //			{
 //				var row:Array = new Array();

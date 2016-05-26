@@ -1,7 +1,5 @@
 package
 {
-	import flash.geom.Rectangle;
-	import flash.system.System;
 	import flash.utils.Dictionary;
 	
 	import starling.display.DisplayObjectContainer;

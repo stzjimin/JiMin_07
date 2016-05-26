@@ -12,16 +12,11 @@ package
 		private var _prevCell:Cell;
 		private var _currentCell:Cell;
 		
-		private var _openNodes:Vector.<Cell>;
-		private var _closeNodes:Vector.<Cell>;
-		
-		private var _currentSearchNode:Cell;
 		private var _path:Vector.<Cell>;
 		
 		private var _possible:Dictionary;
 		
 		private var _neigborTypes:Vector.<int> = NeigborType.TYPES;
-		private var _cells:Vector.<Cell>;
 		
 		public function PathChecker()
 		{
@@ -45,28 +40,27 @@ package
 		
 		public function setPrev(cell:Cell):void
 		{
-			if(_prevCell != null && (_prevCell != cell))
+			if(_prevCell != null)
 			{
-				_currentCell = cell;
-				
-				if(_currentCell.block.attribute.type == _prevCell.block.attribute.type)
+				if(_prevCell != cell)
 				{
-					if(_currentCell.checkPossibleCell(_prevCell))
+					_currentCell = cell;
+					
+					if(_currentCell.block.attribute.type == _prevCell.block.attribute.type)
 					{
-						var array:Array = new Array();
-						array.push(_prevCell);
-						array.push(_currentCell);
-						dispatchEvent(new Event(CheckEvent.SAME, false, array));
+						if(_currentCell.checkPossibleCell(_prevCell))
+						{
+							var array:Array = new Array();
+							array.push(_prevCell);
+							array.push(_currentCell);
+							dispatchEvent(new Event(CheckEvent.SAME, false, array));
+						}
 					}
-//					trace(_currentCell.name);
-//					trace(_prevCell.name);
-//					init();
-//					findPath(_prevCell, _currentCell);
+					outChecker(_prevCell);
+					_prevCell = null;
+					outChecker(_currentCell);
+					_currentCell = null;
 				}
-				outChecker(_prevCell);
-				outChecker(_currentCell);
-				_prevCell = null;
-				_currentCell = null;
 			}
 			else
 				_prevCell = cell;
@@ -74,13 +68,6 @@ package
 		
 		public function checkPossibleCell(cells:Vector.<Cell>):void
 		{
-			var direction:int;
-			var distRow:int;
-			var distColum:int;
-			var k:int;
-			var isBlocked:Boolean;
-			_cells = cells;
-			
 			for(var i:int = 0; i < cells.length-1; i++)
 			{
 				if(cells[i].block == null)
@@ -103,22 +90,13 @@ package
 					}
 				}
 			}
-			
-			function findPossible():void
-			{
-				
-			}
 		}
 		
 		private function findPath(startNode:Cell, destNode:Cell):Boolean
 		{
 			var result:Boolean = false;
-			var count:int = 0;
 			var currentNode:Cell = startNode;
 			var prevNode:Cell = startNode;
-			
-			var prevDirection:int = 0;
-			var currentDirection:int = 0;
 			
 			var curveCount:uint = 0;
 			
@@ -158,10 +136,45 @@ package
 			states.splice(0, states.length);
 			return result;
 			
+			function calculPriority(node:Cell, direction:int):int
+			{
+				var rowDist:int = destNode.row - node.row;
+				var columDist:int = destNode.colum - node.colum;
+				
+				if(direction == NeigborType.RIGHT)
+				{
+					if(rowDist >= 0)
+						return 1;
+					else
+						return -1;
+				}
+				else if(direction == NeigborType.LEFT)
+				{
+					if(rowDist <= 0)
+						return 1;
+					else
+						return -1;
+				}
+				else if(direction == NeigborType.TOP)
+				{
+					if(columDist <= 0)
+						return 1;
+					else
+						return -1;
+				}
+				else if(direction == NeigborType.BOTTOM)
+				{
+					if(columDist >= 0)
+						return 1;
+					else
+						return -1;
+				}
+			}
 			
 			function pushStates(node:Cell):void
 			{
 				var curve:uint;
+				var priority:int;
 				for(var i:int = 0; i < _neigborTypes.length; i++)
 				{
 					if(node.neigbor[_neigborTypes[i]] == null || node.neigbor[_neigborTypes[i]].block != null)
@@ -169,26 +182,33 @@ package
 					
 					if(node.neigbor[_neigborTypes[i]] != prevNode)
 					{
+						priority = calculPriority(node, _neigborTypes[i]);
+						
 						if(prevNode.neigbor[_neigborTypes[i]] != node)
 							curve = curveCount+1;
 						else
 							curve = curveCount;
+						
 						if(curve >= 4)	//처음 한번 진행할 때 커브카운트가 1증가 하기때문에 커브 최대 횟수는 3이하로 계산
 							continue;
-						pushState(node.neigbor[_neigborTypes[i]], curve);
+						
+						pushState(node.neigbor[_neigborTypes[i]], curve, priority);
 					}
 				}
 			}
 			
-			function pushState(node:Cell, curve:uint):void
+			function pushState(node:Cell, curve:uint, priority:int):void
 			{
 				var state:State = new State();
 				state.node = node;
 				state.prevNode = currentNode;
 				state.curveCount = curve;
-				state.prevDirection = prevDirection;
-				state.currentDirection = currentDirection;
-				states.push(state);
+//				state.prevDirection = prevDirection;
+//				state.currentDirection = currentDirection;
+				if(priority >= 0)
+					states.push(state);
+				else
+					states.insertAt(0, state);
 			}
 			
 			function popState():void
@@ -197,8 +217,8 @@ package
 				currentNode = state.node;
 				prevNode = state.prevNode;
 				curveCount = state.curveCount;
-				currentDirection = state.currentDirection;
-				prevDirection = state.prevDirection;
+//				currentDirection = state.currentDirection;
+//				prevDirection = state.prevDirection;
 			}
 			
 			function checkDest(node:Cell, destNode:Cell):int

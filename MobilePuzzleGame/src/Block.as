@@ -53,7 +53,6 @@ package
 			super(_blockTexture);
 			
 			addEventListener(Event.TRIGGERED, onTriggered);
-//			addEventListener(TouchEvent.TOUCH, onTouch);
 		}
 		
 		public function init():void
@@ -75,7 +74,6 @@ package
 			else
 			{
 				parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
-//				this.scale = 1.0;
 			}
 		}
 		

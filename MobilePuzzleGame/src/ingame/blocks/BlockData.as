@@ -1,4 +1,4 @@
-package
+package ingame.blocks
 {
 	public class BlockData
 	{

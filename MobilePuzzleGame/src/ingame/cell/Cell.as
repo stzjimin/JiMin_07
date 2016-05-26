@@ -1,14 +1,19 @@
-package
+package ingame.cell
 {
 	import flash.utils.Dictionary;
 	
+	import ingame.blocks.Block;
+	import ingame.util.possibleCheck.CheckEvent;
+	
 	import starling.display.DisplayObjectContainer;
+	import starling.display.Quad;
 	import starling.events.Event;
+	import starling.utils.Color;
 
 	public class Cell extends DisplayObjectContainer
 	{
-		public static const CELL_WIDTH_SIZE:Number = 55;
-		public static const CELL_HEIGHT_SIZE:Number = 72;
+		public static const CELL_WIDTH_SIZE:Number = 45;
+		public static const CELL_HEIGHT_SIZE:Number = 60;
 		
 		private var _neigbor:Dictionary;
 		private var _block:Block;
@@ -18,6 +23,8 @@ package
 		
 		private var _row:int;
 		private var _colum:int;
+		
+		private var _color:Quad;
 		
 		private var _possibleCell:Vector.<Cell>;
 		
@@ -32,6 +39,14 @@ package
 		{
 			_neigbor = new Dictionary();
 			_possibleCell = new Vector.<Cell>();
+			_color = new Quad(this.width, this.height, Color.RED);
+			_color.visible = false;
+			addChild(_color);
+		}
+		
+		public function showColor():void
+		{
+			_color.visible = true;
 		}
 		
 		public function createBlock(type:String):void

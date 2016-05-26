@@ -1,4 +1,4 @@
-package
+package ingame.blocks
 {
 	import flash.display.Bitmap;
 	import flash.geom.Point;
@@ -10,15 +10,21 @@ package
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.textures.Texture;
+	import ingame.cell.Cell;
+	import ingame.util.possibleCheck.CheckEvent;
 
 	public class Block extends Button
 	{
-		[Embed(source="19.png")]
+		[Embed(source="pink.png")]
 		private const testImage0:Class;
-		[Embed(source="iu3.jpg")]
+		[Embed(source="blue.png")]
 		private const testImage1:Class;
-		[Embed(source="hulk.jpg")]
+		[Embed(source="green.png")]
 		private const testImage2:Class;
+		[Embed(source="cat.png")]
+		private const testImage3:Class;
+		[Embed(source="monky.png")]
+		private const testImage4:Class;
 		
 		private var _blockTexture:Texture;
 		private var _attribute:Attribute;
@@ -32,24 +38,37 @@ package
 			_attribute = new Attribute();
 			_clicked = false;
 			
-			if(type == AttributeType.RED)
+			if(type == AttributeType.PINK)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage0() as Bitmap);
-				_attribute.type = AttributeType.RED;
-				this.name = "19";
+				_attribute.type = AttributeType.PINK;
+				this.name = "pink";
 			}
 			else if(type == AttributeType.GREEN)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage1() as Bitmap);
 				_attribute.type = AttributeType.GREEN;
-				this.name = "iu";
+				this.name = "green";
 			}			
 			else if(type == AttributeType.BLUE)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage2() as Bitmap);
 				_attribute.type = AttributeType.BLUE;
-				this.name = "hulk";
+				this.name = "blue";
 			}
+			else if(type == AttributeType.CAT)
+			{
+				_blockTexture = Texture.fromBitmap(new testImage3() as Bitmap);
+				_attribute.type = AttributeType.CAT;
+				this.name = "cat";
+			}
+			else if(type == AttributeType.MONKY)
+			{
+				_blockTexture = Texture.fromBitmap(new testImage4() as Bitmap);
+				_attribute.type = AttributeType.MONKY;
+				this.name = "monky";
+			}
+			
 			super(_blockTexture);
 			
 			addEventListener(Event.TRIGGERED, onTriggered);

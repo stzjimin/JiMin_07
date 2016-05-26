@@ -1,7 +1,8 @@
-package
+package ingame.util
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
+	import ingame.blocks.Block;
 
 	public class Distroyer extends EventDispatcher
 	{

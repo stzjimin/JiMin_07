@@ -46,7 +46,7 @@ package
 			}
 			blockData = null;
 			
-//			_field.checkPossibleCell();
+			_field.checkPossibleCell();
 //			_field.freeCells();
 //			_field.getCell(3,3).block.removeFromParent();
 //			_field.getCell(3,3).block = null;

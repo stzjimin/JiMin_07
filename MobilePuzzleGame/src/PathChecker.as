@@ -37,16 +37,10 @@ package
 			}
 			_possible = new Dictionary();
 			
-			if(_openNodes != null)
-				_openNodes.splice(0, _openNodes.length);
-			if(_closeNodes != null)
-				_closeNodes.splice(0, _closeNodes.length);
 			if(_path != null)
 				_path.splice(0, _path.length);
 			
 			_path = new Vector.<Cell>();
-			_openNodes = new Vector.<Cell>();
-			_closeNodes = new Vector.<Cell>();
 		}
 		
 		public function setPrev(cell:Cell):void
@@ -57,7 +51,6 @@ package
 				
 				if(_currentCell.block.attribute.type == _prevCell.block.attribute.type)
 				{
-//					checkPath();
 					if(_currentCell.checkPossibleCell(_prevCell))
 					{
 						var array:Array = new Array();
@@ -100,50 +93,18 @@ package
 					
 					if(cells[i].block.attribute.type == cells[j].block.attribute.type)
 					{
-//						if(cells[i].name == "2/2")
-//						{
-////							trace("aa");
-//						}
 						trace("startNode = " + cells[i].name);
 						trace("destNode = " + cells[j].name);
 						if(findPath(cells[i], cells[j]))
 						{
-//							trace(cells[i].name);
 							cells[i].addPossibleCell(cells[j]);
 							cells[j].addPossibleCell(cells[i]);
 						}
-//						distRow = (i % Field.ROW_NUM) - (j % Field.ROW_NUM);
-//						
-//						if(distRow < 0)
-//						{
-//							
-//						}
-//						else if(distRow > 0)
-//						{
-//							
-//						}
-//						else
-//						{
-//							
-//						}
 					}
 				}
 			}
 			
 			function findPossible():void
-			{
-				
-			}
-		}
-		
-		public function checkPossibleCell2(cells:Array):void
-		{
-			var i:int;
-			var j:int;
-			var k:int;
-			var l:int;
-			
-			for(i = 0; i < cells.length; i++)
 			{
 				
 			}
@@ -163,9 +124,6 @@ package
 			
 			var states:Vector.<State> = new Vector.<State>();
 			
-//			pushState();
-			_openNodes.push(currentNode);
-//			addOpenNodes(currentNode);
 			while(currentNode != destNode)
 			{
 				trace(currentNode.name);
@@ -174,7 +132,7 @@ package
 				trace(curveCount);
 				if(dest != 0)
 				{
-					if(curveCount >= 3)
+					if(curveCount >= 3)	//처음 한번 진행할 때 커브카운트가 1증가 하기때문에 커브 최대 횟수는 3이하로 계산
 					{
 						if(prevNode.neigbor[dest] == currentNode)
 						{
@@ -215,92 +173,12 @@ package
 							curve = curveCount+1;
 						else
 							curve = curveCount;
-						if(curve >= 4)
+						if(curve >= 4)	//처음 한번 진행할 때 커브카운트가 1증가 하기때문에 커브 최대 횟수는 3이하로 계산
 							continue;
 						pushState(node.neigbor[_neigborTypes[i]], curve);
 					}
 				}
 			}
-			
-//			function initCellsCheck():void
-//			{
-//				for(var i:int = 0; i < _cells.length; i++)
-//					_cells[i].check = false;
-//			}
-			
-			function isInOpenNodes(node):int
-			{
-				return _openNodes.indexOf(node);
-			}
-			
-//			function calculNeigborFGH(node:Cell):void
-//			{
-//				var neigbor:Cell;
-//				for(var i:int = 0; i < _neigborTypes.length; i++)
-//				{
-//					neigbor = node.neigbor[_neigborTypes[i]];
-//					
-//					if(neigbor != null)
-//					{
-//						if(isInOpenNodes(neigbor) < 0)
-//							neigbor.initFGH();
-//						else
-//						{
-//							if(neigbor.g < node.g + 10)
-//							{
-//								
-//							}
-//						}
-//						neigbor.g = node.g + 10;
-//						if(neigbor.row == destNode.row)
-//						{
-//							if(Math.abs(neigbor.colum - destNode.colum) > Math.abs(node.colum - destNode.colum))
-//								neigbor.h = 50;
-//							else 
-//								neigbor.h = 30;
-//						}
-//						else if(neigbor.colum == destNode.colum)
-//						{
-//							if(Math.abs(neigbor.row - destNode.row) > Math.abs(node.row - destNode.row))
-//								neigbor.h = 50;
-//							else 
-//								neigbor.h = 30;
-//						}
-//						else
-//							neigbor.h = 40;
-//						
-//						neigbor.f = neigbor.g + neigbor.h;
-//					}
-//				}
-//			}
-			
-			function getNextDirection(node:Cell):int
-			{
-				for(var i:int = 0; i < _neigborTypes.length; i++)
-				{
-					if(node.neigbor[_neigborTypes[i]] != null && node.neigbor[_neigborTypes[i]].block == null)
-					{
-						if(!node.neigbor[_neigborTypes[i]].check)
-							return _neigborTypes[i];
-					}
-				}
-				return 0;
-			}
-			
-//			function sortOpenNodes():void
-//			{
-//				_openNodes.sort(orderByF);
-//			}
-			
-//			function orderByF(node1:Cell, node2:Cell):int
-//			{
-//				if(node1.f > node2.f)
-//					return 1;
-//				else if(node1.f < node2.f)
-//					return -1;
-//				else
-//					return 0;
-//			}
 			
 			function pushState(node:Cell, curve:uint):void
 			{
@@ -332,86 +210,11 @@ package
 				}
 				return 0;
 			}
-			
-			function goNode(node:Cell):void
-			{
-				addCloseNode(node);
-				addOpenNodes(node);
-				_path.push(node);
-			}
-			
-			function checkAvailable(node:Cell):Boolean
-			{
-				if(node.block == null)
-					return true;
-				else
-					return false;
-			}
-			
-			function checkOpenNodes(node:Cell):Boolean
-			{
-				for(var i:int = 0; i < _openNodes.length; i++)
-				{
-					if(node == _openNodes[i])
-						return true;
-				}
-				
-				return false;
-			}
-			
-			function removeFromOpenNodes(node:Cell):void
-			{
-				var index:int = _openNodes.indexOf(node);
-				if(index < 0)
-					return;
-				_openNodes.removeAt(index);
-			}
-			
-			function addCloseNode(node:Cell):void
-			{
-				removeFromOpenNodes(node);
-				_closeNodes.push(node);
-			}
-			
-			function addOpenNodes(node:Cell):void
-			{
-				for(var i:int = 0; i < _neigborTypes.length; i++)
-				{
-					if(node.neigbor[_neigborTypes[i]] != null && checkAvailable(node.neigbor[_neigborTypes[i]]))
-					{
-						if(checkCloseNode(node.neigbor[_neigborTypes[i]]))
-							continue;
-						if(node.neigbor[_neigborTypes[i]].check)
-							continue;
-						//					trace(node.neigbor[_neigborTypes[i]].name);
-						_openNodes.push(node.neigbor[_neigborTypes[i]]);
-						node.neigbor[_neigborTypes[i]].pathParent = node;
-					}
-					else
-						addCloseNode(node.neigbor[_neigborTypes[i]]);
-				}
-			}
-			
-			function checkCloseNode(node:Cell):Boolean
-			{
-				for(var i:int = 0; i < _closeNodes.length; i++)
-				{
-					if(node == _closeNodes[i])
-						return true;
-				}
-				
-				return false;
-			}
 		}
 		
 		public function outChecker(cell:Cell):void
 		{
 			cell.dispatchEvent(new Event(CheckEvent.PULL_PREV));
 		}
-		
-//		private function checkPath(node:Cell):void
-//		{
-//			goNode(node);
-//		}
 	}
 }

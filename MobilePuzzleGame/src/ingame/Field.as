@@ -12,10 +12,11 @@ package ingame
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
+	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.textures.Texture;
 
-	public class Field extends DisplayObjectContainer
+	public class Field extends Sprite
 	{
 		[Embed(source="testBackGroundImage2.jpg")]
 		private const testBackGroundImage:Class;

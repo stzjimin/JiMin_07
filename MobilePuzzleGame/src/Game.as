@@ -9,6 +9,7 @@ package
 	import starling.display.Button;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
+	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.textures.Texture;
 	
@@ -96,6 +97,8 @@ package
 			blockData = null;
 			
 			_field.checkPossibleCell();
+			
+			trace(flash.display.Screen.mainScreen.bounds);
 //			_field.freeCells();
 //			_field.getCell(3,3).block.removeFromParent();
 //			_field.getCell(3,3).block = null;

@@ -5,6 +5,7 @@ package ingame.cell
 	import ingame.blocks.Block;
 	import ingame.util.possibleCheck.CheckEvent;
 	
+	import starling.animation.Juggler;
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Quad;
@@ -49,21 +50,25 @@ package ingame.cell
 		
 		public function showColor():void
 		{
-			var frameCount:uint = 0;
-			
-			addEventListener(Event.ENTER_FRAME, onShowTime);
 			_color.visible = true;
-			
-			function onShowTime(event:Event):void
-			{
-				frameCount++;
-				if(frameCount > 10)
-				{
-					frameCount = 0;
-					_color.visible = false;
-					removeEventListener(Event.ENTER_FRAME, onShowTime);
-				}
-			}
+			Starling.juggler.delayCall(offColor, 0.3);
+//			var frameCount:uint = 0;
+//			addEventListener(Event.ENTER_FRAME, onShowTime);
+//			function onShowTime(event:Event):void
+//			{
+//				frameCount++;
+//				if(frameCount > 10)
+//				{
+//					frameCount = 0;
+//					_color.visible = false;
+//					removeEventListener(Event.ENTER_FRAME, onShowTime);
+//				}
+//			}
+		}
+		
+		private function offColor():void
+		{
+			_color.visible = false;
 		}
 		
 		public function createBlock(type:String):void

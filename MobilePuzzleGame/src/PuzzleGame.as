@@ -14,7 +14,7 @@ package
 			super();
 			
 			// support autoOrients
-			stage.align = StageAlign.TOP_LEFT;
+			stage.align = StageAlign.TOP;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			
 			Starling.multitouchEnabled = true;

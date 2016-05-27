@@ -5,6 +5,7 @@ package ingame.cell
 	import ingame.blocks.Block;
 	import ingame.util.possibleCheck.CheckEvent;
 	
+	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Quad;
 	import starling.events.Event;
@@ -40,13 +41,29 @@ package ingame.cell
 			_neigbor = new Dictionary();
 			_possibleCell = new Vector.<Cell>();
 			_color = new Quad(this.width, this.height, Color.RED);
+			_color.x = 0;
+			_color.y = 0;
 			_color.visible = false;
 			addChild(_color);
 		}
 		
 		public function showColor():void
 		{
+			var frameCount:uint = 0;
+			
+			addEventListener(Event.ENTER_FRAME, onShowTime);
 			_color.visible = true;
+			
+			function onShowTime(event:Event):void
+			{
+				frameCount++;
+				if(frameCount > 10)
+				{
+					frameCount = 0;
+					_color.visible = false;
+					removeEventListener(Event.ENTER_FRAME, onShowTime);
+				}
+			}
 		}
 		
 		public function createBlock(type:String):void

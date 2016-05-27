@@ -82,8 +82,8 @@ package ingame.util.possibleCheck
 								if(vector[i].destCell == _currentCell)
 								{
 									path = cloneVector(vector[i].path);
-									removeFromPossibles(_prevCell, _currentCell);
-									removeFromPossibles(_currentCell, _prevCell);
+									removeFromPossibles(_prevCell);
+									removeFromPossibles(_currentCell);
 									result = true;
 									break;
 								}
@@ -176,7 +176,8 @@ package ingame.util.possibleCheck
 					{
 						if(curveCount < 3)	//처음 한번 진행할 때 커브카운트가 1증가 하기때문에 커브 최대 횟수는 3이하로 계산
 						{
-							originPath.push(currentNode);
+							if(currentNode != startNode)
+								originPath.push(currentNode);
 							currentNode = currentNode.neigbor[dest];
 							result = true;
 							break;
@@ -216,20 +217,6 @@ package ingame.util.possibleCheck
 				{
 					if(columDist > 0)
 					{
-						if(direction == NeigborType.BOTTOM)
-							return 1;
-					}
-					else
-					{
-						if(direction == NeigborType.TOP)
-							return 1;
-					}
-				}
-				
-				if(columDist == 0)
-				{
-					if(rowDist > 0)
-					{
 						if(direction == NeigborType.RIGHT)
 							return 1;
 					}
@@ -240,30 +227,44 @@ package ingame.util.possibleCheck
 					}
 				}
 				
+				if(columDist == 0)
+				{
+					if(rowDist > 0)
+					{
+						if(direction == NeigborType.BOTTOM)
+							return 1;
+					}
+					else
+					{
+						if(direction == NeigborType.TOP)
+							return 1;
+					}
+				}
+				
 				if(direction == NeigborType.RIGHT)
 				{
-					if(rowDist >= 0)
+					if(columDist >= 0)
 						return 0;
 					else
 						return -1;
 				}
 				else if(direction == NeigborType.LEFT)
 				{
-					if(rowDist <= 0)
+					if(columDist <= 0)
 						return 0;
 					else
 						return -1;
 				}
 				else if(direction == NeigborType.TOP)
 				{
-					if(columDist <= 0)
+					if(rowDist <= 0)
 						return 0;
 					else
 						return -1;
 				}
 				else if(direction == NeigborType.BOTTOM)
 				{
-					if(columDist >= 0)
+					if(rowDist >= 0)
 						return 0;
 					else
 						return -1;
@@ -350,18 +351,34 @@ package ingame.util.possibleCheck
 			}
 		}
 		
-		private function removeFromPossibles(trigger:Cell, target:Cell):Boolean
+		private function removeFromPossibles(cell:Cell):void
 		{
-			var vector:Vector.<Possible> = _possibles[trigger];
+			var vector:Vector.<Possible> = _possibles[cell];
 			for(var i:int = 0; i < vector.length; i++)
+				vector[i].distroy();
+			vector.splice(0, vector.length);
+			
+			for(var key:Cell in _possibles)
 			{
-				if(vector[i].destCell == target)
+				vector = _possibles[key];
+				for(i = 0; i < vector.length; i++)
 				{
-					vector.removeAt(i);
-					return true;
+					if(vector[i].destCell == cell)
+					{
+						vector[i].distroy();
+						vector.removeAt(i);
+					}
 				}
 			}
-			return false;
+//			for(var i:int = 0; i < vector.length; i++)
+//			{
+//				if(vector[i].destCell == target)
+//				{
+//					vector.removeAt(i);
+//					return true;
+//				}
+//			}
+//			return true;
 		}
 		
 		private function setBothPossible(cell1:Cell, cell2:Cell, path:Vector.<Cell>):void
@@ -381,6 +398,11 @@ package ingame.util.possibleCheck
 			if(_possibles[cell2] == null)
 				_possibles[cell2] = new Vector.<Possible>();
 			_possibles[cell2].push(possible);
+			
+//			function searchIsIn(cell:Cell, array:Array):void
+//			{
+//				
+//			}
 		}
 		
 		private function cloneVector(vector:Vector.<Cell>):Vector.<Cell>

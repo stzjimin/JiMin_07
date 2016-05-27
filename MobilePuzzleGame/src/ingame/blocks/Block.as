@@ -84,6 +84,7 @@ package ingame.blocks
 		
 		public function onTriggered():void
 		{
+			trace(Cell(parent).row);
 			_clicked = !_clicked;
 			if(_clicked)
 			{

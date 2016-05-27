@@ -61,6 +61,15 @@ package
 			_blockDatas.push(new BlockData(10, 3, AttributeType.MONKY));
 			_blockDatas.push(new BlockData(7, 10, AttributeType.CAT));
 			_blockDatas.push(new BlockData(10, 5, AttributeType.CAT));
+			_blockDatas.push(new BlockData(10, 5, AttributeType.CAT));
+			_blockDatas.push(new BlockData(10, 1, AttributeType.CAT));
+			_blockDatas.push(new BlockData(10, 2, AttributeType.CAT));
+			_blockDatas.push(new BlockData(10, 8, AttributeType.CAT));
+			_blockDatas.push(new BlockData(8, 5, AttributeType.CAT));
+			_blockDatas.push(new BlockData(3, 5, AttributeType.CAT));
+			_blockDatas.push(new BlockData(10, 9, AttributeType.CAT));
+			_blockDatas.push(new BlockData(9, 3, AttributeType.CAT));
+			_blockDatas.push(new BlockData(7, 5, AttributeType.CAT));
 			
 			_field = new Field();
 			_field.x = 18;

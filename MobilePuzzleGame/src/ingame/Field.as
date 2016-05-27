@@ -20,8 +20,8 @@ package ingame
 		[Embed(source="testBackGroundImage2.jpg")]
 		private const testBackGroundImage:Class;
 		
-		public static const ROW_NUM:uint = 12;
-		public static const COLUM_NUM:uint = 12;
+		private static var _sROW_NUM:uint;
+		private static var _sCOLUM_NUM:uint;
 		
 		private var _backGround:Image;
 		
@@ -30,9 +30,10 @@ package ingame
 		
 		private var _possibleChecker:PossibleChecker;
 		
-		public function Field()
+		public function Field(rowNum:uint = 12, columNum:uint = 12)
 		{
-//			init();
+			_sROW_NUM = rowNum;
+			_sCOLUM_NUM = columNum;
 		}
 		
 		public function init():void
@@ -49,35 +50,35 @@ package ingame
 			addChild(_backGround);
 			
 			_cells = new Vector.<Cell>();
-			var colum:int = 0;
+			var columNum:int = 0;
 			for(var i:int = 0; i < COLUM_NUM*ROW_NUM; i++)
 			{
 				var cell:Cell = new Cell();
-				var row:int = i%ROW_NUM;
+				var rowNum:int = i%ROW_NUM;
 				_cells.push(cell);
 				cell.addEventListener(CheckEvent.ADD_PREV, onAddPrev);
 				cell.addEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
 				cell.width = Cell.CELL_WIDTH_SIZE;
 				cell.height = Cell.CELL_HEIGHT_SIZE;
-				cell.x = colum * Cell.CELL_WIDTH_SIZE;
-				cell.y = row * Cell.CELL_HEIGHT_SIZE;
-				cell.row = colum;
-				cell.colum = row;
-				_cells[i].name = row.toString() + "/" + colum.toString();
+				cell.x = columNum * Cell.CELL_WIDTH_SIZE;
+				cell.y = rowNum * Cell.CELL_HEIGHT_SIZE;
+				cell.row = rowNum;
+				cell.colum = columNum;
+				_cells[i].name = rowNum.toString() + "/" + columNum.toString();
 				cell.init();
 				addChild(cell);
-				if(colum != 0)
+				if(columNum != 0)
 				{
-					_cells[i].neigbor[NeigborType.TOP] = _cells[i-ROW_NUM];
-					_cells[i-ROW_NUM].neigbor[NeigborType.BOTTOM] = _cells[i];
+					_cells[i].neigbor[NeigborType.LEFT] = _cells[i-ROW_NUM];
+					_cells[i-ROW_NUM].neigbor[NeigborType.RIGHT] = _cells[i];
 				}
-				if(row != 0)
+				if(rowNum != 0)
 				{
-					_cells[i].neigbor[NeigborType.LEFT] = _cells[i-1];
-					_cells[i-1].neigbor[NeigborType.RIGHT] = _cells[i];
+					_cells[i].neigbor[NeigborType.TOP] = _cells[i-1];
+					_cells[i-1].neigbor[NeigborType.BOTTOM] = _cells[i];
 				}
-				if(row == (ROW_NUM-1))
-					colum++;
+				if(rowNum == (ROW_NUM-1))
+					columNum++;
 			}
 		}
 		
@@ -145,16 +146,40 @@ package ingame
 			possible.path.insertAt(0, possible.startCell);
 			possible.path.push(possible.destCell);
 			
+			var line:Vector.<Cell>;
 			for(var i:int = 0; i < possible.path.length-1; i++)
-				fullPath.concat(getLine(possible.path[i], possible.path[i+1]));
+			{
+				trace("possible.path[i].name = " + possible.path[i].name);
+				trace("possible.path[i+1].name = " + possible.path[i+1].name);
+				line = getLine(possible.path[i], possible.path[i+1]);
+				fullPath = fullPath.concat(line);
+			}
 			
 			var cell:Cell;
+			var prev:Cell;
+			var neigborTypes:Vector.<int> = NeigborType.TYPES;
+			var direction:int;
 			trace("fullPath.length = " + fullPath.length);
 			while(fullPath.length != 0)
 			{
 				cell = fullPath.shift();
+				if(prev == cell)
+				{
+					for(i = 0; i < neigborTypes.length; i++)
+					{
+						if(cell.neigbor[neigborTypes[i]] == fullPath[0])
+						{
+							direction = neigborTypes[i];
+							break;
+						}
+					}
+					
+					trace(direction + "으로 꺾임");
+				}
 				cell.showColor();
+				prev = cell;
 			}
+			cell = null;
 		}
 		
 		private function getLine(cell1:Cell, cell2:Cell):Vector.<Cell>
@@ -168,21 +193,27 @@ package ingame
 				{
 					trace("cell1.colum = " + cell1.colum)
 					trace("cell2.colum = " + cell2.colum)
-					searchCell = cell1.neigbor[NeigborType.TOP];
+					result.push(searchCell);
+					searchCell = cell1.neigbor[NeigborType.LEFT];
+					result.push(searchCell);
 					while(searchCell != cell2)
 					{
-//						trace("a");
-						searchCell = cell1.neigbor[NeigborType.TOP];
+						trace(searchCell.name);
+//						result.push(searchCell);
+						searchCell = searchCell.neigbor[NeigborType.LEFT];
 						result.push(searchCell);
 					}
 				}
 				else
 				{
-					searchCell = cell1.neigbor[NeigborType.BOTTOM];
+					result.push(searchCell);
+					searchCell = cell1.neigbor[NeigborType.RIGHT];
+					result.push(searchCell);
 					while(searchCell != cell2)
 					{
-						trace("b");
-						searchCell = cell1.neigbor[NeigborType.BOTTOM];
+						trace(searchCell.name);
+//						result.push(searchCell);
+						searchCell = searchCell.neigbor[NeigborType.RIGHT];
 						result.push(searchCell);
 					}
 				}
@@ -191,25 +222,33 @@ package ingame
 			{
 				if(cell1.row > cell2.row)
 				{
-					searchCell = cell1.neigbor[NeigborType.RIGHT];
+					result.push(searchCell);
+					searchCell = cell1.neigbor[NeigborType.TOP];
+					result.push(searchCell);
 					while(searchCell != cell2)
 					{
-						trace("c");
-						searchCell = cell1.neigbor[NeigborType.RIGHT];
+						trace(searchCell.name);
+//						result.push(searchCell);
+						searchCell = searchCell.neigbor[NeigborType.TOP];
 						result.push(searchCell);
 					}
 				}
 				else
 				{
-					searchCell = cell1.neigbor[NeigborType.LEFT];
+					result.push(searchCell);
+					searchCell = cell1.neigbor[NeigborType.BOTTOM];
+					result.push(searchCell);
 					while(searchCell != cell2)
 					{
-						trace("d");
-						searchCell = cell1.neigbor[NeigborType.LEFT];
+						trace(searchCell.name);
+//						result.push(searchCell);
+						searchCell = searchCell.neigbor[NeigborType.BOTTOM];
 						result.push(searchCell);
 					}
 				}
 			}
+			
+			trace("result.length = " + result.length)
 			
 			return result;
 		}
@@ -230,5 +269,17 @@ package ingame
 		{
 			return _cells[colum+(ROW_NUM*row)];
 		}
+
+		public static function get ROW_NUM():uint
+		{
+			return _sROW_NUM;
+		}
+
+		public static function get COLUM_NUM():uint
+		{
+			return _sCOLUM_NUM;
+		}
+
+
 	}
 }

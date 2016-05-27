@@ -1,7 +1,11 @@
-package ingame.blocks
+package ingame.cell.blocks
 {
 	import flash.display.Bitmap;
 	import flash.geom.Point;
+	
+	import ingame.cell.Cell;
+	import ingame.cell.NeigborType;
+	import ingame.util.possibleCheck.CheckEvent;
 	
 	import starling.display.Button;
 	import starling.display.Image;
@@ -10,62 +14,65 @@ package ingame.blocks
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.textures.Texture;
-	import ingame.cell.Cell;
-	import ingame.util.possibleCheck.CheckEvent;
 
 	public class Block extends Button
 	{
 		[Embed(source="pink.png")]
 		private const testImage0:Class;
+		
 		[Embed(source="blue.png")]
 		private const testImage1:Class;
+		
 		[Embed(source="green.png")]
 		private const testImage2:Class;
+		
 		[Embed(source="cat.png")]
 		private const testImage3:Class;
+		
 		[Embed(source="monky.png")]
 		private const testImage4:Class;
 		
 		private var _blockTexture:Texture;
-		private var _attribute:Attribute;
+		private var _type:String;
+		private var _skill:String;
 		
 		private var _distroyed:Boolean = false;
 		
 		private var _clicked:Boolean;
 		
-		public function Block(type:String)
+		public function Block(blockData:BlockData)
 		{
-			_attribute = new Attribute();
 			_clicked = false;
 			
-			if(type == AttributeType.PINK)
+			var type:String = blockData.type;
+			if(type == BlockType.PINK)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage0() as Bitmap);
-				_attribute.type = AttributeType.PINK;
+				_type = BlockType.PINK;
 				this.name = "pink";
 			}
-			else if(type == AttributeType.GREEN)
+			else if(type == BlockType.BLUE)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage1() as Bitmap);
-				_attribute.type = AttributeType.GREEN;
-				this.name = "green";
-			}			
-			else if(type == AttributeType.BLUE)
-			{
-				_blockTexture = Texture.fromBitmap(new testImage2() as Bitmap);
-				_attribute.type = AttributeType.BLUE;
+				_type = BlockType.BLUE;
 				this.name = "blue";
 			}
-			else if(type == AttributeType.CAT)
+			else if(type == BlockType.GREEN)
+			{
+				_blockTexture = Texture.fromBitmap(new testImage2() as Bitmap);
+				_type = BlockType.GREEN;
+				this.name = "green";
+			}			
+			else if(type == BlockType.CAT)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage3() as Bitmap);
-				_attribute.type = AttributeType.CAT;
+				_type = BlockType.CAT;
 				this.name = "cat";
 			}
-			else if(type == AttributeType.MONKY)
+			else if(type == BlockType.MONKY)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage4() as Bitmap);
-				_attribute.type = AttributeType.MONKY;
+				_type = BlockType.MONKY;
 				this.name = "monky";
 			}
 			
@@ -75,7 +82,7 @@ package ingame.blocks
 		}
 		
 		public function init():void
-		{
+		{	
 			this.pivotX = this.width/2;
 			this.pivotY = this.height/2;
 			this.x = this.width/2;
@@ -84,7 +91,7 @@ package ingame.blocks
 		
 		public function onTriggered():void
 		{
-			trace(Cell(parent).row);
+//			trace(Cell(Cell(parent).neigbor[NeigborType.TOP]).block.type);
 			_clicked = !_clicked;
 			if(_clicked)
 			{
@@ -171,14 +178,24 @@ package ingame.blocks
 			_distroyed = value;
 		}
 
-		public function get attribute():Attribute
+		public function get type():String
 		{
-			return _attribute;
+			return _type;
 		}
 
-		public function set attribute(value:Attribute):void
+		public function set type(value:String):void
 		{
-			_attribute = value;
+			_type = value;
+		}
+
+		public function get skill():String
+		{
+			return _skill;
+		}
+
+		public function set skill(value:String):void
+		{
+			_skill = value;
 		}
 
 

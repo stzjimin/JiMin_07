@@ -5,11 +5,14 @@ package ingame
 	
 	import ingame.cell.Cell;
 	import ingame.cell.NeigborType;
+	import ingame.cell.blocks.BlockData;
 	import ingame.util.Distroyer;
 	import ingame.util.possibleCheck.CheckEvent;
 	import ingame.util.possibleCheck.Possible;
 	import ingame.util.possibleCheck.PossibleChecker;
 	
+	import starling.animation.Juggler;
+	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.display.Sprite;
@@ -23,6 +26,8 @@ package ingame
 		
 		private static var _sROW_NUM:uint;
 		private static var _sCOLUM_NUM:uint;
+		
+		private var _juggler:Juggler;
 		
 		private var _backGround:Image;
 		
@@ -39,6 +44,8 @@ package ingame
 		
 		public function init():void
 		{	
+			_juggler = new Juggler();
+			
 			_distroyer = new Distroyer();
 			_possibleChecker = new PossibleChecker();
 			_possibleChecker.init();
@@ -112,7 +119,7 @@ package ingame
 				_cells[i].removeEventListener(CheckEvent.ADD_PREV, onAddPrev);
 				_cells[i].removeEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
 				_cells[i].distroy();
-				_cells[i].removeFromParent(true);
+				_cells[i].removeFromParent();
 				_cells[i] = null;
 			}
 			_cells.splice(0, _cells.length);
@@ -120,8 +127,14 @@ package ingame
 			_possibleChecker.removeEventListener(CheckEvent.SAME, onSame);
 			_possibleChecker.distroy();
 			_possibleChecker = null;
-			_backGround.removeFromParent(true);
+			
+			_backGround.removeFromParent();
 			_backGround = null;
+		}
+		
+		public function advanceTime(time:Number):void
+		{
+			_juggler.advanceTime(time);
 		}
 		
 		private function onSame(event:Event):void
@@ -178,6 +191,7 @@ package ingame
 					trace(direction + "으로 꺾임");
 				}
 				cell.showColor();
+				_juggler.delayCall(cell.offColor, 0.3);
 				prev = cell;
 			}
 			cell = null;
@@ -256,8 +270,8 @@ package ingame
 		
 		private function onAddPrev(event:Event):void
 		{
-			trace(Cell(event.currentTarget).row);
-			trace(Cell(event.currentTarget).block.attribute.type);
+//			trace(Cell(event.currentTarget).row);
+//			trace(Cell(event.currentTarget).block.type);
 			_possibleChecker.setPrev(event.currentTarget as Cell);
 		}
 		
@@ -266,9 +280,15 @@ package ingame
 			_possibleChecker.outChecker(event.currentTarget as Cell);
 		}
 		
-		public function getCell(row:uint, colum:uint):Cell
+		private function getCell(row:uint, colum:uint):Cell
 		{
 			return _cells[colum+(ROW_NUM*row)];
+		}
+		
+		public function createBlock(blockData:BlockData):void
+		{
+			var cell:Cell = getCell(blockData.row, blockData.colum);
+			cell.createBlock(blockData);
 		}
 
 		public static function get ROW_NUM():uint

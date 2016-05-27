@@ -70,7 +70,7 @@ package ingame.util.possibleCheck
 				{
 					_currentCell = cell;
 					
-					if(_currentCell.block.attribute.type == _prevCell.block.attribute.type)
+					if(_currentCell.block.type == _prevCell.block.type)
 					{
 						var vector:Vector.<Possible> = _possibles[_prevCell];
 						if(vector != null)
@@ -121,7 +121,7 @@ package ingame.util.possibleCheck
 					if(cells[j].block == null)
 						continue;	//블록이 없는 경우는 검사할 필요가 없으니 제외
 					
-					if(cells[i].block.attribute.type == cells[j].block.attribute.type)
+					if(cells[i].block.type == cells[j].block.type)
 					{
 //						trace("startNode = " + cells[i].name);
 //						trace("destNode = " + cells[j].name);

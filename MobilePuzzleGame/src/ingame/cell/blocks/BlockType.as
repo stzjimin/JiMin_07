@@ -1,6 +1,6 @@
-package ingame.blocks
+package ingame.cell.blocks
 {
-	public class AttributeType
+	public class BlockType
 	{
 		public static const CAT:String = "cat";
 		public static const MONKY:String = "monky";
@@ -8,7 +8,7 @@ package ingame.blocks
 		public static const GREEN:String = "green";
 		public static const BLUE:String = "blue";
 		
-		public function AttributeType()
+		public function BlockType()
 		{
 		}
 	}

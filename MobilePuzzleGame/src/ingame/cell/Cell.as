@@ -2,11 +2,10 @@ package ingame.cell
 {
 	import flash.utils.Dictionary;
 	
-	import ingame.blocks.Block;
+	import ingame.cell.blocks.Block;
+	import ingame.cell.blocks.BlockData;
 	import ingame.util.possibleCheck.CheckEvent;
 	
-	import starling.animation.Juggler;
-	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Quad;
 	import starling.events.Event;
@@ -28,8 +27,6 @@ package ingame.cell
 		
 		private var _color:Quad;
 		
-		private var _possibleCell:Vector.<Cell>;
-		
 		private var _frameCheck:uint;
 		
 		public function Cell()
@@ -40,43 +37,45 @@ package ingame.cell
 		public function init():void
 		{
 			_neigbor = new Dictionary();
-			_possibleCell = new Vector.<Cell>();
 			_color = new Quad(this.width, this.height, Color.RED);
 			_color.x = 0;
 			_color.y = 0;
 			_color.visible = false;
 			addChild(_color);
+			
+//			if(cellData.blockData != null)
+//			{
+//				_block = new Block();
+//				_block.width = this.width;
+//				_block.height = this.height;
+//				_block.init(cellData.blockData);
+//				addChild(_block);
+//			}
 		}
 		
 		public function showColor():void
 		{
 			_color.visible = true;
-			Starling.juggler.delayCall(offColor, 0.3);
-//			var frameCount:uint = 0;
-//			addEventListener(Event.ENTER_FRAME, onShowTime);
-//			function onShowTime(event:Event):void
-//			{
-//				frameCount++;
-//				if(frameCount > 10)
-//				{
-//					frameCount = 0;
-//					_color.visible = false;
-//					removeEventListener(Event.ENTER_FRAME, onShowTime);
-//				}
-//			}
 		}
 		
-		private function offColor():void
+		public function offColor():void
 		{
 			_color.visible = false;
 		}
 		
-		public function createBlock(type:String):void
+//		private function createBlock(blockData):Block
+//		{
+//			var block:Block = new Block();
+//			
+//			return block;
+//		}
+		
+		public function createBlock(blockData:BlockData):void
 		{
 			if(_block != null)
 				return;
 			
-			_block = new Block(type);
+			_block = new Block(blockData);
 			_block.width = this.width;
 			_block.height = this.height;
 			_block.init();
@@ -90,27 +89,11 @@ package ingame.cell
 			_block.pullPrev();
 		}
 		
-		public function addPossibleCell(cell:Cell):void
-		{
-			_possibleCell.push(cell);
-		}
-		
-		public function checkPossibleCell(cell:Cell):Boolean
-		{
-			if(_possibleCell == null || _possibleCell.length == 0)
-				return false;
-			
-			for(var i:int = 0; i < _possibleCell.length; i++)
-			{
-				if(cell == _possibleCell[i])
-					return true;
-			}
-			return false;
-		}
-		
 		public function distroy():void
 		{
 			removeEventListener(CheckEvent.PULL_PREV, onPullPrev);
+			
+			dispose();
 		}
 		
 		private function onEnterFrame(event:Event):void

@@ -110,55 +110,6 @@ package ingame.cell.blocks
 			this.scale = 1.0;
 		}
 		
-//		public function init():void
-//		{
-//			this.pivotX = this.width/2;
-//			this.pivotY = this.height/2;
-//		}
-		
-		private function onTouch(event:TouchEvent):void
-		{
-			var touch:Touch = event.getTouch(this);
-			if(touch == null)
-				return;
-			
-			if(touch.phase == TouchPhase.ENDED)
-			{
-				_clicked = true;
-			}
-			
-//			if(touch.phase == TouchPhase.BEGAN)
-//			{
-//				this.x = 0;
-//				this.y = 0;
-//				_prevPoint = touch.getLocation(stage);
-//				_clicked = true;
-//			}
-//			else if(touch.phase == TouchPhase.MOVED && _clicked)
-//			{
-//				
-//			}
-//			else if(touch.phase == TouchPhase.ENDED)
-//			{	
-//				var movementPoint:Point = _prevPoint.subtract(touch.getLocation(stage));
-//				if(Math.abs(movementPoint.x) > Math.abs(movementPoint.y))
-//				{
-//					if(movementPoint.x < 0)
-//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.RIGHT));
-//					else
-//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.LEFT));
-//				}
-//				else
-//				{
-//					if(movementPoint.y < 0)
-//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.BOTTOM));
-//					else
-//						Cell(parent).dispatchEvent(new Event(SwapType.MOVE_MOTION, false, NeigborType.TOP));
-//				}
-//				_clicked = false;
-//			}
-		}
-		
 		public function distroy():void
 		{
 			var parent:Cell = Cell(this.parent);

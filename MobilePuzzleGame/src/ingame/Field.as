@@ -1,6 +1,8 @@
 package ingame
 {	
 	import flash.display.Bitmap;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
 	import ingame.cell.Cell;
@@ -12,17 +14,21 @@ package ingame
 	import ingame.util.possibleCheck.PossibleChecker;
 	
 	import starling.animation.Juggler;
-	import starling.core.Starling;
-	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.textures.Texture;
 
 	public class Field extends Sprite
-	{
+	{	
 		[Embed(source="testBackGroundImage2.jpg")]
 		private const testBackGroundImage:Class;
+		
+		[Embed(source="rowLine.png")]
+		private const rowLineImage:Class;
+		
+		[Embed(source="columLine.png")]
+		private const columLineImage:Class;
 		
 		private static var _sROW_NUM:uint;
 		private static var _sCOLUM_NUM:uint;
@@ -130,6 +136,8 @@ package ingame
 			
 			_backGround.removeFromParent();
 			_backGround = null;
+			
+			dispose();
 		}
 		
 		public function advanceTime(time:Number):void
@@ -160,41 +168,9 @@ package ingame
 			possible.path.insertAt(0, possible.startCell);
 			possible.path.push(possible.destCell);
 			
-			var line:Vector.<Cell>;
-			for(var i:int = 0; i < possible.path.length-1; i++)
-			{
-				trace("possible.path[i].name = " + possible.path[i].name);
-				trace("possible.path[i+1].name = " + possible.path[i+1].name);
-				line = getLine(possible.path[i], possible.path[i+1]);
-				fullPath = fullPath.concat(line);
-			}
-			
-			var cell:Cell;
-			var prev:Cell;
-			var neigborTypes:Vector.<int> = NeigborType.TYPES;
-			var direction:int;
-			trace("fullPath.length = " + fullPath.length);
-			while(fullPath.length != 0)
-			{
-				cell = fullPath.shift();
-				if(prev == cell)
-				{
-					for(i = 0; i < neigborTypes.length; i++)
-					{
-						if(cell.neigbor[neigborTypes[i]] == fullPath[0])
-						{
-							direction = neigborTypes[i];
-							break;
-						}
-					}
-					
-					trace(direction + "으로 꺾임");
-				}
-				cell.showColor();
-				_juggler.delayCall(cell.offColor, 0.3);
-				prev = cell;
-			}
-			cell = null;
+			var points:Vector.<Point> = getPoints(possible.path);
+			for(var i:int = 0; i < points.length-1; i++)
+				drawLine(points[i], points[i+1]);
 		}
 		
 		private function getLine(cell1:Cell, cell2:Cell):Vector.<Cell>
@@ -266,6 +242,57 @@ package ingame
 			trace("result.length = " + result.length)
 			
 			return result;
+		}
+		
+		private function drawLine(start:Point, dest:Point):void
+		{
+			trace(start);
+			trace(dest);
+			var line:Image;
+			if(start.x == dest.x)
+			{
+				line = new Image(Texture.fromBitmap(new columLineImage() as Bitmap));
+				line.alignPivot();
+				line.width = 40;
+				line.height = Math.abs(start.y - dest.y);
+				line.x = start.x;
+				line.y = (start.y < dest.y) ? start.y : dest.y;
+				line.y += (line.height/2);
+			}
+			else
+			{
+				line = new Image(Texture.fromBitmap(new rowLineImage() as Bitmap));
+				line.alignPivot();
+				line.width = Math.abs(start.x - dest.x);
+				line.height = 40;
+				line.x = (start.x < dest.x) ? start.x : dest.x;
+				line.x += (line.width/2);
+				line.y = start.y;
+			}
+			
+			addChild(line);
+//			trace(line.getBounds(this));
+			_juggler.delayCall(removeLine, 0.3);
+			
+			function removeLine():void
+			{
+				line.removeFromParent(true);
+			}
+		}
+		
+		private function getPoints(path:Vector.<Cell>):Vector.<Point>
+		{
+			var points:Vector.<Point> = new Vector.<Point>();
+			var bound:Rectangle;
+			var center:Point;
+			for(var i:int = 0; i < path.length; i++)
+			{
+				bound = path[i].getBounds(this);
+				center = Point.interpolate(bound.topLeft, bound.bottomRight,0.5);
+				points.push(center);
+			}
+			
+			return points;
 		}
 		
 		private function onAddPrev(event:Event):void

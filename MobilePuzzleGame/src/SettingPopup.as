@@ -54,6 +54,8 @@ package
 		public function distroy():void
 		{
 			_closeButton.removeEventListener(Event.TRIGGERED, onClickedCloseButton);
+			
+			dispose();
 		}
 		
 		private function onClickedCloseButton(event:Event):void

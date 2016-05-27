@@ -3,15 +3,12 @@ package
 	import flash.display.Bitmap;
 	
 	import ingame.Field;
-	import ingame.cell.blocks.AttributeType;
 	import ingame.cell.blocks.BlockData;
 	import ingame.cell.blocks.BlockType;
 	
-	import starling.animation.Juggler;
 	import starling.display.Button;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
-	import starling.display.Sprite;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.textures.Texture;
@@ -54,6 +51,10 @@ package
 			addChild(_backGround);
 			
 			_timer = new Timer();
+			_timer.init(50, 10, 450, 70);
+			_timer.addEventListener(Timer.TIME_OVER, onTimeOver);
+			_timer.startCount(60);
+			addChild(_timer);
 			
 			_blockDatas = new Vector.<BlockData>();
 			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
@@ -136,11 +137,28 @@ package
 //			this.height = flash.display.Screen.mainScreen.bounds.height /11 * 10;
 		}
 		
+		public function init():void
+		{
+			
+		}
+		
 		public function distroy():void
 		{
+			_timer.distroy();
+			_field.distroy();
+			_settingPopup.distroy();
+			_backGround.dispose();
 			_settingButton.removeEventListener(Event.TRIGGERED, onClickedSettingButton);
+			_timer.removeEventListener(Timer.TIME_OVER, onTimeOver);
 			
 			dispose();
+		}
+		
+		private function onTimeOver(event:Event):void
+		{
+			trace("끝");
+			_paused = false;
+			_field.touchable = false;
 		}
 		
 		private function onEnterFrame(event:EnterFrameEvent):void
@@ -169,7 +187,6 @@ package
 				_field.touchable = false;
 			else
 				_field.touchable = true;
-//			_field.checkPossibleCell();
 		}
 	}
 }

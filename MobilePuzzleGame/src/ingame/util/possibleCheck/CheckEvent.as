@@ -1,4 +1,4 @@
-package
+package ingame.util.possibleCheck
 {
 	public class CheckEvent
 	{

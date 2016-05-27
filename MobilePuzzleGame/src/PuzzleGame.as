@@ -6,7 +6,7 @@ package
 	
 	import starling.core.Starling;
 	
-	[SWF(frameRate = "60", width="576", height="1024")]
+	[SWF(frameRate = "60", width="576", height="1024", backgroundColor="#FFFFF0")]
 	public class PuzzleGame extends Sprite
 	{
 		public function PuzzleGame()
@@ -14,7 +14,7 @@ package
 			super();
 			
 			// support autoOrients
-			stage.align = StageAlign.TOP_LEFT;
+			stage.align = StageAlign.TOP;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			
 			Starling.multitouchEnabled = true;

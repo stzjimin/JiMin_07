@@ -1,15 +1,25 @@
 package
 {
+	import ingame.cell.Cell;
+
 	public class State
 	{
 		private var _node:Cell;
 		private var _prevNode:Cell;
 		private var _curveCount:int;
-		private var _prevDirection:int;
-		private var _currentDirection:int;
+		private var _path:Vector.<Cell>;
+		private var _priority:int;
 		
 		public function State()
 		{
+		}
+		
+		public function distroy():void
+		{
+			_node = null;
+			_prevNode = null;
+			_path.splice(0, _path.length);
+			_path = null;
 		}
 
 		public function get node():Cell
@@ -32,26 +42,6 @@ package
 			_curveCount = value;
 		}
 
-		public function get prevDirection():int
-		{
-			return _prevDirection;
-		}
-
-		public function set prevDirection(value:int):void
-		{
-			_prevDirection = value;
-		}
-
-		public function get currentDirection():int
-		{
-			return _currentDirection;
-		}
-
-		public function set currentDirection(value:int):void
-		{
-			_currentDirection = value;
-		}
-
 		public function get prevNode():Cell
 		{
 			return _prevNode;
@@ -60,6 +50,26 @@ package
 		public function set prevNode(value:Cell):void
 		{
 			_prevNode = value;
+		}
+
+		public function get path():Vector.<Cell>
+		{
+			return _path;
+		}
+
+		public function set path(value:Vector.<Cell>):void
+		{
+			_path = value;
+		}
+
+		public function get priority():int
+		{
+			return _priority;
+		}
+
+		public function set priority(value:int):void
+		{
+			_priority = value;
 		}
 
 

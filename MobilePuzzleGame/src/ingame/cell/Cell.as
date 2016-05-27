@@ -1,16 +1,20 @@
-package
+package ingame.cell
 {
-	import flash.geom.Rectangle;
-	import flash.system.System;
 	import flash.utils.Dictionary;
 	
+	import ingame.cell.blocks.Block;
+	import ingame.cell.blocks.BlockData;
+	import ingame.util.possibleCheck.CheckEvent;
+	
 	import starling.display.DisplayObjectContainer;
+	import starling.display.Quad;
 	import starling.events.Event;
+	import starling.utils.Color;
 
 	public class Cell extends DisplayObjectContainer
 	{
-		public static const CELL_WIDTH_SIZE:Number = 55;
-		public static const CELL_HEIGHT_SIZE:Number = 72;
+		public static const CELL_WIDTH_SIZE:Number = 45;
+		public static const CELL_HEIGHT_SIZE:Number = 60;
 		
 		private var _neigbor:Dictionary;
 		private var _block:Block;
@@ -21,15 +25,7 @@ package
 		private var _row:int;
 		private var _colum:int;
 		
-		private var _f:Number;
-		private var _g:Number;
-		private var _h:Number;
-		
-//		private var _check:Boolean = false;
-		
-		private var _pathParent:Cell;
-		
-		private var _possibleCell:Vector.<Cell>;
+		private var _color:Quad;
 		
 		private var _frameCheck:uint;
 		
@@ -41,22 +37,45 @@ package
 		public function init():void
 		{
 			_neigbor = new Dictionary();
-			_possibleCell = new Vector.<Cell>();
+			_color = new Quad(this.width, this.height, Color.RED);
+			_color.x = 0;
+			_color.y = 0;
+			_color.visible = false;
+			addChild(_color);
+			
+//			if(cellData.blockData != null)
+//			{
+//				_block = new Block();
+//				_block.width = this.width;
+//				_block.height = this.height;
+//				_block.init(cellData.blockData);
+//				addChild(_block);
+//			}
 		}
 		
-		public function initFGH():void
+		public function showColor():void
 		{
-			_f = 0;
-			_g = 0;
-			_h = 0;
+			_color.visible = true;
 		}
 		
-		public function createBlock(type:String):void
+		public function offColor():void
+		{
+			_color.visible = false;
+		}
+		
+//		private function createBlock(blockData):Block
+//		{
+//			var block:Block = new Block();
+//			
+//			return block;
+//		}
+		
+		public function createBlock(blockData:BlockData):void
 		{
 			if(_block != null)
 				return;
 			
-			_block = new Block(type);
+			_block = new Block(blockData);
 			_block.width = this.width;
 			_block.height = this.height;
 			_block.init();
@@ -70,27 +89,11 @@ package
 			_block.pullPrev();
 		}
 		
-		public function addPossibleCell(cell:Cell):void
-		{
-			_possibleCell.push(cell);
-		}
-		
-		public function checkPossibleCell(cell:Cell):Boolean
-		{
-			if(_possibleCell == null || _possibleCell.length == 0)
-				return false;
-			
-			for(var i:int = 0; i < _possibleCell.length; i++)
-			{
-				if(cell == _possibleCell[i])
-					return true;
-			}
-			return false;
-		}
-		
 		public function distroy():void
 		{
 			removeEventListener(CheckEvent.PULL_PREV, onPullPrev);
+			
+			dispose();
 		}
 		
 		private function onEnterFrame(event:Event):void
@@ -159,57 +162,5 @@ package
 		{
 			_colum = value;
 		}
-
-		public function get f():Number
-		{
-			return _f;
-		}
-
-		public function set f(value:Number):void
-		{
-			_f = value;
-		}
-
-		public function get g():Number
-		{
-			return _g;
-		}
-
-		public function set g(value:Number):void
-		{
-			_g = value;
-		}
-
-		public function get h():Number
-		{
-			return _h;
-		}
-
-		public function set h(value:Number):void
-		{
-			_h = value;
-		}
-
-		public function get pathParent():Cell
-		{
-			return _pathParent;
-		}
-
-		public function set pathParent(value:Cell):void
-		{
-			_pathParent = value;
-		}
-
-//		public function get check():Boolean
-//		{
-//			return _check;
-//		}
-//
-//		public function set check(value:Boolean):void
-//		{
-//			_check = value;
-//		}
-
-		
 	}
 }

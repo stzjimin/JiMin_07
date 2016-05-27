@@ -7,6 +7,7 @@ package ingame
 	
 	import ingame.cell.Cell;
 	import ingame.cell.NeigborType;
+	import ingame.cell.blocks.Block;
 	import ingame.cell.blocks.BlockData;
 	import ingame.util.Distroyer;
 	import ingame.util.possibleCheck.CheckEvent;
@@ -14,6 +15,7 @@ package ingame
 	import ingame.util.possibleCheck.PossibleChecker;
 	
 	import starling.animation.Juggler;
+	import starling.animation.Tween;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
@@ -54,7 +56,6 @@ package ingame
 			
 			_distroyer = new Distroyer();
 			_possibleChecker = new PossibleChecker();
-			_possibleChecker.init();
 			_possibleChecker.addEventListener(CheckEvent.SAME, onSame);
 //			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
 			
@@ -102,16 +103,12 @@ package ingame
 		 */		
 		public function checkPossibleCell():void
 		{
+			_possibleChecker.init();
 			var prevTime:Number = getTimer() / 1000;
 			_possibleChecker.checkPossibleCell(_cells);
 			var currentTime:Number = getTimer() / 1000;
 			trace("경과시간 = " + (currentTime - prevTime));
 			trace("가능 개수 = " + _possibleChecker.possibleCount);
-		}
-			
-		public function initPossibleChecker():void
-		{
-			_possibleChecker.init();
 		}
 		
 		/**
@@ -148,17 +145,29 @@ package ingame
 		private function onSame(event:Event):void
 		{
 			var possible:Possible = event.data as Possible;
-			_distroyer.add(possible.startCell.block);
-			_distroyer.add(possible.destCell.block);
-			var path:Vector.<Cell> = possible.path;
+//			_distroyer.add(possible.startCell.block);
+//			_distroyer.add(possible.destCell.block);
+//			_distroyer.distroy();
+			
+			var tween1:Tween = new Tween(possible.startCell.block, 0.5);
+			var tween2:Tween = new Tween(possible.destCell.block, 0.5);
+			tween1.fadeTo(0.0);
+			tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+			tween2.fadeTo(0.0);
+			tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+			_juggler.add(tween1);
+			_juggler.add(tween2);
 			
 			showPath(possible);
 			possible.distroy();
 			
-			_distroyer.distroy();
-			_possibleChecker.init();
 			checkPossibleCell();
-//			_pathChecker.checkPossibleCell(_cells);
+			
+			function onTweenComplete(event:Event):void
+			{
+				Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+				Tween(event.currentTarget).target.distroy();
+			}
 		}
 		
 		private function showPath(possible:Possible):void
@@ -173,81 +182,8 @@ package ingame
 				drawLine(points[i], points[i+1]);
 		}
 		
-		private function getLine(cell1:Cell, cell2:Cell):Vector.<Cell>
-		{
-			var result:Vector.<Cell> = new Vector.<Cell>();
-			
-			var searchCell:Cell = cell1;
-			if(cell1.row == cell2.row)
-			{
-				if(cell1.colum > cell2.colum)
-				{
-					trace("cell1.colum = " + cell1.colum)
-					trace("cell2.colum = " + cell2.colum)
-					result.push(searchCell);
-					searchCell = cell1.neigbor[NeigborType.LEFT];
-					result.push(searchCell);
-					while(searchCell != cell2)
-					{
-						trace(searchCell.name);
-//						result.push(searchCell);
-						searchCell = searchCell.neigbor[NeigborType.LEFT];
-						result.push(searchCell);
-					}
-				}
-				else
-				{
-					result.push(searchCell);
-					searchCell = cell1.neigbor[NeigborType.RIGHT];
-					result.push(searchCell);
-					while(searchCell != cell2)
-					{
-						trace(searchCell.name);
-//						result.push(searchCell);
-						searchCell = searchCell.neigbor[NeigborType.RIGHT];
-						result.push(searchCell);
-					}
-				}
-			}
-			else if(cell1.colum == cell2.colum)
-			{
-				if(cell1.row > cell2.row)
-				{
-					result.push(searchCell);
-					searchCell = cell1.neigbor[NeigborType.TOP];
-					result.push(searchCell);
-					while(searchCell != cell2)
-					{
-						trace(searchCell.name);
-//						result.push(searchCell);
-						searchCell = searchCell.neigbor[NeigborType.TOP];
-						result.push(searchCell);
-					}
-				}
-				else
-				{
-					result.push(searchCell);
-					searchCell = cell1.neigbor[NeigborType.BOTTOM];
-					result.push(searchCell);
-					while(searchCell != cell2)
-					{
-						trace(searchCell.name);
-//						result.push(searchCell);
-						searchCell = searchCell.neigbor[NeigborType.BOTTOM];
-						result.push(searchCell);
-					}
-				}
-			}
-			
-			trace("result.length = " + result.length)
-			
-			return result;
-		}
-		
 		private function drawLine(start:Point, dest:Point):void
 		{
-			trace(start);
-			trace(dest);
 			var line:Image;
 			if(start.x == dest.x)
 			{
@@ -271,7 +207,6 @@ package ingame
 			}
 			
 			addChild(line);
-//			trace(line.getBounds(this));
 			_juggler.delayCall(removeLine, 0.3);
 			
 			function removeLine():void
@@ -307,7 +242,7 @@ package ingame
 			_possibleChecker.outChecker(event.currentTarget as Cell);
 		}
 		
-		private function getCell(row:uint, colum:uint):Cell
+		public function getCell(row:uint, colum:uint):Cell
 		{
 			return _cells[colum+(ROW_NUM*row)];
 		}

@@ -175,11 +175,6 @@ package
 			_settingPopup.visible = !_settingPopup.visible;
 		}
 		
-		private function onTriggered2(event:Event):void
-		{
-			_field.initPossibleChecker();
-		}
-		
 		private function onTriggered(event:Event):void
 		{
 			_paused = !_paused;

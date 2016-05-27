@@ -1,21 +1,16 @@
 package ingame.cell.blocks
 {
 	import flash.display.Bitmap;
-	import flash.geom.Point;
 	
 	import ingame.cell.Cell;
-	import ingame.cell.NeigborType;
 	import ingame.util.possibleCheck.CheckEvent;
 	
+	import starling.animation.IAnimatable;
 	import starling.display.Button;
-	import starling.display.Image;
 	import starling.events.Event;
-	import starling.events.Touch;
-	import starling.events.TouchEvent;
-	import starling.events.TouchPhase;
 	import starling.textures.Texture;
 
-	public class Block extends Button
+	public class Block extends Button implements IAnimatable
 	{
 		[Embed(source="pink.png")]
 		private const testImage0:Class;
@@ -117,6 +112,11 @@ package ingame.cell.blocks
 			removeFromParent(true);
 			
 			dispose();
+		}
+		
+		public function advanceTime(time:Number):void
+		{
+			
 		}
 
 		public function get distroyed():Boolean

@@ -12,19 +12,19 @@ package ingame.cell.blocks
 
 	public class Block extends Button implements IAnimatable
 	{
-		[Embed(source="pink.png")]
+		[Embed(source="pinky.png")]
 		private const testImage0:Class;
 		
 		[Embed(source="blue.png")]
 		private const testImage1:Class;
 		
-		[Embed(source="green.png")]
+		[Embed(source="micky.png")]
 		private const testImage2:Class;
 		
-		[Embed(source="cat.png")]
+		[Embed(source="lucy.png")]
 		private const testImage3:Class;
 		
-		[Embed(source="monky.png")]
+		[Embed(source="mongyi.png")]
 		private const testImage4:Class;
 		
 		private var _blockTexture:Texture;
@@ -40,10 +40,10 @@ package ingame.cell.blocks
 			_clicked = false;
 			
 			var type:String = blockData.type;
-			if(type == BlockType.PINK)
+			if(type == BlockType.PINKY)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage0() as Bitmap);
-				_type = BlockType.PINK;
+				_type = BlockType.PINKY;
 				this.name = "pink";
 			}
 			else if(type == BlockType.BLUE)
@@ -52,22 +52,22 @@ package ingame.cell.blocks
 				_type = BlockType.BLUE;
 				this.name = "blue";
 			}
-			else if(type == BlockType.GREEN)
+			else if(type == BlockType.MICKY)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage2() as Bitmap);
-				_type = BlockType.GREEN;
+				_type = BlockType.MICKY;
 				this.name = "green";
 			}			
-			else if(type == BlockType.CAT)
+			else if(type == BlockType.LUCY)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage3() as Bitmap);
-				_type = BlockType.CAT;
+				_type = BlockType.LUCY;
 				this.name = "cat";
 			}
-			else if(type == BlockType.MONKY)
+			else if(type == BlockType.MONGYI)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage4() as Bitmap);
-				_type = BlockType.MONKY;
+				_type = BlockType.MONGYI;
 				this.name = "monky";
 			}
 			
@@ -107,8 +107,8 @@ package ingame.cell.blocks
 		
 		public function distroy():void
 		{
-			var parent:Cell = Cell(this.parent);
-			parent.block = null;
+//			var parent:Cell = Cell(this.parent);
+//			parent.block = null;
 			removeFromParent(true);
 			
 			dispose();

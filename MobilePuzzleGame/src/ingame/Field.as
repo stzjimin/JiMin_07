@@ -7,13 +7,12 @@ package ingame
 	
 	import ingame.cell.Cell;
 	import ingame.cell.NeigborType;
-	import ingame.cell.blocks.Block;
 	import ingame.cell.blocks.BlockData;
-	import ingame.util.Distroyer;
 	import ingame.util.possibleCheck.CheckEvent;
 	import ingame.util.possibleCheck.Possible;
 	import ingame.util.possibleCheck.PossibleChecker;
 	
+	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
 	import starling.animation.Tween;
 	import starling.display.Image;
@@ -21,7 +20,7 @@ package ingame
 	import starling.events.Event;
 	import starling.textures.Texture;
 
-	public class Field extends Sprite
+	public class Field extends Sprite implements IAnimatable
 	{	
 		[Embed(source="testBackGroundImage2.jpg")]
 		private const testBackGroundImage:Class;
@@ -40,7 +39,6 @@ package ingame
 		private var _backGround:Image;
 		
 		private var _cells:Vector.<Cell>;
-		private var _distroyer:Distroyer;
 		
 		private var _possibleChecker:PossibleChecker;
 		
@@ -54,7 +52,6 @@ package ingame
 		{	
 			_juggler = new Juggler();
 			
-			_distroyer = new Distroyer();
 			_possibleChecker = new PossibleChecker();
 			_possibleChecker.addEventListener(CheckEvent.SAME, onSame);
 //			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
@@ -145,12 +142,14 @@ package ingame
 		private function onSame(event:Event):void
 		{
 			var possible:Possible = event.data as Possible;
-//			_distroyer.add(possible.startCell.block);
-//			_distroyer.add(possible.destCell.block);
-//			_distroyer.distroy();
-			
 			var tween1:Tween = new Tween(possible.startCell.block, 0.5);
 			var tween2:Tween = new Tween(possible.destCell.block, 0.5);
+			
+			possible.startCell.block = null;
+			possible.destCell.block = null;
+			showPath(possible);
+			checkPossibleCell();
+			
 			tween1.fadeTo(0.0);
 			tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
 			tween2.fadeTo(0.0);
@@ -158,10 +157,7 @@ package ingame
 			_juggler.add(tween1);
 			_juggler.add(tween2);
 			
-			showPath(possible);
 			possible.distroy();
-			
-			checkPossibleCell();
 			
 			function onTweenComplete(event:Event):void
 			{

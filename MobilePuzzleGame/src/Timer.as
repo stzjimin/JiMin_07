@@ -2,13 +2,14 @@ package
 {
 	import flash.display.Bitmap;
 	
+	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.textures.Texture;
 
-	public class Timer extends Sprite
+	public class Timer extends Sprite implements IAnimatable
 	{	
 		[Embed(source="bar.png")]
 		private const testBarImage:Class;

@@ -82,8 +82,8 @@ package ingame.util.possibleCheck
 								if(vector[i].destCell == _currentCell)
 								{
 									path = cloneVector(vector[i].path);
-									removeFromPossibles(_prevCell);
-									removeFromPossibles(_currentCell);
+//									removeFromPossibles(_prevCell);
+//									removeFromPossibles(_currentCell);
 									result = true;
 									break;
 								}

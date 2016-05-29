@@ -6,6 +6,7 @@ package
 	import ingame.cell.blocks.BlockData;
 	import ingame.cell.blocks.BlockType;
 	
+	import starling.animation.Juggler;
 	import starling.display.Button;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
@@ -25,6 +26,8 @@ package
 		
 		private var _paused:Boolean;
 		private var _timer:Timer;
+		
+		private var _playJuggler:Juggler;
 		
 		private var _field:Field;
 		private var _settingPopup:SettingPopup;
@@ -58,32 +61,32 @@ package
 			
 			_blockDatas = new Vector.<BlockData>();
 			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 1, BlockType.GREEN));
-			_blockDatas.push(new BlockData(2, 1, BlockType.GREEN));
-			_blockDatas.push(new BlockData(6, 6, BlockType.GREEN));
-			_blockDatas.push(new BlockData(2, 2, BlockType.PINK));
-			_blockDatas.push(new BlockData(4, 3, BlockType.PINK));
-			_blockDatas.push(new BlockData(6, 4, BlockType.GREEN));
+			_blockDatas.push(new BlockData(1, 1, BlockType.MICKY));
+			_blockDatas.push(new BlockData(2, 1, BlockType.MICKY));
+			_blockDatas.push(new BlockData(6, 6, BlockType.MICKY));
+			_blockDatas.push(new BlockData(2, 2, BlockType.PINKY));
+			_blockDatas.push(new BlockData(4, 3, BlockType.PINKY));
+			_blockDatas.push(new BlockData(6, 4, BlockType.MICKY));
 			_blockDatas.push(new BlockData(2, 5, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 4, BlockType.GREEN));
-			_blockDatas.push(new BlockData(1, 5, BlockType.GREEN));
+			_blockDatas.push(new BlockData(1, 4, BlockType.MICKY));
+			_blockDatas.push(new BlockData(1, 5, BlockType.MICKY));
 			_blockDatas.push(new BlockData(1, 2, BlockType.BLUE));
 			_blockDatas.push(new BlockData(5, 1, BlockType.BLUE));
-			_blockDatas.push(new BlockData(4, 2, BlockType.PINK));
-			_blockDatas.push(new BlockData(3, 6, BlockType.PINK));
-			_blockDatas.push(new BlockData(10, 10, BlockType.MONKY));
-			_blockDatas.push(new BlockData(10, 3, BlockType.MONKY));
-			_blockDatas.push(new BlockData(7, 10, BlockType.CAT));
-			_blockDatas.push(new BlockData(10, 5, BlockType.CAT));
-			_blockDatas.push(new BlockData(10, 5, BlockType.CAT));
-			_blockDatas.push(new BlockData(10, 1, BlockType.CAT));
-			_blockDatas.push(new BlockData(10, 2, BlockType.CAT));
-			_blockDatas.push(new BlockData(10, 8, BlockType.CAT));
-			_blockDatas.push(new BlockData(8, 5, BlockType.CAT));
-			_blockDatas.push(new BlockData(3, 5, BlockType.CAT));
-			_blockDatas.push(new BlockData(10, 9, BlockType.CAT));
-			_blockDatas.push(new BlockData(9, 3, BlockType.CAT));
-			_blockDatas.push(new BlockData(7, 5, BlockType.CAT));
+			_blockDatas.push(new BlockData(4, 2, BlockType.PINKY));
+			_blockDatas.push(new BlockData(3, 6, BlockType.PINKY));
+			_blockDatas.push(new BlockData(10, 10, BlockType.MONGYI));
+			_blockDatas.push(new BlockData(10, 3, BlockType.MONGYI));
+			_blockDatas.push(new BlockData(7, 10, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 1, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 2, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 8, BlockType.LUCY));
+			_blockDatas.push(new BlockData(8, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(3, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 9, BlockType.LUCY));
+			_blockDatas.push(new BlockData(9, 3, BlockType.LUCY));
+			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
 			
 			_field = new Field();
 			_field.x = 18;
@@ -110,6 +113,10 @@ package
 			blockData = null;
 			
 			_field.checkPossibleCell();
+			
+			_playJuggler = new Juggler();
+			_playJuggler.add(_field);
+			_playJuggler.add(_timer);
 			
 			trace(flash.display.Screen.mainScreen.bounds);
 //			_field.freeCells();
@@ -164,10 +171,7 @@ package
 		private function onEnterFrame(event:EnterFrameEvent):void
 		{
 			if(!_paused)
-			{
-				_timer.advanceTime(event.passedTime);
-				_field.advanceTime(event.passedTime);
-			}
+				_playJuggler.advanceTime(event.passedTime);
 		}
 		
 		private function onClickedSettingButton(event:Event):void

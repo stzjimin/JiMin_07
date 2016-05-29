@@ -2,10 +2,10 @@ package ingame.cell.blocks
 {
 	public class BlockType
 	{
-		public static const CAT:String = "cat";
-		public static const MONKY:String = "monky";
-		public static const PINK:String = "pink";
-		public static const GREEN:String = "green";
+		public static const LUCY:String = "lucy";
+		public static const MONGYI:String = "mongyi";
+		public static const PINKY:String = "pinky";
+		public static const MICKY:String = "micky";
 		public static const BLUE:String = "blue";
 		
 		public function BlockType()

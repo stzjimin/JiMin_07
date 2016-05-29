@@ -337,7 +337,14 @@ package ingame.util.possibleCheck
 				else if(state1.priority < state2.priority)
 					return -1;
 				else
-					return 0;
+				{
+					if(state1.curveCount < state2.curveCount)
+						return 1;
+					else if(state1.curveCount > state2.curveCount)
+						return -1;
+					else
+						return 0;
+				}
 			}
 			
 			function checkDest(node:Cell, destNode:Cell):int

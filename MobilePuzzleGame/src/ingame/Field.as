@@ -22,8 +22,20 @@ package ingame
 
 	public class Field extends Sprite implements IAnimatable
 	{	
-		[Embed(source="testBackGroundImage2.jpg")]
+		[Embed(source="backGround.png")]
 		private const testBackGroundImage:Class;
+		
+		[Embed(source="topPadding.png")]
+		private const topPaddingImage:Class;
+		
+		[Embed(source="bottomPadding.png")]
+		private const bottomPaddingImage:Class;
+		
+		[Embed(source="leftPadding.png")]
+		private const leftPaddingImage:Class;
+		
+		[Embed(source="rightPadding.png")]
+		private const rightPaddingImage:Class;
 		
 		[Embed(source="rowLine.png")]
 		private const rowLineImage:Class;
@@ -33,19 +45,23 @@ package ingame
 		
 		private static var _sROW_NUM:uint;
 		private static var _sCOLUM_NUM:uint;
+		private static var _sPADDING:uint;
 		
 		private var _juggler:Juggler;
 		
 		private var _backGround:Image;
 		
+		private var _padding:FramePadding;
+		
 		private var _cells:Vector.<Cell>;
 		
 		private var _possibleChecker:PossibleChecker;
 		
-		public function Field(rowNum:uint = 12, columNum:uint = 12)
+		public function Field(rowNum:uint = 12, columNum:uint = 12, padding:uint = 18)
 		{
 			_sROW_NUM = rowNum;
 			_sCOLUM_NUM = columNum;
+			_sPADDING = padding;
 		}
 		
 		public function init():void
@@ -56,9 +72,16 @@ package ingame
 			_possibleChecker.addEventListener(CheckEvent.SAME, onSame);
 //			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
 			
+			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.CELL_WIDTH_SIZE), (Field.COLUM_NUM * Cell.CELL_HEIGHT_SIZE), 
+										Texture.fromBitmap(new topPaddingImage() as Bitmap), Texture.fromBitmap(new bottomPaddingImage() as Bitmap),
+										Texture.fromBitmap(new leftPaddingImage() as Bitmap), Texture.fromBitmap(new rightPaddingImage() as Bitmap));
+			addChild(_padding);
+			
 			_backGround = new Image(Texture.fromBitmap(new testBackGroundImage() as Bitmap));
-			_backGround.width = Field.ROW_NUM * Cell.CELL_WIDTH_SIZE;
-			_backGround.height = Field.COLUM_NUM * Cell.CELL_HEIGHT_SIZE;
+			_backGround.x = Field.PADDING;
+			_backGround.y = Field.PADDING;
+			_backGround.width = (Field.ROW_NUM * Cell.CELL_WIDTH_SIZE);
+			_backGround.height = (Field.COLUM_NUM * Cell.CELL_HEIGHT_SIZE);
 			addChild(_backGround);
 			
 			_cells = new Vector.<Cell>();
@@ -72,8 +95,8 @@ package ingame
 				cell.addEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
 				cell.width = Cell.CELL_WIDTH_SIZE;
 				cell.height = Cell.CELL_HEIGHT_SIZE;
-				cell.x = columNum * Cell.CELL_WIDTH_SIZE;
-				cell.y = rowNum * Cell.CELL_HEIGHT_SIZE;
+				cell.x = Field.PADDING + (columNum * Cell.CELL_WIDTH_SIZE);
+				cell.y = Field.PADDING + (rowNum * Cell.CELL_HEIGHT_SIZE);
 				cell.row = rowNum;
 				cell.colum = columNum;
 				_cells[i].name = rowNum.toString() + "/" + columNum.toString();
@@ -148,7 +171,6 @@ package ingame
 			possible.startCell.block = null;
 			possible.destCell.block = null;
 			showPath(possible);
-			checkPossibleCell();
 			
 			tween1.fadeTo(0.0);
 			tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
@@ -156,6 +178,8 @@ package ingame
 			tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
 			_juggler.add(tween1);
 			_juggler.add(tween2);
+			
+			checkPossibleCell();
 			
 			possible.distroy();
 			
@@ -257,6 +281,11 @@ package ingame
 		public static function get COLUM_NUM():uint
 		{
 			return _sCOLUM_NUM;
+		}
+
+		public static function get PADDING():uint
+		{
+			return _sPADDING;
 		}
 
 

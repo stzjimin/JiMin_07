@@ -7,6 +7,7 @@ package ingame.cell.blocks
 	
 	import starling.animation.IAnimatable;
 	import starling.display.Button;
+	import starling.display.Image;
 	import starling.events.Event;
 	import starling.textures.Texture;
 
@@ -26,6 +27,17 @@ package ingame.cell.blocks
 		
 		[Embed(source="mongyi.png")]
 		private const testImage4:Class;
+		
+		[Embed(source="blockRightPadding.png")]
+		private const rightPaddingImage:Class;
+		
+		[Embed(source="blockBottomPadding.png")]
+		private const bottomPaddingImage:Class;
+		
+		public static const PADDING_SIZE:Number = 5;
+		
+		private var _blockRightPadding:Image;
+		private var _blockBottomPadding:Image;
 		
 		private var _blockTexture:Texture;
 		private var _type:String;
@@ -57,7 +69,7 @@ package ingame.cell.blocks
 				_blockTexture = Texture.fromBitmap(new testImage2() as Bitmap);
 				_type = BlockType.MICKY;
 				this.name = "green";
-			}			
+			}
 			else if(type == BlockType.LUCY)
 			{
 				_blockTexture = Texture.fromBitmap(new testImage3() as Bitmap);
@@ -77,7 +89,19 @@ package ingame.cell.blocks
 		}
 		
 		public function init():void
-		{	
+		{
+			_blockRightPadding = new Image(Texture.fromBitmap(new rightPaddingImage() as Bitmap));
+			_blockRightPadding.x = Cell.CELL_WIDTH_SIZE - Block.PADDING_SIZE;
+			_blockRightPadding.width = Block.PADDING_SIZE;
+			_blockRightPadding.height = Cell.CELL_HEIGHT_SIZE;
+			addChild(_blockRightPadding);
+			
+			_blockBottomPadding = new Image(Texture.fromBitmap(new bottomPaddingImage() as Bitmap));
+			_blockBottomPadding.y = Cell.CELL_HEIGHT_SIZE - Block.PADDING_SIZE;
+			_blockBottomPadding.width = Cell.CELL_WIDTH_SIZE;
+			_blockBottomPadding.height = Block.PADDING_SIZE;
+			addChild(_blockBottomPadding);
+			
 			this.pivotX = this.width/2;
 			this.pivotY = this.height/2;
 			this.x = this.width/2;

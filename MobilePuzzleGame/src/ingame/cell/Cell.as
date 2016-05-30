@@ -9,12 +9,11 @@ package ingame.cell
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Quad;
 	import starling.events.Event;
-	import starling.utils.Color;
 
 	public class Cell extends DisplayObjectContainer
 	{
-		public static const CELL_WIDTH_SIZE:Number = 45;
-		public static const CELL_HEIGHT_SIZE:Number = 60;
+		public static const WIDTH_SIZE:Number = 45;
+		public static const HEIGHT_SIZE:Number = 60;
 		
 		private var _neigbor:Dictionary;
 		private var _block:Block;
@@ -37,20 +36,11 @@ package ingame.cell
 		public function init():void
 		{
 			_neigbor = new Dictionary();
-			_color = new Quad(this.width, this.height, Color.RED);
+			_color = new Quad(this.width, this.height, 0x0);
 			_color.x = 0;
 			_color.y = 0;
 			_color.visible = false;
 			addChild(_color);
-			
-//			if(cellData.blockData != null)
-//			{
-//				_block = new Block();
-//				_block.width = this.width;
-//				_block.height = this.height;
-//				_block.init(cellData.blockData);
-//				addChild(_block);
-//			}
 		}
 		
 		public function showColor():void
@@ -63,22 +53,18 @@ package ingame.cell
 			_color.visible = false;
 		}
 		
-//		private function createBlock(blockData):Block
-//		{
-//			var block:Block = new Block();
-//			
-//			return block;
-//		}
-		
 		public function createBlock(blockData:BlockData):void
 		{
 			if(_block != null)
 				return;
 			
-			_block = new Block(blockData);
-			_block.width = this.width;
-			_block.height = this.height;
-			_block.init();
+			_block = new Block();
+			_block.width = _width;
+			_block.height = _height;
+			_block.init(blockData);
+			_block.alignPivot();
+			_block.x = this.width/2;
+			_block.y = this.height/2;
 			addChild(_block);
 		}
 		
@@ -89,7 +75,7 @@ package ingame.cell
 			_block.pullPrev();
 		}
 		
-		public function distroy():void
+		public function destroy():void
 		{
 			removeEventListener(CheckEvent.PULL_PREV, onPullPrev);
 			

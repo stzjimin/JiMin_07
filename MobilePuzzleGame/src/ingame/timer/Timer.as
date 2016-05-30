@@ -10,13 +10,7 @@ package ingame.timer
 	import starling.textures.Texture;
 
 	public class Timer extends Sprite implements IAnimatable
-	{	
-//		[Embed(source="bar.png")]
-//		private const testBarImage:Class;
-//		
-		[Embed(source="fill.png")]
-		private const testFillImage:Class;
-		
+	{
 		[Embed(source="timerFrame.png")]
 		private const timerFrameImage:Class;
 		
@@ -86,7 +80,7 @@ package ingame.timer
 			_juggler.repeatCall(onSec, 1.0, countTime);
 		}
 		
-		public function distroy():void
+		public function destroy():void
 		{
 			_juggler.purge();
 			

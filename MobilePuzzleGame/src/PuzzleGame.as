@@ -8,6 +8,7 @@ package
 	
 	import starling.core.Starling;
 	import starling.events.Event;
+	import ingame.InGame;
 	
 	[SWF(frameRate = "60", width="576", height="1024", backgroundColor="#FFFFF0")]
 	public class PuzzleGame extends Sprite
@@ -33,7 +34,7 @@ package
 			_starlingCore.removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
 			SceneManager.current.addScene(TitleScene, "title");
 			SceneManager.current.addScene(InGame, "game");
-			SceneManager.current.goScene("game");
+			SceneManager.current.goScene("title");
 			_starlingCore.start();
 		}
 	}

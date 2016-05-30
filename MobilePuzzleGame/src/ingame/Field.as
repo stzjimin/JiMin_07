@@ -7,6 +7,7 @@ package ingame
 	
 	import ingame.cell.Cell;
 	import ingame.cell.NeigborType;
+	import ingame.cell.blocks.Block;
 	import ingame.cell.blocks.BlockData;
 	import ingame.util.possibleCheck.CheckEvent;
 	import ingame.util.possibleCheck.Possible;
@@ -72,7 +73,7 @@ package ingame
 			_possibleChecker.addEventListener(CheckEvent.SAME, onSame);
 //			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
 			
-			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.CELL_WIDTH_SIZE), (Field.COLUM_NUM * Cell.CELL_HEIGHT_SIZE), 
+			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.WIDTH_SIZE), (Field.COLUM_NUM * Cell.HEIGHT_SIZE), 
 										Texture.fromBitmap(new topPaddingImage() as Bitmap), Texture.fromBitmap(new bottomPaddingImage() as Bitmap),
 										Texture.fromBitmap(new leftPaddingImage() as Bitmap), Texture.fromBitmap(new rightPaddingImage() as Bitmap));
 			addChild(_padding);
@@ -80,8 +81,8 @@ package ingame
 			_backGround = new Image(Texture.fromBitmap(new testBackGroundImage() as Bitmap));
 			_backGround.x = Field.PADDING;
 			_backGround.y = Field.PADDING;
-			_backGround.width = (Field.ROW_NUM * Cell.CELL_WIDTH_SIZE);
-			_backGround.height = (Field.COLUM_NUM * Cell.CELL_HEIGHT_SIZE);
+			_backGround.width = (Field.ROW_NUM * Cell.WIDTH_SIZE);
+			_backGround.height = (Field.COLUM_NUM * Cell.HEIGHT_SIZE);
 			addChild(_backGround);
 			
 			_cells = new Vector.<Cell>();
@@ -93,24 +94,30 @@ package ingame
 				_cells.push(cell);
 				cell.addEventListener(CheckEvent.ADD_PREV, onAddPrev);
 				cell.addEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
-				cell.width = Cell.CELL_WIDTH_SIZE;
-				cell.height = Cell.CELL_HEIGHT_SIZE;
-				cell.x = Field.PADDING + (columNum * Cell.CELL_WIDTH_SIZE);
-				cell.y = Field.PADDING + (rowNum * Cell.CELL_HEIGHT_SIZE);
-				cell.row = rowNum;
-				cell.colum = columNum;
+				cell.width = Cell.WIDTH_SIZE;
+				cell.height = Cell.HEIGHT_SIZE;
+				cell.x = Field.PADDING + (rowNum * Cell.WIDTH_SIZE);
+				cell.y = Field.PADDING + (columNum * Cell.HEIGHT_SIZE);
+				cell.row = columNum;
+				cell.colum = rowNum;
 				_cells[i].name = rowNum.toString() + "/" + columNum.toString();
 				cell.init();
 				addChild(cell);
+//				trace("cell.x = " + cell.x);
+//				trace("cell.y = " + cell.y);
+//				trace("cell.row = " + cell.row);
+//				trace("cell.colum = " + cell.colum);
 				if(columNum != 0)
 				{
-					_cells[i].neigbor[NeigborType.LEFT] = _cells[i-ROW_NUM];
-					_cells[i-ROW_NUM].neigbor[NeigborType.RIGHT] = _cells[i];
+					_cells[i].neigbor[NeigborType.TOP] = _cells[i-ROW_NUM];
+					_cells[i-ROW_NUM].neigbor[NeigborType.BOTTOM] = _cells[i];
+//					_cells[i].y -= Block.PADDING_SIZE;
 				}
 				if(rowNum != 0)
 				{
-					_cells[i].neigbor[NeigborType.TOP] = _cells[i-1];
-					_cells[i-1].neigbor[NeigborType.BOTTOM] = _cells[i];
+					_cells[i].neigbor[NeigborType.LEFT] = _cells[i-1];
+					_cells[i-1].neigbor[NeigborType.RIGHT] = _cells[i];
+//					_cells[i].x -= Block.PADDING_SIZE;
 				}
 				if(rowNum == (ROW_NUM-1))
 					columNum++;
@@ -135,20 +142,20 @@ package ingame
 		 *Field를 제거하는 함수 
 		 * 
 		 */		
-		public function distroy():void
+		public function destroy():void
 		{
 			for(var i:int = 0; i < _cells.length; i++)
 			{
 				_cells[i].removeEventListener(CheckEvent.ADD_PREV, onAddPrev);
 				_cells[i].removeEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
-				_cells[i].distroy();
+				_cells[i].destroy();
 				_cells[i].removeFromParent();
 				_cells[i] = null;
 			}
 			_cells.splice(0, _cells.length);
 			_cells = null;
 			_possibleChecker.removeEventListener(CheckEvent.SAME, onSame);
-			_possibleChecker.distroy();
+			_possibleChecker.destroy();
 			_possibleChecker = null;
 			
 			_backGround.removeFromParent();
@@ -186,7 +193,7 @@ package ingame
 			function onTweenComplete(event:Event):void
 			{
 				Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
-				Tween(event.currentTarget).target.distroy();
+				Tween(event.currentTarget).target.destroy();
 			}
 		}
 		

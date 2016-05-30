@@ -34,7 +34,7 @@ package customize
 			
 		}
 		
-		public function distroy():void
+		public function destroy():void
 		{
 			removeEventListener(Scene.START, onStart);
 			removeEventListener(Scene.END, onEnded);

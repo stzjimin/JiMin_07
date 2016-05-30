@@ -41,7 +41,7 @@ package ingame.util.possibleCheck
 			_possibles = new Dictionary();
 		}
 		
-		public function distroy():void
+		public function destroy():void
 		{
 			if(_possibles != null)
 			{
@@ -338,11 +338,11 @@ package ingame.util.possibleCheck
 					return -1;
 				else
 				{
-					if(state1.curveCount < state2.curveCount)
-						return 1;
-					else if(state1.curveCount > state2.curveCount)
-						return -1;
-					else
+//					if(state1.curveCount < state2.curveCount)
+//						return 1;
+//					else if(state1.curveCount > state2.curveCount)
+//						return -1;
+//					else
 						return 0;
 				}
 			}

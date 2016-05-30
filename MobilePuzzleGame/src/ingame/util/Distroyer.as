@@ -36,7 +36,7 @@ package ingame.util
 			for(var i:int = 0; i < _blocks.length; i++)
 			{
 				block = _blocks[i];
-				block.distroy();
+				block.destroy();
 			}
 			init();
 			dispatchEvent(new Event(Distroyer.COMPLETE_DISTROY));

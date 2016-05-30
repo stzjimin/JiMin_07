@@ -46,7 +46,7 @@ package customize
 				return;
 			
 			_sceneDic[key].dispatchEvent(new Event(Scene.END));
-			_sceneDic[key].distroy();
+			_sceneDic[key].destroy();
 			delete _sceneDic[key];
 		}
 		

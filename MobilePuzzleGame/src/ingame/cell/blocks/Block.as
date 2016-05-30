@@ -6,12 +6,15 @@ package ingame.cell.blocks
 	import ingame.util.possibleCheck.CheckEvent;
 	
 	import starling.animation.IAnimatable;
-	import starling.display.Button;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
+	import starling.events.Touch;
+	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
 	import starling.textures.Texture;
 
-	public class Block extends Button implements IAnimatable
+	public class Block extends DisplayObjectContainer implements IAnimatable
 	{
 		[Embed(source="pinky.png")]
 		private const testImage0:Class;
@@ -38,6 +41,7 @@ package ingame.cell.blocks
 		
 		private var _blockRightPadding:Image;
 		private var _blockBottomPadding:Image;
+		private var _blockImage:Image;
 		
 		private var _blockTexture:Texture;
 		private var _type:String;
@@ -47,7 +51,15 @@ package ingame.cell.blocks
 		
 		private var _clicked:Boolean;
 		
-		public function Block(blockData:BlockData)
+		public function Block()
+		{	
+			super();
+			
+			addEventListener(TouchEvent.TOUCH, onTouch);
+//			addEventListener(Event.TRIGGERED, onTriggered);
+		}
+		
+		public function init(blockData:BlockData):void
 		{
 			_clicked = false;
 			
@@ -83,45 +95,69 @@ package ingame.cell.blocks
 				this.name = "monky";
 			}
 			
-			super(_blockTexture);
+			_blockImage = new Image(_blockTexture);
+			_blockImage.x = -Block.PADDING_SIZE;
+			_blockImage.y = -Block.PADDING_SIZE;
+			_blockImage.width = Cell.WIDTH_SIZE;
+			_blockImage.height = Cell.HEIGHT_SIZE;
+			addChild(_blockImage);
 			
-			addEventListener(Event.TRIGGERED, onTriggered);
-		}
-		
-		public function init():void
-		{
 			_blockRightPadding = new Image(Texture.fromBitmap(new rightPaddingImage() as Bitmap));
-			_blockRightPadding.x = Cell.CELL_WIDTH_SIZE - Block.PADDING_SIZE;
+			_blockRightPadding.x = Cell.WIDTH_SIZE - Block.PADDING_SIZE;
 			_blockRightPadding.width = Block.PADDING_SIZE;
-			_blockRightPadding.height = Cell.CELL_HEIGHT_SIZE;
+			_blockRightPadding.height = Cell.HEIGHT_SIZE;
 			addChild(_blockRightPadding);
 			
 			_blockBottomPadding = new Image(Texture.fromBitmap(new bottomPaddingImage() as Bitmap));
-			_blockBottomPadding.y = Cell.CELL_HEIGHT_SIZE - Block.PADDING_SIZE;
-			_blockBottomPadding.width = Cell.CELL_WIDTH_SIZE;
+			_blockBottomPadding.y = Cell.HEIGHT_SIZE - Block.PADDING_SIZE;
+			_blockBottomPadding.width = Cell.WIDTH_SIZE;
 			_blockBottomPadding.height = Block.PADDING_SIZE;
 			addChild(_blockBottomPadding);
-			
-			this.pivotX = this.width/2;
-			this.pivotY = this.height/2;
-			this.x = this.width/2;
-			this.y = this.height/2;
+//			this.pivotX = this.width/2;
+//			this.pivotY = this.height/2;
+//			this.x = this.width/2;
+//			this.y = this.height/2;
 		}
 		
-		public function onTriggered():void
+		private function onTouch(event:TouchEvent):void
 		{
-//			trace(Cell(Cell(parent).neigbor[NeigborType.TOP]).block.type);
-			_clicked = !_clicked;
-			if(_clicked)
+			var touch:Touch = event.getTouch(this);
+			if(touch == null)
+				return;
+			if(touch.phase == TouchPhase.BEGAN)
 			{
 				this.scale = 0.9;
-				parent.dispatchEvent(new Event(CheckEvent.ADD_PREV));
 			}
-			else
+			else if(touch.phase == TouchPhase.ENDED)
 			{
-				parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
+				this.scale = 1.0;
+				_clicked = !_clicked;
+				if(_clicked)
+				{
+					this.scale = 0.9;
+					parent.dispatchEvent(new Event(CheckEvent.ADD_PREV));
+				}
+				else
+				{
+					parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
+				}
 			}
 		}
+		
+//		public function onTriggered():void
+//		{
+////			trace(Cell(Cell(parent).neigbor[NeigborType.TOP]).block.type);
+//			_clicked = !_clicked;
+//			if(_clicked)
+//			{
+//				this.scale = 0.9;
+//				parent.dispatchEvent(new Event(CheckEvent.ADD_PREV));
+//			}
+//			else
+//			{
+//				parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
+//			}
+//		}
 		
 		public function pullPrev():void
 		{
@@ -129,10 +165,11 @@ package ingame.cell.blocks
 			this.scale = 1.0;
 		}
 		
-		public function distroy():void
+		public function destroy():void
 		{
 //			var parent:Cell = Cell(this.parent);
 //			parent.block = null;
+			removeEventListener(TouchEvent.TOUCH, onTouch);
 			removeFromParent(true);
 			
 			dispose();

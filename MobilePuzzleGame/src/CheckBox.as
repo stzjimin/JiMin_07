@@ -40,7 +40,7 @@ package
 			}
 		}
 		
-		public function distroy():void
+		public function destroy():void
 		{
 			removeEventListener(Event.TRIGGERED, onTriggered);
 		}

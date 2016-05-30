@@ -17,8 +17,7 @@ package ingame
 	import starling.textures.Texture;
 	
 	public class InGame extends Scene
-	{
-		
+	{	
 		[Embed(source="popUpButton.png")]
 		private const popUpButtonImage:Class;
 		
@@ -29,6 +28,8 @@ package ingame
 		
 		private var _paused:Boolean;
 		private var _timer:Timer;
+		
+		private var _items:Items;
 		
 		private var _playJuggler:Juggler;
 		
@@ -57,6 +58,15 @@ package ingame
 			_timer.addEventListener(Timer.TIME_OVER, onTimeOver);
 			_timer.startCount(60);
 			addChild(_timer);
+			
+			_items = new Items();
+			_items.init(280, 70);
+			_items.x = 300;
+			_items.y = 950;
+			_items.addEventListener(Item.FORK, onClickedFork);
+			_items.addEventListener(Item.SEARCH, onClickedSearch);
+			_items.addEventListener(Item.SHUFFLE, onClickedShuffle);
+			addChild(_items);
 			
 			_blockDatas = new Vector.<BlockData>();
 			_blockDatas.push(new BlockData(0, 0, BlockType.BLUE));
@@ -159,9 +169,11 @@ package ingame
 		
 		public override function destroy():void
 		{
+			_timer.removeEventListener(Timer.TIME_OVER, onTimeOver);
 			_timer.destroy();
+			
 			_field.destroy();
-			_settingPopup.destroy();
+			
 			_backGround.dispose();
 			
 			_settingButton.removeEventListener(Event.TRIGGERED, onClickedSettingButton);
@@ -173,17 +185,36 @@ package ingame
 			_settingPopup.removeEventListener(SettingPopup.RESTART_CLICKED, onClickedRestart);
 			_settingPopup.destroy();
 			
-			_timer.removeEventListener(Timer.TIME_OVER, onTimeOver);
-			_timer.destroy();
+			_items.removeEventListener(Item.FORK, onClickedFork);
+			_items.removeEventListener(Item.SEARCH, onClickedSearch);
+			_items.removeEventListener(Item.SHUFFLE, onClickedShuffle);
+			_items.destroy();
+			
+			removeChildren(0, numChildren);
 			
 			dispose();
+		}
+		
+		private function onClickedFork(event:Event):void
+		{
+			trace("fork");
+		}
+		
+		private function onClickedSearch(event:Event):void
+		{
+			trace("search");
+		}
+		
+		private function onClickedShuffle(event:Event):void
+		{
+			trace("shuffle");
 		}
 		
 		private function keepPlay():void
 		{
 			_paused = false;
 			_settingPopup.visible = false; 
-			_field.touchable = true;
+//			_field.touchable = true;
 		}
 		
 		private function onClickedContinue(event:Event):void
@@ -219,12 +250,12 @@ package ingame
 			if(_paused)
 			{
 				_settingPopup.visible = true;
-				_field.touchable = false;
+//				_field.touchable = false;
 			}
 			else
 			{
 				_settingPopup.visible = false;
-				_field.touchable = true;
+//				_field.touchable = true;
 				//				SceneManager.current.goScene("title");
 			}
 		}

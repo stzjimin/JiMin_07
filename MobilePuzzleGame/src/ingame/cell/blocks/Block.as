@@ -172,6 +172,8 @@ package ingame.cell.blocks
 			removeEventListener(TouchEvent.TOUCH, onTouch);
 			removeFromParent(true);
 			
+			removeChildren(0, numChildren);
+			
 			dispose();
 		}
 		

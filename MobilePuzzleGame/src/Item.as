@@ -32,6 +32,5 @@ package
 		{
 			_type = value;
 		}
-
 	}
 }

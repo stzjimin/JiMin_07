@@ -7,7 +7,6 @@ package ingame
 	
 	import ingame.cell.Cell;
 	import ingame.cell.NeigborType;
-	import ingame.cell.blocks.Block;
 	import ingame.cell.blocks.BlockData;
 	import ingame.util.possibleCheck.CheckEvent;
 	import ingame.util.possibleCheck.Possible;
@@ -16,12 +15,12 @@ package ingame
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
 	import starling.animation.Tween;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
-	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.textures.Texture;
 
-	public class Field extends Sprite implements IAnimatable
+	public class Field extends DisplayObjectContainer implements IAnimatable
 	{	
 		[Embed(source="backGround.png")]
 		private const testBackGroundImage:Class;
@@ -160,6 +159,8 @@ package ingame
 			
 			_backGround.removeFromParent();
 			_backGround = null;
+			
+			removeChildren(0, numChildren);
 			
 			dispose();
 		}

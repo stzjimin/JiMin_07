@@ -78,7 +78,7 @@ package ingame.cell
 		public function destroy():void
 		{
 			removeEventListener(CheckEvent.PULL_PREV, onPullPrev);
-			
+			removeChildren(0, numChildren);
 			dispose();
 		}
 		

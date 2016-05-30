@@ -71,8 +71,14 @@ package ingame
 		
 		public override function destroy():void
 		{	
+			_continueButton.removeEventListener(Event.TRIGGERED, onTriggered);
+			_menuButton.removeEventListener(Event.TRIGGERED, onTriggered);
+			_restartButton.removeEventListener(Event.TRIGGERED, onTriggered);
+			
 			_bgmCheckButton.destroy();
 			_effectCheckButton.destroy();
+			
+			removeChildren(0, numChildren);
 			
 			dispose();
 		}

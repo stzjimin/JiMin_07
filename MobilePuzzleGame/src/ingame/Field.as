@@ -48,6 +48,7 @@ package ingame
 		private static var _sCOLUM_NUM:uint;
 		private static var _sPADDING:uint;
 		
+		private var _resources:Resources;
 		private var _juggler:Juggler;
 		
 		private var _backGround:Image;
@@ -57,6 +58,7 @@ package ingame
 		private var _cells:Vector.<Cell>;
 		
 		private var _possibleChecker:PossibleChecker;
+		private var _shuffle:Shuffle;
 		
 		public function Field(rowNum:uint = 12, columNum:uint = 12, padding:uint = 18)
 		{
@@ -65,12 +67,17 @@ package ingame
 			_sPADDING = padding;
 		}
 		
-		public function init():void
+		public function init(resources:Resources):void
 		{	
+			_resources = resources;
+			
 			_juggler = new Juggler();
 			
 			_possibleChecker = new PossibleChecker();
 			_possibleChecker.addEventListener(CheckEvent.SAME, onSame);
+			_shuffle = new Shuffle();
+			_shuffle.init();
+			_shuffle.addEventListener(Shuffle.COMPLETE, onCompleteShuffle);
 //			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
 			
 			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.WIDTH_SIZE), (Field.COLUM_NUM * Cell.HEIGHT_SIZE), 
@@ -122,6 +129,13 @@ package ingame
 				if(rowNum == (ROW_NUM-1))
 					columNum++;
 			}
+			
+			addEventListener("shuffle", onShuffle);
+		}
+		
+		private function onShuffle(event:Event):void
+		{
+			_shuffle.shuffle(_cells);
 		}
 		
 		/**
@@ -158,17 +172,32 @@ package ingame
 			_possibleChecker.destroy();
 			_possibleChecker = null;
 			
+			_padding.destroy();
+			
 			_backGround.removeFromParent();
 			_backGround = null;
 			
-			removeChildren(0, numChildren);
+			_shuffle.removeEventListener(Shuffle.COMPLETE, onCompleteShuffle);
 			
 			dispose();
+			removeChildren(0, numChildren);
 		}
 		
 		public function advanceTime(time:Number):void
 		{
 			_juggler.advanceTime(time);
+		}
+		
+		private function onCompleteShuffle(event:Event):void
+		{
+			_possibleChecker.checkPossibleCell(_cells);
+			if(_possibleChecker.blockCount >= 2 && _possibleChecker.possibleCount == 0)
+				_shuffle.shuffle(_cells);
+			else
+			{
+				trace(_possibleChecker.blockCount);
+				trace(_possibleChecker.possibleCount);
+			}
 		}
 		
 		private function onSame(event:Event):void

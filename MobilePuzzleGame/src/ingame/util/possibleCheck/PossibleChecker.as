@@ -19,6 +19,7 @@ package ingame.util.possibleCheck
 		
 		private var _neigborTypes:Vector.<int> = NeigborType.TYPES;
 		private var _possibleCount:uint;
+		private var _blockCount:uint;
 		
 		public function PossibleChecker()
 		{
@@ -111,11 +112,12 @@ package ingame.util.possibleCheck
 		public function checkPossibleCell(cells:Vector.<Cell>):void
 		{
 			_possibleCount = 0;
+			_blockCount = 0;
 			for(var i:int = 0; i < cells.length-1; i++)
 			{
 				if(cells[i].block == null)
 					continue;	//블록이 없는 경우는 검사할 필요가 없으니 제외
-				
+				_blockCount++;
 				for(var j:int = i+1; j < cells.length; j++)
 				{
 					if(cells[j].block == null)
@@ -130,6 +132,8 @@ package ingame.util.possibleCheck
 					}
 				}
 			}
+			if(cells[i].block != null)
+				_blockCount++;
 		}
 		
 		public function outChecker(cell:Cell):void
@@ -429,6 +433,17 @@ package ingame.util.possibleCheck
 		{
 			_possibleCount = value;
 		}
+
+		public function get blockCount():uint
+		{
+			return _blockCount;
+		}
+
+		public function set blockCount(value:uint):void
+		{
+			_blockCount = value;
+		}
+
 
 	}
 }

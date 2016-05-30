@@ -1,4 +1,4 @@
-package
+package title
 {
 	import flash.display.Bitmap;
 	

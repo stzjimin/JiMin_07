@@ -1,6 +1,8 @@
 package ingame
 {
+	import flash.desktop.NativeApplication;
 	import flash.display.Bitmap;
+	import flash.filesystem.File;
 	
 	import customize.Scene;
 	import customize.SceneManager;
@@ -24,6 +26,9 @@ package ingame
 		[Embed(source="IngameBackGround.png")]
 		private const testBackGroundImage:Class;
 		
+		private var _spirteDir:File = File.applicationDirectory.resolvePath("ingame");
+		private var _resources:Resources;
+		
 		private var _backGround:Image;
 		
 		private var _paused:Boolean;
@@ -42,13 +47,38 @@ package ingame
 		public function InGame()
 		{
 			super();
-			
 			_paused = true;
 			
-			this.width = 576;
-			this.height = 1024;
+		}
+		
+		protected override function onStart(event:Event):void
+		{
+			_resources = new Resources(_spirteDir, null, null);
 			
-			_backGround = new Image(Texture.fromBitmap(new testBackGroundImage() as Bitmap));
+			_resources.addSpriteName("IngameSprite0.png");
+			_resources.addSpriteName("IngameSprite1.png");
+			_resources.addSpriteName("IngameSprite2.png");
+			
+			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.loadResource();
+			//음악 on
+		}
+		
+		private function onFailedLoading(event:LoadingEvent):void
+		{
+			trace(event.data);
+			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.destroy();
+//			NativeApplication.nativeApplication.exit();
+		}
+		
+		private function onCompleteLoading(event:LoadingEvent):void
+		{
+			_paused = false;
+			
+			_backGround = new Image(_resources.getSubTexture("IngameSprite2.png", "IngameBackGround"));
 			_backGround.width = 576;
 			_backGround.height = 1024;
 			addChild(_backGround);
@@ -100,12 +130,12 @@ package ingame
 			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
 			
 			_field = new Field();
-//			_field.x = 18;
+			//			_field.x = 18;
 			_field.y = 100;
-			_field.init();
+			_field.init(_resources);
 			addChild(_field);
 			
-			_settingButton = new Button(Texture.fromBitmap(new popUpButtonImage() as Bitmap));
+			_settingButton = new Button(_resources.getSubTexture("IngameSprite2.png", "popUpButton"));
 			_settingButton.x = 536;
 			_settingButton.width = 40;
 			_settingButton.height = 40;
@@ -133,6 +163,9 @@ package ingame
 			_playJuggler.add(_field);
 			_playJuggler.add(_timer);
 			
+			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			
 			trace(flash.display.Screen.mainScreen.bounds);
 			//			
 			//			_button = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
@@ -148,12 +181,6 @@ package ingame
 			//			
 			//			this.width = flash.display.Screen.mainScreen.bounds.width /11 * 10; 
 			//			this.height = flash.display.Screen.mainScreen.bounds.height /11 * 10;
-		}
-		
-		protected override function onStart(event:Event):void
-		{
-			_paused = false;
-			//음악 on
 		}
 		
 		protected override function onEnded(event:Event):void
@@ -229,7 +256,8 @@ package ingame
 		
 		private function onClickedRestart(event:Event):void
 		{
-			
+			keepPlay();
+			_field.dispatchEvent(new Event("shuffle"));
 		}
 		
 		private function onClickedCover(event:Event):void

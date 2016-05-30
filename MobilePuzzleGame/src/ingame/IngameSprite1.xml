@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="IngameSprite1.png">
+   <SubTexture name="blockBottomPadding" x="0" y="423" width="47" height="10" />
+   <SubTexture name="blockRightPadding" x="237" y="423" width="9" height="57" />
+   <SubTexture name="blue" x="0" y="435" width="45" height="60" />
+   <SubTexture name="lucy" x="49" y="423" width="45" height="60" />
+   <SubTexture name="micky" x="96" y="423" width="45" height="60" />
+   <SubTexture name="mongyi" x="143" y="423" width="45" height="60" />
+   <SubTexture name="pinky" x="190" y="423" width="45" height="60" />
+   <SubTexture name="continue" x="492" y="0" width="436" height="91" />
+   <SubTexture name="menu" x="492" y="93" width="436" height="91" />
+   <SubTexture name="restart" x="492" y="186" width="436" height="91" />
+   <SubTexture name="settingPopup" x="0" y="0" width="490" height="421" />
+</TextureAtlas>

@@ -37,5 +37,11 @@ package ingame
 			_rightPadding.height = (paddingSize*2) + contentHeight;
 			addChild(_rightPadding);
 		}
+		
+		public function destroy():void
+		{
+			dispose();
+			removeChildren(0, numChildren);
+		}
 	}
 }

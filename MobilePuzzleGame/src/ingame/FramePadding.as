@@ -1,4 +1,4 @@
-package
+package ingame
 {
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;

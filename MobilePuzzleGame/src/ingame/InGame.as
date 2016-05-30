@@ -1,11 +1,10 @@
-package
+package ingame
 {
 	import flash.display.Bitmap;
 	
 	import customize.Scene;
 	import customize.SceneManager;
 	
-	import ingame.Field;
 	import ingame.cell.blocks.BlockData;
 	import ingame.cell.blocks.BlockType;
 	import ingame.timer.Timer;
@@ -19,8 +18,9 @@ package
 	
 	public class InGame extends Scene
 	{
-		[Embed(source="19.png")]
-		private const buttonImage:Class;
+		
+		[Embed(source="popUpButton.png")]
+		private const popUpButtonImage:Class;
 		
 		[Embed(source="IngameBackGround.png")]
 		private const testBackGroundImage:Class;
@@ -35,8 +35,6 @@ package
 		private var _field:Field;
 		private var _settingPopup:SettingPopup;
 		private var _settingButton:Button;
-		
-		private var _testButton:Button;
 		
 		private var _blockDatas:Vector.<BlockData>;
 		
@@ -61,6 +59,8 @@ package
 			addChild(_timer);
 			
 			_blockDatas = new Vector.<BlockData>();
+			_blockDatas.push(new BlockData(0, 0, BlockType.BLUE));
+			_blockDatas.push(new BlockData(11, 11, BlockType.BLUE));
 			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
 			_blockDatas.push(new BlockData(1, 1, BlockType.MICKY));
 			_blockDatas.push(new BlockData(2, 1, BlockType.MICKY));
@@ -95,7 +95,7 @@ package
 			_field.init();
 			addChild(_field);
 			
-			_settingButton = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
+			_settingButton = new Button(Texture.fromBitmap(new popUpButtonImage() as Bitmap));
 			_settingButton.x = 536;
 			_settingButton.width = 40;
 			_settingButton.height = 40;
@@ -103,6 +103,10 @@ package
 			addChild(_settingButton);
 			
 			_settingPopup = new SettingPopup(400, 300);
+			_settingPopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_settingPopup.addEventListener(SettingPopup.CONTINUE_CLICKED, onClickedContinue);
+			_settingPopup.addEventListener(SettingPopup.MENU_CLICKED, onClickedMenu);
+			_settingPopup.addEventListener(SettingPopup.RESTART_CLICKED, onClickedRestart);
 			addChild(_settingPopup);
 			
 			var blockData:BlockData;
@@ -120,12 +124,6 @@ package
 			_playJuggler.add(_timer);
 			
 			trace(flash.display.Screen.mainScreen.bounds);
-			
-			_testButton = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
-			_testButton.x = 10;
-			_testButton.y = 800;
-			_testButton.addEventListener(Event.TRIGGERED, onTriggered);
-			addChild(_testButton);
 			//			
 			//			_button = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
 			//			_button.x = 300;
@@ -145,11 +143,12 @@ package
 		protected override function onStart(event:Event):void
 		{
 			_paused = false;
+			//음악 on
 		}
 		
 		protected override function onEnded(event:Event):void
 		{
-			
+			//음악 off
 		}
 		
 		protected override function onUpdate(event:EnterFrameEvent):void
@@ -158,16 +157,53 @@ package
 				_playJuggler.advanceTime(event.passedTime);
 		}
 		
-		public override function distroy():void
+		public override function destroy():void
 		{
-			_timer.distroy();
-			_field.distroy();
-			_settingPopup.distroy();
+			_timer.destroy();
+			_field.destroy();
+			_settingPopup.destroy();
 			_backGround.dispose();
+			
 			_settingButton.removeEventListener(Event.TRIGGERED, onClickedSettingButton);
+			_settingButton.dispose();
+			
+			_settingPopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_settingPopup.removeEventListener(SettingPopup.CONTINUE_CLICKED, onClickedContinue);
+			_settingPopup.removeEventListener(SettingPopup.MENU_CLICKED, onClickedMenu);
+			_settingPopup.removeEventListener(SettingPopup.RESTART_CLICKED, onClickedRestart);
+			_settingPopup.destroy();
+			
 			_timer.removeEventListener(Timer.TIME_OVER, onTimeOver);
+			_timer.destroy();
 			
 			dispose();
+		}
+		
+		private function keepPlay():void
+		{
+			_paused = false;
+			_settingPopup.visible = false; 
+			_field.touchable = true;
+		}
+		
+		private function onClickedContinue(event:Event):void
+		{
+			keepPlay();
+		}
+		
+		private function onClickedMenu(event:Event):void
+		{
+			SceneManager.current.outScene();
+		}
+		
+		private function onClickedRestart(event:Event):void
+		{
+			
+		}
+		
+		private function onClickedCover(event:Event):void
+		{
+			keepPlay();
 		}
 		
 		private function onTimeOver(event:Event):void
@@ -179,22 +215,18 @@ package
 		
 		private function onClickedSettingButton(event:Event):void
 		{
-//			_settingPopup.visible = !_settingPopup.visible;
-//			SceneManager.current.goScene("title");
 			_paused = !_paused;
 			if(_paused)
 			{
+				_settingPopup.visible = true;
 				_field.touchable = false;
 			}
 			else
 			{
+				_settingPopup.visible = false;
 				_field.touchable = true;
+				//				SceneManager.current.goScene("title");
 			}
-		}
-		
-		private function onTriggered(event:Event):void
-		{
-			
 		}
 	}
 }

@@ -7,6 +7,7 @@ package ingame
 	
 	import ingame.cell.Cell;
 	import ingame.cell.NeigborType;
+	import ingame.cell.blocks.Block;
 	import ingame.cell.blocks.BlockData;
 	import ingame.util.possibleCheck.CheckEvent;
 	import ingame.util.possibleCheck.Possible;
@@ -278,7 +279,10 @@ package ingame
 		public function createBlock(blockData:BlockData):void
 		{
 			var cell:Cell = getCell(blockData.row, blockData.colum);
-			cell.createBlock(blockData);
+			
+			var block:Block = new Block();
+			block.init(blockData);
+			cell.addBlock(block);
 		}
 
 		public static function get ROW_NUM():uint

@@ -53,15 +53,25 @@ package ingame.cell
 			_color.visible = false;
 		}
 		
-		public function createBlock(blockData:BlockData):void
+//		public function createBlock(blockData:BlockData):void
+//		{
+////			if(_block != null)
+////				return;
+//			
+////			_block = new Block();
+////			_block.width = _width;
+////			_block.height = _height;
+////			_block.init(blockData);
+//			
+////			addChild(_block);
+//		}
+		
+		public function addBlock(block:Block):void
 		{
 			if(_block != null)
 				return;
 			
-			_block = new Block();
-			_block.width = _width;
-			_block.height = _height;
-			_block.init(blockData);
+			_block = block;
 			_block.alignPivot();
 			_block.x = this.width/2;
 			_block.y = this.height/2;

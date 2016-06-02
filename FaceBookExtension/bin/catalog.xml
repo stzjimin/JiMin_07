@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding ="utf-8"?>
+<swc xmlns="http://www.adobe.com/flash/swccatalog/9">
+  <versions>
+    <swc version="1.2" />
+    <flex version="4.6.0" build="23201" minimumSupportedVersion="3.0.0" />
+  </versions>
+  <features>
+    <feature-script-deps />
+    <feature-files />
+  </features>
+  <libraries>
+    <library path="library.swf">
+      <script name="FacebookEvent" mod="1464698123510" signatureChecksum="2375263608" >
+        <def id="FacebookEvent" /> 
+        <dep id="AS3" type="n" /> 
+        <dep id="flash.events:Event" type="i" /> 
+      </script>
+      <script name="FaceBookExtension" mod="1464698501935" signatureChecksum="1792786449" >
+        <def id="FaceBookExtension" /> 
+        <dep id="JSON" type="e" /> 
+        <dep id="trace" type="e" /> 
+        <dep id="flash.external:ExtensionContext" type="e" /> 
+        <dep id="flash.filesystem:FileMode" type="e" /> 
+        <dep id="Error" type="e" /> 
+        <dep id="flash.desktop:NativeApplication" type="e" /> 
+        <dep id="FacebookEvent" type="e" /> 
+        <dep id="Date" type="e" /> 
+        <dep id="flash.filesystem:FileStream" type="e" /> 
+        <dep id="flash.system:Capabilities" type="e" /> 
+        <dep id="flash.events:StatusEvent" type="e" /> 
+        <dep id="flash.filesystem:File" type="e" /> 
+        <dep id="flash.events:InvokeEvent" type="e" /> 
+        <dep id="FacebookEvent" type="s" /> 
+        <dep id="Date" type="s" /> 
+        <dep id="flash.filesystem:FileStream" type="s" /> 
+        <dep id="flash.events:StatusEvent" type="s" /> 
+        <dep id="flash.filesystem:File" type="s" /> 
+        <dep id="flash.external:ExtensionContext" type="s" /> 
+        <dep id="Error" type="s" /> 
+        <dep id="flash.events:InvokeEvent" type="s" /> 
+        <dep id="AS3" type="n" /> 
+        <dep id="flash.events:EventDispatcher" type="i" /> 
+      </script>
+      <script name="_f3ea5290b4e45b776bd0e5aead0edfe2d03001e1f600db2604a3202f71035348_flash_display_Sprite" mod="1464744943019" signatureChecksum="2271509041" >
+        <def id="_f3ea5290b4e45b776bd0e5aead0edfe2d03001e1f600db2604a3202f71035348_flash_display_Sprite" /> 
+        <dep id="flash.system:Security" type="e" /> 
+        <dep id="AS3" type="n" /> 
+        <dep id="flash.display:Sprite" type="i" /> 
+      </script>
+      <digests>
+        <digest type="SHA-256" signed="false" value="dc15feb17c6e40e20ffc1829ef04940b88354092cae9cda813064820175f9f6b"   />
+      </digests>
+    </library>
+  </libraries>
+  <files>
+  </files>
+</swc>

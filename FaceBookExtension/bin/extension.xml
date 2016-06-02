@@ -1,0 +1,13 @@
+<extension xmlns="http://ns.adobe.com/air/extension/4.0">
+      <id>com.example.facebooktest.FaceBookExtension</id>
+      <versionNumber>1.0.0</versionNumber>
+      <platforms>
+        <platform name="Android-ARM">
+            <applicationDeployment>
+                <nativeLibrary>facebookTest.jar</nativeLibrary>
+                <initializer>com.example.facebooktest.FaceBookExtension</initializer>
+                <finalizer>com.example.facebooktest.FaceBookExtension</finalizer>
+            </applicationDeployment>
+        </platform>
+       </platforms>
+</extension>

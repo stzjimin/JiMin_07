@@ -15,7 +15,7 @@
 
 	<!-- A universally unique application identifier. Must be unique across all AIR applications.
 	Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-	<id>PuzzleGame</id>
+	<id>com.example.PuzzleGame</id>
 
 	<!-- Used as the filename for the application. Required. -->
 	<filename>PuzzleGame</filename>
@@ -282,9 +282,9 @@
 			    <!--Removing the permission android.permission.INTERNET will have the side effect
 		of preventing you from debugging your application on your device-->
 			    <uses-permission android:name="android.permission.INTERNET"/>
-			    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>-->
-			    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE"/>-->
-			    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>-->
+			    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+			    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+			    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 			    <!--The DISABLE_KEYGUARD and WAKE_LOCK permissions should be toggled together
 		in order to access AIR's SystemIdleMode APIs-->
 			    <!--<uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>-->
@@ -295,6 +295,13 @@
 		together in order to use AIR's NetworkInfo APIs-->
 			    <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>-->
 			    <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>-->
+			    
+				<application android:enabled="true">
+				<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+				
+					<activity android:name="com.facebook.extension.LoginActivity"/>
+					<activity android:name="com.facebook.FacebookActivity"/>
+				</application>
 			</manifest>
 			
 		]]></manifestAdditions>
@@ -309,4 +316,15 @@
 		]]></InfoAdditions>
         <requestedDisplayResolution>high</requestedDisplayResolution>
     </iPhone>
+
+
+
+
+
+
+
+<extensions>
+        
+    <extensionID>com.facebook.extension.FacebookExtension</extensionID>
+    </extensions>
 </application>

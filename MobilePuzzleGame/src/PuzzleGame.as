@@ -1,4 +1,4 @@
-package
+package 
 {
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -8,8 +8,8 @@ package
 	
 	import starling.core.Starling;
 	import starling.events.Event;
-	import ingame.InGame;
-	import title.TitleScene;
+	import Puzzle.ingame.InGame;
+	import Puzzle.title.TitleScene;
 	
 	[SWF(frameRate = "60", width="576", height="1024", backgroundColor="#FFFFF0")]
 	public class PuzzleGame extends Sprite

@@ -37,7 +37,7 @@ package puzzle.ingame
 		private var _playJuggler:Juggler;
 		
 		private var _field:Field;
-		private var _settingPopup:SettingPopup;
+		private var _settingPopup:IngamePopup;
 		private var _settingButton:Button;
 		
 		private var _blockDatas:Vector.<BlockData>;
@@ -140,11 +140,11 @@ package puzzle.ingame
 			_settingButton.addEventListener(Event.TRIGGERED, onClickedSettingButton);
 			addChild(_settingButton);
 			
-			_settingPopup = new SettingPopup(400, 300, _resources);
+			_settingPopup = new IngamePopup(400, 300, _resources);
 			_settingPopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
-			_settingPopup.addEventListener(SettingPopup.CONTINUE_CLICKED, onClickedContinue);
-			_settingPopup.addEventListener(SettingPopup.MENU_CLICKED, onClickedMenu);
-			_settingPopup.addEventListener(SettingPopup.RESTART_CLICKED, onClickedRestart);
+			_settingPopup.addEventListener(IngamePopup.CONTINUE_CLICKED, onClickedContinue);
+			_settingPopup.addEventListener(IngamePopup.MENU_CLICKED, onClickedMenu);
+			_settingPopup.addEventListener(IngamePopup.RESTART_CLICKED, onClickedRestart);
 			addChild(_settingPopup);
 			
 			var blockData:BlockData;
@@ -207,9 +207,9 @@ package puzzle.ingame
 			_settingButton.dispose();
 			
 			_settingPopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
-			_settingPopup.removeEventListener(SettingPopup.CONTINUE_CLICKED, onClickedContinue);
-			_settingPopup.removeEventListener(SettingPopup.MENU_CLICKED, onClickedMenu);
-			_settingPopup.removeEventListener(SettingPopup.RESTART_CLICKED, onClickedRestart);
+			_settingPopup.removeEventListener(IngamePopup.CONTINUE_CLICKED, onClickedContinue);
+			_settingPopup.removeEventListener(IngamePopup.MENU_CLICKED, onClickedMenu);
+			_settingPopup.removeEventListener(IngamePopup.RESTART_CLICKED, onClickedRestart);
 			_settingPopup.destroy();
 			
 			_items.removeEventListener(Item.FORK, onClickedFork);

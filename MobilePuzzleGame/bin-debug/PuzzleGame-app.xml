@@ -325,8 +325,5 @@
 
 
 
-<extensions>
-        
-    <extensionID>com.facebook.extension.FacebookExtension</extensionID>
-    </extensions>
+
 </application>

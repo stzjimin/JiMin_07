@@ -18,6 +18,9 @@ package puzzle.stageSelect
 
 	public class StageSelectScene extends Scene
 	{
+		[Embed(source="settingButton.png")]
+		private const settingImage:Class;
+		
 		[Embed(source="stageSelectBackGround.png")]
 		private const backGroundImage:Class;
 		
@@ -29,6 +32,8 @@ package puzzle.stageSelect
 		
 		private var _backGround:Image;
 		private var _stageButtons:Vector.<Button>;
+		
+		private var _settingButton:Button;
 		
 		public function StageSelectScene()
 		{
@@ -67,6 +72,12 @@ package puzzle.stageSelect
 			
 			_stageButtons[4].x = 414;
 			_stageButtons[4].y = 224;
+			
+			_settingButton = new Button(Texture.fromBitmap(new settingImage() as Bitmap));
+			_settingButton.width = 70;
+			_settingButton.height = 70;
+			_settingButton.x = 576 - 70;
+			addChild(_settingButton);
 		}
 		
 		public override function destroy():void

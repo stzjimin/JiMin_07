@@ -3,14 +3,12 @@ package puzzle.ingame
 	import puzzle.Popup;
 	import puzzle.loader.Resources;
 	
-	import customize.CheckBox;
-	
 	import starling.display.Button;
 	import starling.display.Image;
 	import starling.events.Event;
 	import starling.text.TextField;
 
-	public class SettingPopup extends Popup
+	public class IngamePopup extends Popup
 	{	
 		public static const CONTINUE_CLICKED:String = "continueClicked";
 		public static const MENU_CLICKED:String = "menuClicked";
@@ -29,7 +27,7 @@ package puzzle.ingame
 		private var _profileImage:Image;
 		private var _profileText:TextField;
 
-		public function SettingPopup(width:Number, height:Number, resources:Resources)
+		public function IngamePopup(width:Number, height:Number, resources:Resources)
 		{
 			_resources = resources;
 			
@@ -82,11 +80,11 @@ package puzzle.ingame
 		private function onTriggered(event:Event):void
 		{
 			if(event.currentTarget == _continueButton)
-				dispatchEvent(new Event(SettingPopup.CONTINUE_CLICKED));
+				dispatchEvent(new Event(IngamePopup.CONTINUE_CLICKED));
 			else if(event.currentTarget == _menuButton)
-				dispatchEvent(new Event(SettingPopup.MENU_CLICKED));
+				dispatchEvent(new Event(IngamePopup.MENU_CLICKED));
 			else if(event.currentTarget == _restartButton)
-				dispatchEvent(new Event(SettingPopup.RESTART_CLICKED));
+				dispatchEvent(new Event(IngamePopup.RESTART_CLICKED));
 		}
 	}
 }

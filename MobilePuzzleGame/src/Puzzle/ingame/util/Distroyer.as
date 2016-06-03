@@ -1,8 +1,8 @@
-package Puzzle.ingame.util
+package puzzle.ingame.util
 {
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
-	import Puzzle.ingame.cell.blocks.Block;
+	import puzzle.ingame.cell.blocks.Block;
 
 	public class Distroyer extends EventDispatcher
 	{

@@ -1,9 +1,9 @@
-package Puzzle.ingame.util.possibleCheck
+package puzzle.ingame.util.possibleCheck
 {
 	import flash.utils.Dictionary;
 	
-	import Puzzle.ingame.cell.Cell;
-	import Puzzle.ingame.cell.NeigborType;
+	import puzzle.ingame.cell.Cell;
+	import puzzle.ingame.cell.NeigborType;
 	
 	import starling.events.Event;
 	import starling.events.EventDispatcher;

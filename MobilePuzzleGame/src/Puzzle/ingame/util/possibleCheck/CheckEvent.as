@@ -1,4 +1,4 @@
-package Puzzle.ingame.util.possibleCheck
+package puzzle.ingame.util.possibleCheck
 {
 	public class CheckEvent
 	{

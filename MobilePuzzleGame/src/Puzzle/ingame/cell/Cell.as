@@ -1,10 +1,10 @@
-package Puzzle.ingame.cell
+package puzzle.ingame.cell
 {
 	import flash.utils.Dictionary;
 	
-	import Puzzle.Resources;
-	import Puzzle.ingame.cell.blocks.Block;
-	import Puzzle.ingame.util.possibleCheck.CheckEvent;
+	import puzzle.loader.Resources;
+	import puzzle.ingame.cell.blocks.Block;
+	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Quad;

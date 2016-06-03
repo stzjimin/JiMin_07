@@ -1,15 +1,24 @@
-package Puzzle.ingame.timer
+package puzzle.ingame.timer
 {
-	import Puzzle.Resources;
+	import com.greensock.TweenMax;
+	
+	import flash.display.Bitmap;
+	
+	import puzzle.loader.Resources;
 	
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
+	import starling.animation.Tween;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.textures.Texture;
 
 	public class Timer extends Sprite implements IAnimatable
 	{	
+		[Embed(source="fillBar.png")]
+		private const fillbarImage:Class;
+		
 		public static const TIME_START:String = "timeStart";
 		public static const TIME_OVER:String = "timeOver";
 		
@@ -21,6 +30,7 @@ package Puzzle.ingame.timer
 		private var _juggler:Juggler;
 		
 		private var _bar:Image;
+		private var _fillBar:Image;
 		private var _fillFront:Image;
 		private var _fillBack:Image;
 		private var _ratio:Number;
@@ -43,6 +53,11 @@ package Puzzle.ingame.timer
 			_bar.height = height;
 			addChild(_bar);
 			
+//			_fillBar = new Image(Texture.fromBitmap(new fillbarImage() as Bitmap));
+//			_fillBar.width = width;
+//			_fillBar.height = height;
+//			addChild(_fillBar);
+			
 			_fillFront = new Image(_resources.getSubTexture("IngameSprite2.png", "timerFront2"));
 			_fillFront.width = width/20;
 			_fillFront.height = height;
@@ -52,12 +67,14 @@ package Puzzle.ingame.timer
 			_fillBack.x = _fillFront.width;
 			_fillBack.width = width - _fillFront.width;
 			_fillBack.height = height;
+//			trace(_fillBack.scaleX);
 			addChild(_fillBack);
 		}
 		
 		public function update(ratio:Number):void
 		{
-			_fillBack.scaleX -= ratio;
+//			_fillBack.scaleX -= ratio;
+//			trace(_fillBack.scaleX);
 //			_ratio += ratio
 //			_fillBack.setTexCoords(0, _ratio, 0);
 //			_fillBack.setTexCoords(2, _ratio, 1);
@@ -72,6 +89,9 @@ package Puzzle.ingame.timer
 			_time = 0;
 			_countTime = countTime;
 			_juggler.repeatCall(onSec, 1.0, countTime);
+			var tween:Tween = new Tween(_fillBack, 60);
+			tween.scaleXTo(0);
+			_juggler.add(tween);
 		}
 		
 		public function destroy():void

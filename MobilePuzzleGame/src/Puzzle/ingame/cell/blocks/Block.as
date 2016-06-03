@@ -1,10 +1,10 @@
-package Puzzle.ingame.cell.blocks
+package puzzle.ingame.cell.blocks
 {
 	import flash.display.Bitmap;
 	
-	import Puzzle.Resources;
-	import Puzzle.ingame.cell.Cell;
-	import Puzzle.ingame.util.possibleCheck.CheckEvent;
+	import puzzle.loader.Resources;
+	import puzzle.ingame.cell.Cell;
+	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	
 	import starling.animation.IAnimatable;
 	import starling.display.DisplayObjectContainer;

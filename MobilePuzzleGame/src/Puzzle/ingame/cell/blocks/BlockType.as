@@ -1,4 +1,4 @@
-package Puzzle.ingame.cell.blocks
+package puzzle.ingame.cell.blocks
 {
 	public class BlockType
 	{

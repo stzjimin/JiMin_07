@@ -1,4 +1,4 @@
-package 
+package  
 {
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
@@ -6,10 +6,12 @@ package
 	
 	import customize.SceneManager;
 	
+	import puzzle.ingame.InGame;
+	import puzzle.stageSelect.StageSelectScene;
+	import puzzle.title.TitleScene;
+	
 	import starling.core.Starling;
 	import starling.events.Event;
-	import Puzzle.ingame.InGame;
-	import Puzzle.title.TitleScene;
 	
 	[SWF(frameRate = "60", width="576", height="1024", backgroundColor="#FFFFF0")]
 	public class PuzzleGame extends Sprite
@@ -34,7 +36,7 @@ package
 		{
 			_starlingCore.removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
 			SceneManager.current.addScene(TitleScene, "title");
-			SceneManager.current.addScene(InGame, "game");
+			SceneManager.current.addScene(StageSelectScene, "stageSelect");
 			SceneManager.current.goScene("title");
 			_starlingCore.start();
 		}

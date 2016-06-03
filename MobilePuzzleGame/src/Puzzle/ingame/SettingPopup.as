@@ -1,36 +1,26 @@
-package Puzzle.ingame
+package puzzle.ingame
 {
-	import flash.display.Bitmap;
+	import puzzle.Popup;
+	import puzzle.loader.Resources;
+	
+	import customize.CheckBox;
 	
 	import starling.display.Button;
 	import starling.display.Image;
 	import starling.events.Event;
 	import starling.text.TextField;
-	import starling.textures.Texture;
-	import Puzzle.CheckBox;
-	import Puzzle.Popup;
 
 	public class SettingPopup extends Popup
 	{	
-		[Embed(source="settingPopup.png")]
-		private const testPopupImage:Class;
-		
-		[Embed(source="continue.png")]
-		private const continueButtonImage:Class;
-		
-		[Embed(source="menu.png")]
-		private const menuButtonImage:Class;
-		
-		[Embed(source="restart.png")]
-		private const restartButtonImage:Class;
-		
 		public static const CONTINUE_CLICKED:String = "continueClicked";
 		public static const MENU_CLICKED:String = "menuClicked";
 		public static const RESTART_CLICKED:String = "restartClicked";
 		
+		private var _resources:Resources;
+		
 		private var _closeButton:Button;
-		private var _bgmCheckButton:CheckBox;
-		private var _effectCheckButton:CheckBox;
+//		private var _bgmCheckButton:CheckBox;
+//		private var _effectCheckButton:CheckBox;
 		
 		private var _continueButton:Button;
 		private var _menuButton:Button;
@@ -39,11 +29,13 @@ package Puzzle.ingame
 		private var _profileImage:Image;
 		private var _profileText:TextField;
 
-		public function SettingPopup(width:Number, height:Number)
+		public function SettingPopup(width:Number, height:Number, resources:Resources)
 		{
-			super(width, height, Texture.fromBitmap(new testPopupImage() as Bitmap));
+			_resources = resources;
 			
-			_continueButton = new Button(Texture.fromBitmap(new continueButtonImage() as Bitmap));
+			super(width, height, _resources.getSubTexture("IngameSprite1.png", "settingPopup"));
+			
+			_continueButton = new Button(_resources.getSubTexture("IngameSprite1.png", "continue"));
 			_continueButton.width = width * 0.8;
 			_continueButton.height = height * 0.2;
 			_continueButton.alignPivot();
@@ -52,7 +44,7 @@ package Puzzle.ingame
 			_continueButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_continueButton);
 			
-			_menuButton = new Button(Texture.fromBitmap(new menuButtonImage() as Bitmap));
+			_menuButton = new Button(_resources.getSubTexture("IngameSprite1.png", "menu"));
 			_menuButton.width = width * 0.8;
 			_menuButton.height = height * 0.2;
 			_menuButton.alignPivot();
@@ -61,7 +53,7 @@ package Puzzle.ingame
 			_menuButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_menuButton);
 			
-			_restartButton = new Button(Texture.fromBitmap(new restartButtonImage() as Bitmap));
+			_restartButton = new Button(_resources.getSubTexture("IngameSprite1.png", "restart"));
 			_restartButton.width = width * 0.8;
 			_restartButton.height = height * 0.2;
 			_restartButton.alignPivot();
@@ -69,6 +61,8 @@ package Puzzle.ingame
 			_restartButton.y = (this.height / 2) + (height * 0.25) + (height * 0.08);
 			_restartButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_restartButton);
+			
+			_resources = null;
 		}
 		
 		public override function destroy():void
@@ -77,8 +71,8 @@ package Puzzle.ingame
 			_menuButton.removeEventListener(Event.TRIGGERED, onTriggered);
 			_restartButton.removeEventListener(Event.TRIGGERED, onTriggered);
 			
-			_bgmCheckButton.destroy();
-			_effectCheckButton.destroy();
+//			_bgmCheckButton.destroy();
+//			_effectCheckButton.destroy();
 			
 			removeChildren(0, numChildren);
 			

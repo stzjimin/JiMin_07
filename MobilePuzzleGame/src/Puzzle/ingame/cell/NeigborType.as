@@ -1,4 +1,4 @@
-package Puzzle.ingame.cell
+package puzzle.ingame.cell
 {
 	public class NeigborType
 	{

@@ -1,4 +1,4 @@
-package Puzzle.ingame
+package puzzle.ingame
 {
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;

@@ -1,4 +1,4 @@
-package Puzzle
+package puzzle
 {
 	import flash.display.Bitmap;
 	

@@ -1,6 +1,6 @@
-package Puzzle.ingame.util.possibleCheck
+package puzzle.ingame.util.possibleCheck
 {
-	import Puzzle.ingame.cell.Cell;
+	import puzzle.ingame.cell.Cell;
 
 	public class Possible
 	{

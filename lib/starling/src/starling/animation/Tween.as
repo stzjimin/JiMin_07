@@ -149,6 +149,16 @@ package starling.animation
             animate("scaleX", factor);
             animate("scaleY", factor);
         }
+		
+		public function scaleXTo(factor:Number):void
+		{
+			animate("scaleX", factor);
+		}
+		
+		public function scaleYTo(factor:Number):void
+		{
+			animate("scaleY", factor);
+		}
         
         /** Animates the 'x' and 'y' properties of an object simultaneously. */
         public function moveTo(x:Number, y:Number):void

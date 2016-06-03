@@ -1,17 +1,17 @@
-package Puzzle.ingame
+package puzzle.ingame
 {	
-	import flash.display.Bitmap;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
-	import Puzzle.ingame.cell.Cell;
-	import Puzzle.ingame.cell.NeigborType;
-	import Puzzle.ingame.cell.blocks.Block;
-	import Puzzle.ingame.cell.blocks.BlockData;
-	import Puzzle.ingame.util.possibleCheck.CheckEvent;
-	import Puzzle.ingame.util.possibleCheck.Possible;
-	import Puzzle.ingame.util.possibleCheck.PossibleChecker;
+	import puzzle.loader.Resources;
+	import puzzle.ingame.cell.Cell;
+	import puzzle.ingame.cell.NeigborType;
+	import puzzle.ingame.cell.blocks.Block;
+	import puzzle.ingame.cell.blocks.BlockData;
+	import puzzle.ingame.util.possibleCheck.CheckEvent;
+	import puzzle.ingame.util.possibleCheck.Possible;
+	import puzzle.ingame.util.possibleCheck.PossibleChecker;
 	
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
@@ -19,9 +19,6 @@ package Puzzle.ingame
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
-	import starling.textures.Texture;
-	import Puzzle.Resources;
-	import Puzzle.Shuffle;
 
 	public class Field extends DisplayObjectContainer implements IAnimatable
 	{	
@@ -31,6 +28,11 @@ package Puzzle.ingame
 		
 		private var _resources:Resources;
 		private var _juggler:Juggler;
+		
+		private var _rowLine:Image;
+		private var _rowLine2:Image;
+		private var _columLine:Image;
+		private var _columLine2:Image;
 		
 		private var _backGround:Image;
 		
@@ -111,7 +113,17 @@ package Puzzle.ingame
 					columNum++;
 			}
 			
+			_rowLine = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
+			_rowLine.alignPivot();
+			_rowLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
+			_rowLine2.alignPivot();
+			_columLine = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columLine.alignPivot();
+			_columLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columLine2.alignPivot();
+			
 			addEventListener("shuffle", onShuffle);
+			_resources = null;
 		}
 		
 		private function onShuffle(event:Event):void
@@ -156,12 +168,30 @@ package Puzzle.ingame
 			_padding.destroy();
 			
 			_backGround.removeFromParent();
+			_backGround.dispose();
 			_backGround = null;
+			
+			_rowLine.removeFromParent();
+			_rowLine.dispose();
+			_rowLine = null;
+			
+			_rowLine2.removeFromParent();
+			_rowLine2.dispose();
+			_rowLine2 = null;
+			
+			_columLine.removeFromParent();
+			_columLine.dispose();
+			_columLine = null;
+			
+			_columLine2.removeFromParent();
+			_columLine2.dispose();
+			_columLine2 = null;
 			
 			_shuffle.removeEventListener(Shuffle.COMPLETE, onCompleteShuffle);
 			
+			_juggler.purge();
+			
 			dispose();
-			removeChildren(0, numChildren);
 		}
 		
 		public function advanceTime(time:Number):void
@@ -226,8 +256,9 @@ package Puzzle.ingame
 			var line:Image;
 			if(start.x == dest.x)
 			{
-				line = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
-				line.alignPivot();
+				line = _columLine;
+				if(this.getChildIndex(line) > 0)
+					line = _columLine2;
 				line.width = 40;
 				line.height = Math.abs(start.y - dest.y);
 				line.x = start.x;
@@ -236,8 +267,9 @@ package Puzzle.ingame
 			}
 			else
 			{
-				line = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
-				line.alignPivot();
+				line = _rowLine;
+				if(this.getChildIndex(line) > 0)
+					line = _rowLine2;
 				line.width = Math.abs(start.x - dest.x);
 				line.height = 40;
 				line.x = (start.x < dest.x) ? start.x : dest.x;
@@ -250,7 +282,7 @@ package Puzzle.ingame
 			
 			function removeLine():void
 			{
-				line.removeFromParent(true);
+				line.removeFromParent();
 			}
 		}
 		
@@ -286,11 +318,11 @@ package Puzzle.ingame
 			return _cells[colum+(ROW_NUM*row)];
 		}
 		
-		public function createBlock(blockData:BlockData):void
+		public function createBlock(blockData:BlockData, resources:Resources):void
 		{
 			var cell:Cell = getCell(blockData.row, blockData.colum);
 			
-			var block:Block = new Block(_resources);
+			var block:Block = new Block(resources);
 			block.init(blockData);
 			cell.addBlock(block);
 		}

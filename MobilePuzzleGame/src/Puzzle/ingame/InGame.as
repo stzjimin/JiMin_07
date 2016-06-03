@@ -1,4 +1,4 @@
-package Puzzle.ingame
+package puzzle.ingame
 {
 	import flash.desktop.NativeApplication;
 	import flash.display.Bitmap;
@@ -7,24 +7,24 @@ package Puzzle.ingame
 	import customize.Scene;
 	import customize.SceneManager;
 	
-	import Puzzle.ingame.cell.blocks.BlockData;
-	import Puzzle.ingame.cell.blocks.BlockType;
-	import Puzzle.ingame.timer.Timer;
+	import puzzle.Popup;
+	import puzzle.ingame.cell.blocks.BlockData;
+	import puzzle.ingame.cell.blocks.BlockType;
+	import puzzle.ingame.item.Item;
+	import puzzle.ingame.item.Items;
+	import puzzle.ingame.timer.Timer;
+	import puzzle.loader.LoadingEvent;
+	import puzzle.loader.Resources;
 	
 	import starling.animation.Juggler;
 	import starling.display.Button;
 	import starling.display.Image;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
-	import Puzzle.Item;
-	import Puzzle.Items;
-	import Puzzle.LoadingEvent;
-	import Puzzle.Popup;
-	import Puzzle.Resources;
 	
 	public class InGame extends Scene
 	{
-		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame");
+		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/spritesheet");
 		private var _resources:Resources;
 		
 		private var _backGround:Image;
@@ -140,7 +140,7 @@ package Puzzle.ingame
 			_settingButton.addEventListener(Event.TRIGGERED, onClickedSettingButton);
 			addChild(_settingButton);
 			
-			_settingPopup = new SettingPopup(400, 300);
+			_settingPopup = new SettingPopup(400, 300, _resources);
 			_settingPopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
 			_settingPopup.addEventListener(SettingPopup.CONTINUE_CLICKED, onClickedContinue);
 			_settingPopup.addEventListener(SettingPopup.MENU_CLICKED, onClickedMenu);
@@ -151,7 +151,7 @@ package Puzzle.ingame
 			while(_blockDatas.length != 0)
 			{
 				blockData = _blockDatas.shift();
-				_field.createBlock(blockData);
+				_field.createBlock(blockData, _resources);
 			}
 			blockData = null;
 			
@@ -163,6 +163,8 @@ package Puzzle.ingame
 			
 			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.destroy();
+			_resources = null;
 			
 			trace(flash.display.Screen.mainScreen.bounds);
 			//			
@@ -268,6 +270,7 @@ package Puzzle.ingame
 			trace("끝");
 			_paused = false;
 			_field.touchable = false;
+			SceneManager.current.outScene();
 		}
 		
 		private function onClickedSettingButton(event:Event):void

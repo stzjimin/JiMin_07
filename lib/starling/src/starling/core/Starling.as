@@ -35,10 +35,10 @@ package starling.core
     import flash.utils.getTimer;
     import flash.utils.setTimeout;
     
+    import customize.SceneEvent;
     import customize.SceneManager;
     
     import starling.animation.Juggler;
-    import starling.display.DisplayObjectContainer;
     import starling.display.Stage;
     import starling.events.EventDispatcher;
     import starling.events.ResizeEvent;
@@ -267,6 +267,8 @@ package starling.core
             _nativeOverlay = new Sprite();
             _nativeStage = stage;
             _nativeStage.addChild(_nativeOverlay);
+			_nativeStage.addEventListener(Event.ACTIVATE, onActivate);
+			_nativeStage.addEventListener(Event.DEACTIVATE, onDeActivate);
             _touchProcessor = new TouchProcessor(_stage);
             _juggler = new Juggler();
             _antiAliasing = 0;
@@ -318,6 +320,8 @@ package starling.core
             _nativeStage.removeEventListener(KeyboardEvent.KEY_UP, onKey, false);
             _nativeStage.removeEventListener(Event.RESIZE, onResize, false);
             _nativeStage.removeEventListener(Event.MOUSE_LEAVE, onMouseLeave, false);
+			_nativeStage.removeEventListener(Event.ACTIVATE, onActivate);
+			_nativeStage.removeEventListener(Event.DEACTIVATE, onDeActivate);
             _nativeStage.removeChild(_nativeOverlay);
             
             stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false);
@@ -346,9 +350,24 @@ package starling.core
             if (_stage) _stage.dispose();
             if (sCurrent == this) sCurrent = null;
         }
+		
+		//customFunction
+		
+		private function onActivate(event:Event):void
+		{
+			trace("acti");
+			if(SceneManager.current != null)
+				SceneManager.current.dispatchEvent(new SceneEvent(SceneEvent.ACTIVATE));
+		}
+		
+		private function onDeActivate(event:Event):void
+		{
+			if(SceneManager.current != null)
+				SceneManager.current.dispatchEvent(new SceneEvent(SceneEvent.DEACTIVATE));
+		}
         
         // functions
-        
+		
         private function initialize():void
         {
             makeCurrent();
@@ -366,6 +385,7 @@ package starling.core
             if (_sceneManager == null && _sceneManagerClass != null)
             {
                 _sceneManager = new _sceneManagerClass() as SceneManager;
+				_sceneManager.init();
                 if (_sceneManager == null) throw new Error("Invalid root class: " + _sceneManagerClass);
                 _stage.addChildAt(_sceneManager, 0);
 

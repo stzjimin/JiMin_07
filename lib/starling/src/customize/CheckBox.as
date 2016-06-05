@@ -40,9 +40,31 @@ package customize
 			}
 		}
 		
+		/**
+		 * 외부에서 CheckBox를 Empty상태로 만들기위해서 사용하는 함수입니다. 
+		 * 
+		 */		
+		public function setEmpty():void
+		{
+			_checked = false;
+			super.upState = _emptyTexture;
+		}
+		
+		/**
+		 * 외부에서 CheckBox를 Check상태로 만들기위해서 사용하는 함수입니다. 
+		 * 
+		 */		
+		public function setCheck():void
+		{
+			_checked = true;
+			super.upState = _checkTexture;
+		}
+		
 		public function destroy():void
 		{
 			removeEventListener(Event.TRIGGERED, onTriggered);
+			
+			dispose();
 		}
 	}
 }

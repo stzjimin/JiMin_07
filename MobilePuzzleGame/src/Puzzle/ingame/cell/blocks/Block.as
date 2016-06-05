@@ -1,10 +1,8 @@
 package puzzle.ingame.cell.blocks
-{
-	import flash.display.Bitmap;
-	
-	import puzzle.loader.Resources;
+{	
 	import puzzle.ingame.cell.Cell;
-	import puzzle.ingame.util.possibleCheck.CheckEvent;
+	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
+	import puzzle.loader.Resources;
 	
 	import starling.animation.IAnimatable;
 	import starling.display.DisplayObjectContainer;
@@ -119,11 +117,11 @@ package puzzle.ingame.cell.blocks
 				if(_clicked)
 				{
 					this.scale = 0.9;
-					parent.dispatchEvent(new Event(CheckEvent.ADD_PREV));
+					parent.dispatchEvent(new Event(PossibleCheckerEventType.ADD_PREV));
 				}
 				else
 				{
-					parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
+					parent.dispatchEvent(new Event(PossibleCheckerEventType.OUT_CHECKER));
 				}
 			}
 		}
@@ -150,14 +148,20 @@ package puzzle.ingame.cell.blocks
 		}
 		
 		public function destroy():void
-		{
-//			var parent:Cell = Cell(this.parent);
-//			parent.block = null;
+		{	
+			_blockImage.removeFromParent();
+			_blockImage.dispose();
+			
+			_blockRightPadding.removeFromParent();
+			_blockRightPadding.dispose();
+			
+			_blockBottomPadding.removeFromParent();
+			_blockBottomPadding.dispose();
+			
 			removeEventListener(TouchEvent.TOUCH, onTouch);
 			removeFromParent(true);
 			
 			dispose();
-			removeChildren(0, numChildren);
 		}
 		
 		public function advanceTime(time:Number):void

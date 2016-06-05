@@ -5,14 +5,17 @@ package puzzle.ingame
 	import flash.filesystem.File;
 	
 	import customize.Scene;
+	import customize.SceneEvent;
 	import customize.SceneManager;
 	
 	import puzzle.Popup;
 	import puzzle.ingame.cell.blocks.BlockData;
 	import puzzle.ingame.cell.blocks.BlockType;
-	import puzzle.ingame.item.Item;
 	import puzzle.ingame.item.Items;
+	import puzzle.ingame.item.fork.Forker;
+	import puzzle.ingame.timer.ComboTimer;
 	import puzzle.ingame.timer.Timer;
+	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	import puzzle.loader.LoadingEvent;
 	import puzzle.loader.Resources;
 	
@@ -21,23 +24,30 @@ package puzzle.ingame
 	import starling.display.Image;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
+	import starling.text.TextField;
+	import starling.utils.Color;
 	
 	public class InGame extends Scene
-	{
+	{	
 		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/spritesheet");
 		private var _resources:Resources;
 		
 		private var _backGround:Image;
 		
+		private var _blockCount:TextField;
+		private var _possibleCount:TextField;
+		
 		private var _paused:Boolean;
 		private var _timer:Timer;
+		
+		private var _comboTimer:ComboTimer;
 		
 		private var _items:Items;
 		
 		private var _playJuggler:Juggler;
 		
 		private var _field:Field;
-		private var _settingPopup:PausePopup;
+		private var _pausePopup:PausePopup;
 		private var _settingButton:Button;
 		
 		private var _blockDatas:Vector.<BlockData>;
@@ -46,7 +56,6 @@ package puzzle.ingame
 		{
 			super();
 			_paused = true;
-			
 		}
 		
 		protected override function onStart(event:Event):void
@@ -74,6 +83,8 @@ package puzzle.ingame
 		
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
+			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
+			
 			_paused = false;
 			
 			_backGround = new Image(_resources.getSubTexture("IngameSprite2.png", "IngameBackGround"));
@@ -81,19 +92,39 @@ package puzzle.ingame
 			_backGround.height = 1024;
 			addChild(_backGround);
 			
+			_blockCount = new TextField(70, 30);
+			_blockCount.y = 10;
+			_blockCount.format.bold = true;
+			_blockCount.format.size = 20;
+			_blockCount.format.color = Color.AQUA;
+			addChild(_blockCount);
+			
+			_possibleCount = new TextField(70, 30);
+			_possibleCount.y = 50;
+			_possibleCount.format.bold = true;
+			_possibleCount.format.size = 20;
+			_possibleCount.format.color = Color.AQUA;
+			addChild(_possibleCount);
+			
 			_timer = new Timer(_resources);
-			_timer.init(50, 10, 450, 70);
+			_timer.init(70, 10, 450, 50);
 			_timer.addEventListener(Timer.TIME_OVER, onTimeOver);
 			_timer.startCount(60);
 			addChild(_timer);
+			
+			_comboTimer = new ComboTimer();
+			_comboTimer.init(520, 65, 100, 30, 3);
+			_comboTimer.addEventListener(ComboTimer.COMBOED, onCombo);
+			addChild(_comboTimer);
 			
 			_items = new Items(_resources);
 			_items.init(280, 70);
 			_items.x = 300;
 			_items.y = 950;
-			_items.addEventListener(Item.FORK, onClickedFork);
-			_items.addEventListener(Item.SEARCH, onClickedSearch);
-			_items.addEventListener(Item.SHUFFLE, onClickedShuffle);
+			_items.addEventListener(Items.FORK_CHECK, onCheckedFork);
+			_items.addEventListener(Items.FORK_EMPTY, onEmptyFork);
+			_items.addEventListener(Items.SEARCH, onClickedSearch);
+			_items.addEventListener(Items.SHUFFLE, onClickedShuffle);
 			addChild(_items);
 			
 			_blockDatas = new Vector.<BlockData>();
@@ -127,10 +158,13 @@ package puzzle.ingame
 			_blockDatas.push(new BlockData(9, 3, BlockType.LUCY));
 			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
 			
-			_field = new Field();
+			_field = new Field(_resources);
 			//			_field.x = 18;
 			_field.y = 100;
-			_field.init(_resources);
+			_field.init();
+			_field.addEventListener(CheckEvent.CHECKED_COMPLETE, onCompletePossibleCheck);
+			_field.addEventListener(Forker.GET_FORK, onGetFork);
+			_field.addEventListener(Field.PANG, onCompletePang);
 			addChild(_field);
 			
 			_settingButton = new Button(_resources.getSubTexture("IngameSprite2.png", "popUpButton"));
@@ -140,12 +174,13 @@ package puzzle.ingame
 			_settingButton.addEventListener(Event.TRIGGERED, onClickedSettingButton);
 			addChild(_settingButton);
 			
-			_settingPopup = new PausePopup(400, 300, _resources);
-			_settingPopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
-			_settingPopup.addEventListener(PausePopup.CONTINUE_CLICKED, onClickedContinue);
-			_settingPopup.addEventListener(PausePopup.MENU_CLICKED, onClickedMenu);
-			_settingPopup.addEventListener(PausePopup.RESTART_CLICKED, onClickedRestart);
-			addChild(_settingPopup);
+			_pausePopup = new PausePopup(_resources);
+			_pausePopup.init(400, 300);
+			_pausePopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_pausePopup.addEventListener(PausePopup.CONTINUE_CLICKED, onClickedContinue);
+			_pausePopup.addEventListener(PausePopup.MENU_CLICKED, onClickedMenu);
+			_pausePopup.addEventListener(PausePopup.RESTART_CLICKED, onClickedRestart);
+			addChild(_pausePopup);
 			
 			var blockData:BlockData;
 			while(_blockDatas.length != 0)
@@ -160,6 +195,7 @@ package puzzle.ingame
 			_playJuggler = new Juggler();
 			_playJuggler.add(_field);
 			_playJuggler.add(_timer);
+			_playJuggler.add(_comboTimer);
 			
 			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
@@ -197,50 +233,99 @@ package puzzle.ingame
 		public override function destroy():void
 		{
 			_timer.removeEventListener(Timer.TIME_OVER, onTimeOver);
+			_timer.removeFromParent();
 			_timer.destroy();
 			
+			_comboTimer.removeEventListener(ComboTimer.COMBOED, onCombo);
+			_comboTimer.removeFromParent();
+			_comboTimer.destroy();
+			
+			_field.removeEventListener(CheckEvent.CHECKED_COMPLETE, onCompletePossibleCheck);
+			_field.removeEventListener(Forker.GET_FORK, onGetFork);
+			_field.removeEventListener(Field.PANG, onCompletePang);
+			_field.removeFromParent();
 			_field.destroy();
 			
+			_backGround.removeFromParent();
 			_backGround.dispose();
 			
 			_settingButton.removeEventListener(Event.TRIGGERED, onClickedSettingButton);
+			_settingButton.removeFromParent();
 			_settingButton.dispose();
 			
-			_settingPopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
-			_settingPopup.removeEventListener(PausePopup.CONTINUE_CLICKED, onClickedContinue);
-			_settingPopup.removeEventListener(PausePopup.MENU_CLICKED, onClickedMenu);
-			_settingPopup.removeEventListener(PausePopup.RESTART_CLICKED, onClickedRestart);
-			_settingPopup.destroy();
+			_pausePopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_pausePopup.removeEventListener(PausePopup.CONTINUE_CLICKED, onClickedContinue);
+			_pausePopup.removeEventListener(PausePopup.MENU_CLICKED, onClickedMenu);
+			_pausePopup.removeEventListener(PausePopup.RESTART_CLICKED, onClickedRestart);
+			_pausePopup.removeFromParent();
+			_pausePopup.destroy();
 			
-			_items.removeEventListener(Item.FORK, onClickedFork);
-			_items.removeEventListener(Item.SEARCH, onClickedSearch);
-			_items.removeEventListener(Item.SHUFFLE, onClickedShuffle);
+			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
+			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
+			_items.removeEventListener(Items.SEARCH, onClickedSearch);
+			_items.removeEventListener(Items.SHUFFLE, onClickedShuffle);
+			_items.removeFromParent();
 			_items.destroy();
 			
-			removeChildren(0, numChildren);
-			
-			dispose();
+			super.destroy();
 		}
 		
-		private function onClickedFork(event:Event):void
+		private function onDeActivate(event:SceneEvent):void
 		{
-			trace("fork");
+			_settingButton.dispatchEvent(new Event(Event.TRIGGERED));
+		}
+		
+		private function onCombo(event:Event):void
+		{
+			trace("현제 콤보 : " + event.data);
+			_timer.addTime(0.5);
+		}
+		
+		private function onCompletePang(event:Event):void
+		{
+			_comboTimer.startNewComboTime();
+		}
+		
+		private function onCompletePossibleCheck(event:CheckEvent):void
+		{
+			_blockCount.text = event.blockCount.toString();
+			_possibleCount.text = event.possibleCount.toString();
+		}
+		
+		private function onGetFork(event:Event):void
+		{
+			_items.setEmptyFork();
+		}
+		
+		private function onCheckedFork(event:Event):void
+		{
+			trace("forkCheck");
+			_field.isFork = true;
+		}
+		
+		private function onEmptyFork(event:Event):void
+		{
+			trace("forkEmpty");
+			_field.isFork = false;
 		}
 		
 		private function onClickedSearch(event:Event):void
 		{
 			trace("search");
+			_field.search();
 		}
 		
 		private function onClickedShuffle(event:Event):void
 		{
 			trace("shuffle");
+//			_field.dispatchEvent(new Event("shuffle"));
+			_field.shuffle();
 		}
 		
 		private function keepPlay():void
 		{
 			_paused = false;
-			_settingPopup.visible = false; 
+			_pausePopup.visible = false; 
 //			_field.touchable = true;
 		}
 		
@@ -256,8 +341,11 @@ package puzzle.ingame
 		
 		private function onClickedRestart(event:Event):void
 		{
-			keepPlay();
-			_field.dispatchEvent(new Event("shuffle"));
+			SceneManager.current.outScene();
+			SceneManager.current.addScene(InGame, "game");
+			SceneManager.current.goScene("game", this.data);
+//			keepPlay();
+//			_field.dispatchEvent(new Event("shuffle"));
 		}
 		
 		private function onClickedCover(event:Event):void
@@ -270,7 +358,7 @@ package puzzle.ingame
 			trace("끝");
 			_paused = false;
 			_field.touchable = false;
-			SceneManager.current.outScene();
+//			SceneManager.current.outScene();
 		}
 		
 		private function onClickedSettingButton(event:Event):void
@@ -278,12 +366,12 @@ package puzzle.ingame
 			_paused = !_paused;
 			if(_paused)
 			{
-				_settingPopup.visible = true;
+				_pausePopup.visible = true;
 //				_field.touchable = false;
 			}
 			else
 			{
-				_settingPopup.visible = false;
+				_pausePopup.visible = false;
 //				_field.touchable = true;
 				//				SceneManager.current.goScene("title");
 			}

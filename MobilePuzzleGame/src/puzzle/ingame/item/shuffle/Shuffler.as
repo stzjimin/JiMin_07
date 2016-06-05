@@ -1,4 +1,4 @@
-package puzzle.ingame
+package puzzle.ingame.item.shuffle
 {
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.cell.blocks.Block;
@@ -6,14 +6,14 @@ package puzzle.ingame
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
-	public class Shuffle extends EventDispatcher
+	public class Shuffler extends EventDispatcher
 	{
 		public static const COMPLETE:String = "completeShuffle";
 		
 		private var _isBlockCells:Vector.<Cell>;
 		private var _blockStack:Vector.<Block>;
 		
-		public function Shuffle()
+		public function Shuffler()
 		{
 			
 		}
@@ -56,7 +56,7 @@ package puzzle.ingame
 				
 				cell.addBlock(block);
 			}
-			dispatchEvent(new Event(Shuffle.COMPLETE));
+			dispatchEvent(new Event(Shuffler.COMPLETE));
 		}
 	}
 }

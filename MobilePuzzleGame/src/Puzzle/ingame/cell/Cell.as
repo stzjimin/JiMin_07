@@ -4,7 +4,7 @@ package puzzle.ingame.cell
 	
 	import puzzle.loader.Resources;
 	import puzzle.ingame.cell.blocks.Block;
-	import puzzle.ingame.util.possibleCheck.CheckEvent;
+	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Quad;
@@ -26,11 +26,9 @@ package puzzle.ingame.cell
 		
 		private var _color:Quad;
 		
-		private var _frameCheck:uint;
-		
 		public function Cell()
 		{
-			addEventListener(CheckEvent.PULL_PREV, onPullPrev);
+			addEventListener(PossibleCheckerEventType.PULL_PREV, onPullPrev);
 		}
 		
 		public function init():void
@@ -88,14 +86,21 @@ package puzzle.ingame.cell
 		
 		public function destroy():void
 		{
-			removeEventListener(CheckEvent.PULL_PREV, onPullPrev);
-			removeChildren(0, numChildren);
-			dispose();
-		}
+			removeEventListener(PossibleCheckerEventType.PULL_PREV, onPullPrev);
 		
-		private function onEnterFrame(event:Event):void
-		{
+			for(var key:String in _neigbor)
+				delete _neigbor[key];
 			
+			if(_block != null)
+			{
+				_block.destroy();
+				_block = null
+			}
+			
+			_color.removeFromParent();
+			_color.dispose();
+			
+			dispose();
 		}
 
 		public function get neigbor():Dictionary

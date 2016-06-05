@@ -17,8 +17,6 @@ package puzzle.ingame
 		private var _resources:Resources;
 		
 		private var _closeButton:Button;
-//		private var _bgmCheckButton:CheckBox;
-//		private var _effectCheckButton:CheckBox;
 		
 		private var _continueButton:Button;
 		private var _menuButton:Button;
@@ -27,11 +25,16 @@ package puzzle.ingame
 		private var _profileImage:Image;
 		private var _profileText:TextField;
 
-		public function PausePopup(width:Number, height:Number, resources:Resources)
+		public function PausePopup(resources:Resources)
 		{
 			_resources = resources;
 			
-			super(width, height, _resources.getSubTexture("IngameSprite1.png", "settingPopup"));
+			super();
+		}
+		
+		public function init(width:Number, height:Number):void
+		{
+			super.init(width, height, _resources.getSubTexture("IngameSprite1.png", "settingPopup"));
 			
 			_continueButton = new Button(_resources.getSubTexture("IngameSprite1.png", "continue"));
 			_continueButton.width = width * 0.8;
@@ -69,12 +72,7 @@ package puzzle.ingame
 			_menuButton.removeEventListener(Event.TRIGGERED, onTriggered);
 			_restartButton.removeEventListener(Event.TRIGGERED, onTriggered);
 			
-//			_bgmCheckButton.destroy();
-//			_effectCheckButton.destroy();
-			
-			removeChildren(0, numChildren);
-			
-			dispose();
+			super.destroy();
 		}
 		
 		private function onTriggered(event:Event):void

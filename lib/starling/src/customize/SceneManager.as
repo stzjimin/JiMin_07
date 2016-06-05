@@ -4,7 +4,6 @@ package customize
 	import flash.utils.Dictionary;
 	
 	import starling.display.DisplayObjectContainer;
-	import starling.events.Event;
 
 	public class SceneManager extends DisplayObjectContainer
 	{
@@ -23,8 +22,26 @@ package customize
 		
 		public function init():void
 		{
+			trace("sceneManager init");
 			_sceneDic = new Dictionary();
 			_sceneVector = new Vector.<Scene>();
+			
+			addEventListener(SceneEvent.ACTIVATE, onActivate);
+			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
+		}
+		
+		public function destroy():void
+		{
+			for(var key:String in _sceneDic)
+				delete _sceneDic[key];
+			_sceneDic = null;
+			
+			for(var i:int = 0; i < _sceneVector.length; i++)
+				_sceneVector[i].destroy();
+			_sceneVector.splice(0, _sceneVector.length);
+			
+			removeEventListener(SceneEvent.ACTIVATE, onActivate);
+			removeEventListener(SceneEvent.DEACTIVATE, onDeActivate);
 		}
 		
 		public function addScene(sceneClass:Class, key:String):void
@@ -45,7 +62,7 @@ package customize
 			if(_sceneDic == null || _sceneDic[key] == null)
 				return;
 			
-			_sceneDic[key].dispatchEvent(new Event(Scene.END));
+			_sceneDic[key].dispatchEvent(new SceneEvent(SceneEvent.END));
 			_sceneDic[key].destroy();
 			delete _sceneDic[key];
 		}
@@ -60,7 +77,7 @@ package customize
 			
 			if(_currentScene != null)
 			{
-				_currentScene.dispatchEvent(new Event(Scene.END));
+				_currentScene.dispatchEvent(new SceneEvent(SceneEvent.END));
 				_sceneVector.push(_currentScene);
 				removeChild(_currentScene);
 			}
@@ -68,7 +85,7 @@ package customize
 			var scene:Scene = _sceneDic[key];
 			if(data != null)
 				scene.data = Copy.clone(data);
-			scene.dispatchEvent(new Event(Scene.START));
+			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
 			addChild(scene);
 			_currentScene = scene;
 		}
@@ -96,15 +113,30 @@ package customize
 			var scene:Scene = _sceneDic[key];
 			if(data != null)
 				scene.data = Copy.clone(data);
-			scene.dispatchEvent(new Event(Scene.START));
+			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
 			addChild(scene);
 			_currentScene = scene;
+		}
+		
+		private function onActivate(event:SceneEvent):void
+		{
+			trace("activate");
+			_currentScene.dispatchEvent(new SceneEvent(SceneEvent.ACTIVATE));
+			if(getChildIndex(_currentScene) < 0)
+				addChild(_currentScene);
+		}
+		
+		private function onDeActivate(event:SceneEvent):void
+		{
+			trace("deactivate");
+			_currentScene.dispatchEvent(new SceneEvent(SceneEvent.DEACTIVATE));
+			if(getChildIndex(_currentScene) >= 0)
+				removeChild(_currentScene);
 		}
 
 		public static function get current():SceneManager
 		{
 			return _current;
 		}
-
 	}
 }

@@ -113,6 +113,8 @@ package puzzle.title
 			_ari.removeFromParent();
 			_ari.dispose();
 			_ari = null;
+			
+			super.destroy();
 		}
 		
 		protected override function onStart(event:Event):void

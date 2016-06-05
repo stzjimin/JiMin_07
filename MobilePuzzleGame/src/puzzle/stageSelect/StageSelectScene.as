@@ -5,7 +5,9 @@ package puzzle.stageSelect
 	import customize.Scene;
 	import customize.SceneManager;
 	
+	import puzzle.Popup;
 	import puzzle.ingame.InGame;
+	import puzzle.loader.Resources;
 	
 	import starling.display.Button;
 	import starling.display.Image;
@@ -21,7 +23,7 @@ package puzzle.stageSelect
 		[Embed(source="settingButton.png")]
 		private const settingImage:Class;
 		
-		[Embed(source="stageSelectBackGround.png")]
+		[Embed(source="stageSelectBackGround2.png")]
 		private const backGroundImage:Class;
 		
 		[Embed(source="stageButtonImage.png")]
@@ -34,6 +36,7 @@ package puzzle.stageSelect
 		private var _stageButtons:Vector.<Button>;
 		
 		private var _settingButton:Button;
+		private var _settingPopup:SettingPopup;
 		
 		public function StageSelectScene()
 		{
@@ -77,7 +80,14 @@ package puzzle.stageSelect
 			_settingButton.width = 70;
 			_settingButton.height = 70;
 			_settingButton.x = 576 - 70;
+			_settingButton.addEventListener(Event.TRIGGERED, onClickedSettingButton);
 			addChild(_settingButton);
+			
+			_settingPopup = new SettingPopup();
+			_settingPopup.init(400, 300);
+			_settingPopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_settingPopup.addEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
+			addChild(_settingPopup);
 		}
 		
 		public override function destroy():void
@@ -96,6 +106,13 @@ package puzzle.stageSelect
 			}
 			_stageButtons.splice(0, _stageButtons.length);
 			_stageButtons = null;
+			
+			_settingPopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_settingPopup.removeEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
+			_settingPopup.removeFromParent();
+			_settingPopup.destroy();
+			
+			super.destroy();
 		}
 		
 		protected override function onStart(event:Event):void
@@ -111,6 +128,21 @@ package puzzle.stageSelect
 		protected override function onEnded(event:Event):void
 		{
 			
+		}
+		
+		private function onClickedSettingClose(event:Event):void
+		{
+			_settingPopup.visible = false;
+		}
+		
+		private function onClickedCover(event:Event):void
+		{
+			_settingPopup.visible = false;
+		}
+		
+		private function onClickedSettingButton(event:Event):void
+		{
+			_settingPopup.visible = true;
 		}
 		
 		private function onClickedStageButton(event:Event):void

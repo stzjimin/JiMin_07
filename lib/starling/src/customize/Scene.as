@@ -5,17 +5,14 @@ package customize
 	import starling.events.Event;
 
 	public class Scene extends DisplayObjectContainer
-	{
-		public static const START:String = "sceneStart";
-		public static const END:String = "sceneEnd";
-		
+	{	
 		private var _key:String;
 		private var _data:Object;
 		
 		public function Scene()
 		{
-			addEventListener(Scene.START, onStart);
-			addEventListener(Scene.END, onEnded);
+			addEventListener(SceneEvent.START, onStart);
+			addEventListener(SceneEvent.END, onEnded);
 			addEventListener(EnterFrameEvent.ENTER_FRAME, onUpdate);
 		}
 		
@@ -55,9 +52,11 @@ package customize
 		 */		
 		public function destroy():void
 		{
-			removeEventListener(Scene.START, onStart);
-			removeEventListener(Scene.END, onEnded);
+			removeEventListener(SceneEvent.START, onStart);
+			removeEventListener(SceneEvent.END, onEnded);
 			removeEventListener(EnterFrameEvent.ENTER_FRAME, onUpdate);
+			
+			dispose();
 		}
 
 		public function get data():Object

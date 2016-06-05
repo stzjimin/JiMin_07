@@ -4,14 +4,18 @@ package puzzle.ingame
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
-	import puzzle.loader.Resources;
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.cell.NeigborType;
 	import puzzle.ingame.cell.blocks.Block;
 	import puzzle.ingame.cell.blocks.BlockData;
+	import puzzle.ingame.item.fork.ForkEvent;
+	import puzzle.ingame.item.fork.Forker;
+	import puzzle.ingame.item.shuffle.Shuffler;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	import puzzle.ingame.util.possibleCheck.Possible;
 	import puzzle.ingame.util.possibleCheck.PossibleChecker;
+	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
+	import puzzle.loader.Resources;
 	
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
@@ -22,9 +26,11 @@ package puzzle.ingame
 
 	public class Field extends DisplayObjectContainer implements IAnimatable
 	{	
-		private static var _sROW_NUM:uint;
-		private static var _sCOLUM_NUM:uint;
-		private static var _sPADDING:uint;
+		public static const ROW_NUM:uint = 12;
+		public static const COLUM_NUM:uint = 12;
+		public static const PADDING:uint = 18;
+		
+		public static const PANG:String = "pang";
 		
 		private var _resources:Resources;
 		private var _juggler:Juggler;
@@ -41,27 +47,31 @@ package puzzle.ingame
 		private var _cells:Vector.<Cell>;
 		
 		private var _possibleChecker:PossibleChecker;
-		private var _shuffle:Shuffle;
 		
-		public function Field(rowNum:uint = 12, columNum:uint = 12, padding:uint = 18)
+		private var _shuffler:Shuffler;
+		
+		private var _isFork:Boolean;
+		private var _forker:Forker;
+		
+		public function Field(resources:Resources)
 		{
-			_sROW_NUM = rowNum;
-			_sCOLUM_NUM = columNum;
-			_sPADDING = padding;
+			_resources = resources;
 		}
 		
-		public function init(resources:Resources):void
+		public function init():void
 		{	
-			_resources = resources;
-			
 			_juggler = new Juggler();
 			
 			_possibleChecker = new PossibleChecker();
-			_possibleChecker.addEventListener(CheckEvent.SAME, onSame);
-			_shuffle = new Shuffle();
-			_shuffle.init();
-			_shuffle.addEventListener(Shuffle.COMPLETE, onCompleteShuffle);
-//			_distroyer.addEventListener(Distroyer.COMPLETE_DISTROY, onCompleteDistroy);
+			_possibleChecker.addEventListener(PossibleCheckerEventType.SAME, onSame);
+			
+			_shuffler = new Shuffler();
+			_shuffler.init();
+			_shuffler.addEventListener(Shuffler.COMPLETE, onCompleteShuffle);
+			
+			_isFork = false;
+			_forker = new Forker();
+			_forker.addEventListener(Forker.GET_FORK, onSucceedFork);
 			
 			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.WIDTH_SIZE), (Field.COLUM_NUM * Cell.HEIGHT_SIZE), 
 				_resources.getSubTexture("IngameSprite0.png", "topPadding"), _resources.getSubTexture("IngameSprite0.png", "bottomPadding"),
@@ -82,8 +92,8 @@ package puzzle.ingame
 				var cell:Cell = new Cell();
 				var rowNum:int = i%ROW_NUM;
 				_cells.push(cell);
-				cell.addEventListener(CheckEvent.ADD_PREV, onAddPrev);
-				cell.addEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
+				cell.addEventListener(PossibleCheckerEventType.ADD_PREV, onAddPrev);
+				cell.addEventListener(PossibleCheckerEventType.OUT_CHECKER, onOutChecker);
 				cell.width = Cell.WIDTH_SIZE;
 				cell.height = Cell.HEIGHT_SIZE;
 				cell.x = Field.PADDING + (rowNum * Cell.WIDTH_SIZE);
@@ -122,13 +132,19 @@ package puzzle.ingame
 			_columLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
 			_columLine2.alignPivot();
 			
-			addEventListener("shuffle", onShuffle);
 			_resources = null;
 		}
 		
-		private function onShuffle(event:Event):void
+		public function shuffle():void
 		{
-			_shuffle.shuffle(_cells);
+			_shuffler.shuffle(_cells);
+		}
+		
+		public function search():void
+		{
+			var possible:Possible = _possibleChecker.pickPossible();
+			trace(possible.startCell.name);
+			trace(possible.destCell.name);
 		}
 		
 		/**
@@ -141,8 +157,16 @@ package puzzle.ingame
 			var prevTime:Number = getTimer() / 1000;
 			_possibleChecker.checkPossibleCell(_cells);
 			var currentTime:Number = getTimer() / 1000;
+			
+			trace(_possibleChecker.blockCount);
+			trace(_possibleChecker.possibleCount);
+			
 			trace("경과시간 = " + (currentTime - prevTime));
-			trace("가능 개수 = " + _possibleChecker.possibleCount);
+			
+			if(_possibleChecker.blockCount > 0 && _possibleChecker.possibleCount == 0)
+				shuffle();
+			else
+				dispatchEvent(new CheckEvent(CheckEvent.CHECKED_COMPLETE, _possibleChecker.blockCount, _possibleChecker.possibleCount));
 		}
 		
 		/**
@@ -153,15 +177,16 @@ package puzzle.ingame
 		{
 			for(var i:int = 0; i < _cells.length; i++)
 			{
-				_cells[i].removeEventListener(CheckEvent.ADD_PREV, onAddPrev);
-				_cells[i].removeEventListener(CheckEvent.OUT_CHECKER, onOutChecker);
+				_cells[i].removeEventListener(PossibleCheckerEventType.ADD_PREV, onAddPrev);
+				_cells[i].removeEventListener(PossibleCheckerEventType.OUT_CHECKER, onOutChecker);
 				_cells[i].destroy();
 				_cells[i].removeFromParent();
 				_cells[i] = null;
 			}
 			_cells.splice(0, _cells.length);
 			_cells = null;
-			_possibleChecker.removeEventListener(CheckEvent.SAME, onSame);
+			
+			_possibleChecker.removeEventListener(PossibleCheckerEventType.SAME, onSame);
 			_possibleChecker.destroy();
 			_possibleChecker = null;
 			
@@ -187,7 +212,10 @@ package puzzle.ingame
 			_columLine2.dispose();
 			_columLine2 = null;
 			
-			_shuffle.removeEventListener(Shuffle.COMPLETE, onCompleteShuffle);
+			_shuffler.init();
+			_shuffler.removeEventListener(Shuffler.COMPLETE, onCompleteShuffle);
+			
+			_forker.removeEventListener(Forker.GET_FORK, onSucceedFork);
 			
 			_juggler.purge();
 			
@@ -199,16 +227,36 @@ package puzzle.ingame
 			_juggler.advanceTime(time);
 		}
 		
+		private function onSucceedFork(event:ForkEvent):void
+		{
+			var tween1:Tween = new Tween(event.selectedBlock, 0.5);
+			var tween2:Tween = new Tween(event.targetBlock, 0.5);
+			
+			Cell(event.selectedBlock.parent).block = null;
+			Cell(event.targetBlock.parent).block = null;
+			
+			tween1.scaleTo(0);
+			tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+			tween2.scaleTo(0);
+			tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+			_juggler.add(tween1);
+			_juggler.add(tween2);
+			
+			dispatchEvent(new Event(Forker.GET_FORK));
+			dispatchEvent(new Event(Field.PANG));
+			
+			function onTweenComplete(event:Event):void
+			{
+				Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+				Block(Tween(event.currentTarget).target).destroy();
+			}
+		}
+		
 		private function onCompleteShuffle(event:Event):void
 		{
 			_possibleChecker.checkPossibleCell(_cells);
 			if(_possibleChecker.blockCount >= 2 && _possibleChecker.possibleCount == 0)
-				_shuffle.shuffle(_cells);
-			else
-			{
-				trace(_possibleChecker.blockCount);
-				trace(_possibleChecker.possibleCount);
-			}
+				shuffle();
 		}
 		
 		private function onSame(event:Event):void
@@ -232,10 +280,12 @@ package puzzle.ingame
 			
 			possible.distroy();
 			
+			dispatchEvent(new Event(Field.PANG));
+			
 			function onTweenComplete(event:Event):void
 			{
 				Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
-				Tween(event.currentTarget).target.destroy();
+				Block(Tween(event.currentTarget).target).destroy();
 			}
 		}
 		
@@ -305,6 +355,12 @@ package puzzle.ingame
 		{
 //			trace(Cell(event.currentTarget).row);
 //			trace(Cell(event.currentTarget).block.type);
+			if(_isFork)
+			{
+				_forker.fork(Cell(event.currentTarget).block, _cells);
+				_isFork = false;
+				return;
+			}
 			_possibleChecker.setPrev(event.currentTarget as Cell);
 		}
 		
@@ -327,21 +383,14 @@ package puzzle.ingame
 			cell.addBlock(block);
 		}
 
-		public static function get ROW_NUM():uint
+		public function get isFork():Boolean
 		{
-			return _sROW_NUM;
+			return _isFork;
 		}
 
-		public static function get COLUM_NUM():uint
+		public function set isFork(value:Boolean):void
 		{
-			return _sCOLUM_NUM;
+			_isFork = value;
 		}
-
-		public static function get PADDING():uint
-		{
-			return _sPADDING;
-		}
-
-
 	}
 }

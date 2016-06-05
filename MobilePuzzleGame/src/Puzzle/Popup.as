@@ -20,9 +20,21 @@ package puzzle
 		private var _backGround:Image;
 		private var _coverFace:Image;
 		
-		public function Popup(width:Number, height:Number, backGroundTexture:Texture = null)
+		public function Popup()
 		{
 			super();
+		}
+		
+		public function destroy():void
+		{
+			_coverFace.removeEventListener(TouchEvent.TOUCH, onTouch);
+			
+			dispose();
+		}
+		
+		protected function init(width:Number, height:Number, backGroundTexture:Texture):void
+		{
+			trace("super.init");
 			
 			_coverFace = new Image(Texture.fromBitmap(new testImage() as Bitmap));
 			_coverFace.width = 576;
@@ -31,18 +43,23 @@ package puzzle
 			_coverFace.addEventListener(TouchEvent.TOUCH, onTouch);
 			addChild(_coverFace);
 			
+			setBackGround(width, height, backGroundTexture);
+			
+			this.visible = false;
+		}
+		
+		protected function setBackGround(width:Number, height:Number, backGroundTexture:Texture):void
+		{
 			if(backGroundTexture != null)
 			{
 				_backGround = new Image(backGroundTexture);
+				_backGround.width = width;
+				_backGround.height = height;
 				_backGround.alignPivot();
 				_backGround.x = _coverFace.width/2;
 				_backGround.y = _coverFace.height/2;
-				_backGround.width = width;
-				_backGround.height = height;
 				addChild(_backGround);
 			}
-			
-			this.visible = false;
 		}
 		
 		private function onTouch(event:TouchEvent):void
@@ -57,12 +74,16 @@ package puzzle
 				dispatchEvent(new Event(Popup.COVER_CLICKED));
 			}
 		}
-		
-		public function destroy():void
+
+		public function get backGround():Image
 		{
-			_coverFace.removeEventListener(TouchEvent.TOUCH, onTouch);
-			
-			dispose();
+			return _backGround;
 		}
+
+		public function set backGround(value:Image):void
+		{
+			_backGround = value;
+		}
+
 	}
 }

@@ -11,7 +11,7 @@
 package starling.events
 {
     import flash.utils.getQualifiedClassName;
-
+    
     import starling.core.starling_internal;
     import starling.utils.StringUtil;
 

@@ -1,8 +1,6 @@
 package puzzle.ingame.timer
-{
-	import com.greensock.TweenMax;
-	
-	import flash.display.Bitmap;
+{	
+	import com.greensock.TweenLite;
 	
 	import puzzle.loader.Resources;
 	
@@ -12,7 +10,6 @@ package puzzle.ingame.timer
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import starling.textures.Texture;
 
 	public class Timer extends Sprite implements IAnimatable
 	{	
@@ -24,16 +21,20 @@ package puzzle.ingame.timer
 		
 		private var _resources:Resources;
 		
-		private var _countTime:uint;
+		private var _countTime:Number;
+		private var _originTime:Number;
 		
 		private var _time:Number;
 		private var _juggler:Juggler;
+		
+		private var _timerTween:Tween;
 		
 		private var _bar:Image;
 		private var _fillBar:Image;
 		private var _fillFront:Image;
 		private var _fillBack:Image;
-		private var _ratio:Number;
+		
+		private var _fillBackOriginScaleX:Number;
 		
 		public function Timer(resources:Resources)
 		{
@@ -43,7 +44,6 @@ package puzzle.ingame.timer
 		public function init(x:Number = 0, y:Number = 0, width:Number = 0, height:Number = 0):void
 		{
 			_juggler = new Juggler();
-			_ratio = 0;
 			
 			this.x = x;
 			this.y = y;
@@ -67,31 +67,54 @@ package puzzle.ingame.timer
 			_fillBack.x = _fillFront.width;
 			_fillBack.width = width - _fillFront.width;
 			_fillBack.height = height;
-//			trace(_fillBack.scaleX);
+			_fillBackOriginScaleX = _fillBack.scaleX;
 			addChild(_fillBack);
 		}
 		
-		public function update(ratio:Number):void
-		{
-//			_fillBack.scaleX -= ratio;
-//			trace(_fillBack.scaleX);
-//			_ratio += ratio
-//			_fillBack.setTexCoords(0, _ratio, 0);
-//			_fillBack.setTexCoords(2, _ratio, 1);
-//			_fillBack.setTexCoords(1, 1+_ratio, 0);
-//			_fillBack.setTexCoords(3, 1+_ratio, 1);
-		}
-		
-		public function startCount(countTime:uint):void
+		public function startCount(countTime:Number):void
 		{
 			if(countTime < 0)
 				return;
 			_time = 0;
 			_countTime = countTime;
-			_juggler.repeatCall(onSec, 1.0, countTime);
-			var tween:Tween = new Tween(_fillBack, 60);
-			tween.scaleXTo(0);
-			_juggler.add(tween);
+			_originTime = countTime;
+			
+			_timerTween = new Tween(_fillBack, countTime);
+			_timerTween.scaleXTo(0);
+			_timerTween.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+			_juggler.add(_timerTween);
+			
+//			var tween:Tween = new Tween(_fillBack, 60);
+//			tween.scaleXTo(0);
+//			tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+//			_juggler.add(tween);
+			
+			function onCompleteTween(event:Event):void
+			{
+				_timerTween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+				dispatchEvent(new Event(Timer.TIME_OVER));
+			}
+		}
+		
+		public function addTime(addTime:Number):void
+		{
+			trace("_countTime : " + _countTime);
+			trace("_timerTween.currentTime : " + _timerTween.currentTime);
+			trace("추가 시간 : " + addTime);
+			var newTime:Number = (_countTime - _timerTween.currentTime + addTime);
+			trace("시간 : " + newTime);
+			var fillBackNewScaleX:Number = _fillBack.scaleX + (_fillBackOriginScaleX * (addTime / _originTime));
+			
+			if(newTime > _originTime)
+			{
+				newTime = _originTime;
+				fillBackNewScaleX = _fillBackOriginScaleX;
+			}
+			
+			_fillBack.scaleX = fillBackNewScaleX;
+			_timerTween.reset(_fillBack, newTime);
+			_countTime = newTime;
+			_timerTween.scaleXTo(0);
 		}
 		
 		public function destroy():void
@@ -104,14 +127,6 @@ package puzzle.ingame.timer
 		public function advanceTime(time:Number):void
 		{
 			_juggler.advanceTime(time);
-		}
-		
-		private function onSec():void
-		{
-			_time++;
-			update(1/_countTime);
-			if(_time >= _countTime)
-				dispatchEvent(new Event(TIME_OVER));
 		}
 	}
 }

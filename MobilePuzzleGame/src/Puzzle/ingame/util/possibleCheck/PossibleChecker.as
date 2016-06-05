@@ -95,7 +95,7 @@ package puzzle.ingame.util.possibleCheck
 								possible.startCell = _prevCell;
 								possible.destCell = _currentCell;
 								possible.path = path;
-								dispatchEvent(new Event(CheckEvent.SAME, false, possible));
+								dispatchEvent(new Event(PossibleCheckerEventType.SAME, false, possible));
 							}
 						}
 					}
@@ -138,11 +138,23 @@ package puzzle.ingame.util.possibleCheck
 		
 		public function outChecker(cell:Cell):void
 		{
-			cell.dispatchEvent(new Event(CheckEvent.PULL_PREV));
+			cell.dispatchEvent(new Event(PossibleCheckerEventType.PULL_PREV));
 			if(cell == _prevCell)
 				_prevCell = null;
 			if(cell == _currentCell)
 				_currentCell = null;
+		}
+		
+		public function pickPossible():Possible
+		{
+			for(var key:Cell in _possibles)
+			{
+				var possibles:Vector.<Possible> = Vector.<Possible>(_possibles[key]);
+				if(possibles.length == 0)
+					continue;
+				return possibles[0]
+			}
+			return null;
 		}
 		
 		/**

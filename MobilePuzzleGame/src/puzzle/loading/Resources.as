@@ -1,4 +1,4 @@
-package puzzle.loader
+package puzzle.loading
 {
 	import flash.display.Bitmap;
 	import flash.display.Loader;
@@ -11,6 +11,8 @@ package puzzle.loader
 	
 	import starling.events.EventDispatcher;
 	import starling.textures.Texture;
+	import puzzle.loading.info.SpriteSheet;
+	import puzzle.loading.loader.SpriteLoader;
 	
 	public class Resources extends EventDispatcher
 	{	

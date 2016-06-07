@@ -1,40 +1,32 @@
 package puzzle.stageSelect
 {
-	import flash.display.Bitmap;
-	
 	import customize.CheckBox;
+	
+	import puzzle.loading.Resources;
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
 	import starling.text.TextField;
-	import starling.textures.Texture;
-
+	
 	public class SettingContent extends DisplayObjectContainer
-	{
-		[Embed(source="settingPopupFrame.png")]
-		private const popupFrameImage:Class;
-		
-		[Embed(source="CheckBoxON.png")]
-		private const buttonOnImage:Class;
-		
-		[Embed(source="CheckBoxOFF.png")]
-		private const buttonOffImage:Class;
+	{	
+		private var _resources:Resources;
 		
 		private var _text:TextField;
-		
 		private var _backGround:Image;
-		
 		private var _checkBox:CheckBox;
 		
-		public function SettingContent()
+		public function SettingContent(resources:Resources)
 		{
+			_resources = resources;
+			
 			super();
 		}
 		
 		public function init(width:Number, height:Number, contentName:String):void
 		{	
-			_backGround = new Image(Texture.fromBitmap(new popupFrameImage() as Bitmap));
+			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingPopupFrame"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
@@ -49,7 +41,7 @@ package puzzle.stageSelect
 			_text.format.size = height * 0.3;
 			addChild(_text);
 			
-			_checkBox = new CheckBox(Texture.fromBitmap(new buttonOffImage() as Bitmap), Texture.fromBitmap(new buttonOnImage() as Bitmap));
+			_checkBox = new CheckBox(_resources.getSubTexture("stageSelectSceneSprite0.png", "CheckBoxOFF"), _resources.getSubTexture("stageSelectSceneSprite0.png", "CheckBoxON"));
 			_checkBox.width = width * 0.2;
 			_checkBox.height = _checkBox.width;
 			_checkBox.alignPivot();
@@ -58,6 +50,8 @@ package puzzle.stageSelect
 			_checkBox.addEventListener(CheckBox.SWAP_CHECK, onSwapCheck);
 			_checkBox.addEventListener(CheckBox.SWAP_EMPTY, onSwapEmpty);
 			addChild(_checkBox);
+			
+			_resources = null;
 		}
 		
 		public function destroy():void

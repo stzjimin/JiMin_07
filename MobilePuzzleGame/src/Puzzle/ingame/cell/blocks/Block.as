@@ -2,7 +2,7 @@ package puzzle.ingame.cell.blocks
 {	
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
-	import puzzle.loader.Resources;
+	import puzzle.loading.Resources;
 	
 	import starling.animation.IAnimatable;
 	import starling.display.DisplayObjectContainer;

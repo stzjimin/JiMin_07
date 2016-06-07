@@ -16,8 +16,8 @@ package puzzle.ingame
 	import puzzle.ingame.timer.ComboTimer;
 	import puzzle.ingame.timer.Timer;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
-	import puzzle.loader.LoadingEvent;
-	import puzzle.loader.Resources;
+	import puzzle.loading.LoadingEvent;
+	import puzzle.loading.Resources;
 	
 	import starling.animation.Juggler;
 	import starling.display.Button;
@@ -27,9 +27,9 @@ package puzzle.ingame
 	import starling.text.TextField;
 	import starling.utils.Color;
 	
-	public class InGame extends Scene
+	public class InGameScene extends Scene
 	{	
-		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/spritesheet");
+		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/ingameSpriteSheet");
 		private var _resources:Resources;
 		
 		private var _backGround:Image;
@@ -52,13 +52,13 @@ package puzzle.ingame
 		
 		private var _blockDatas:Vector.<BlockData>;
 		
-		public function InGame()
+		public function InGameScene()
 		{
 			super();
 			_paused = true;
 		}
 		
-		protected override function onStart(event:Event):void
+		protected override function onCreate(event:SceneEvent):void
 		{
 			_resources = new Resources(_spirteDir, null, null);
 			
@@ -69,7 +69,67 @@ package puzzle.ingame
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
 			_resources.loadResource();
+		}
+		
+		protected override function onStart(event:SceneEvent):void
+		{
 			//음악 on
+		}
+		
+		protected override function onUpdate(event:EnterFrameEvent):void
+		{
+			if(!_paused)
+				_playJuggler.advanceTime(event.passedTime);
+		}
+		
+		protected override function onEnded(event:SceneEvent):void
+		{
+			//음악 off
+		}
+		
+		protected override function onDestroy(event:SceneEvent):void
+		{
+			_timer.removeEventListener(Timer.TIME_OVER, onTimeOver);
+			_timer.removeFromParent();
+			_timer.destroy();
+			
+			_comboTimer.removeEventListener(ComboTimer.COMBOED, onCombo);
+			_comboTimer.removeFromParent();
+			_comboTimer.destroy();
+			
+			_field.removeEventListener(CheckEvent.CHECKED_COMPLETE, onCompletePossibleCheck);
+			_field.removeEventListener(Forker.GET_FORK, onGetFork);
+			_field.removeEventListener(Field.PANG, onCompletePang);
+			_field.removeFromParent();
+			_field.destroy();
+			
+			_backGround.removeFromParent();
+			_backGround.dispose();
+			
+			_settingButton.removeEventListener(Event.TRIGGERED, onClickedSettingButton);
+			_settingButton.removeFromParent();
+			_settingButton.dispose();
+			
+			_pausePopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_pausePopup.removeEventListener(PausePopup.CONTINUE_CLICKED, onClickedContinue);
+			_pausePopup.removeEventListener(PausePopup.MENU_CLICKED, onClickedMenu);
+			_pausePopup.removeEventListener(PausePopup.RESTART_CLICKED, onClickedRestart);
+			_pausePopup.removeFromParent();
+			_pausePopup.destroy();
+			
+			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
+			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
+			_items.removeEventListener(Items.SEARCH, onClickedSearch);
+			_items.removeEventListener(Items.SHUFFLE, onClickedShuffle);
+			_items.removeFromParent();
+			_items.destroy();
+			
+			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.destroy();
+			_resources = null;
+			
+			super.onDestroy(event);
 		}
 		
 		private function onFailedLoading(event:LoadingEvent):void
@@ -78,7 +138,7 @@ package puzzle.ingame
 			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
 			_resources.destroy();
-//			NativeApplication.nativeApplication.exit();
+			//			NativeApplication.nativeApplication.exit();
 		}
 		
 		private function onCompleteLoading(event:LoadingEvent):void
@@ -197,11 +257,6 @@ package puzzle.ingame
 			_playJuggler.add(_timer);
 			_playJuggler.add(_comboTimer);
 			
-			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
-			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
-			_resources.destroy();
-			_resources = null;
-			
 			trace(flash.display.Screen.mainScreen.bounds);
 			//			
 			//			_button = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
@@ -217,57 +272,6 @@ package puzzle.ingame
 			//			
 			//			this.width = flash.display.Screen.mainScreen.bounds.width /11 * 10; 
 			//			this.height = flash.display.Screen.mainScreen.bounds.height /11 * 10;
-		}
-		
-		protected override function onEnded(event:Event):void
-		{
-			//음악 off
-		}
-		
-		protected override function onUpdate(event:EnterFrameEvent):void
-		{
-			if(!_paused)
-				_playJuggler.advanceTime(event.passedTime);
-		}
-		
-		public override function destroy():void
-		{
-			_timer.removeEventListener(Timer.TIME_OVER, onTimeOver);
-			_timer.removeFromParent();
-			_timer.destroy();
-			
-			_comboTimer.removeEventListener(ComboTimer.COMBOED, onCombo);
-			_comboTimer.removeFromParent();
-			_comboTimer.destroy();
-			
-			_field.removeEventListener(CheckEvent.CHECKED_COMPLETE, onCompletePossibleCheck);
-			_field.removeEventListener(Forker.GET_FORK, onGetFork);
-			_field.removeEventListener(Field.PANG, onCompletePang);
-			_field.removeFromParent();
-			_field.destroy();
-			
-			_backGround.removeFromParent();
-			_backGround.dispose();
-			
-			_settingButton.removeEventListener(Event.TRIGGERED, onClickedSettingButton);
-			_settingButton.removeFromParent();
-			_settingButton.dispose();
-			
-			_pausePopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
-			_pausePopup.removeEventListener(PausePopup.CONTINUE_CLICKED, onClickedContinue);
-			_pausePopup.removeEventListener(PausePopup.MENU_CLICKED, onClickedMenu);
-			_pausePopup.removeEventListener(PausePopup.RESTART_CLICKED, onClickedRestart);
-			_pausePopup.removeFromParent();
-			_pausePopup.destroy();
-			
-			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
-			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
-			_items.removeEventListener(Items.SEARCH, onClickedSearch);
-			_items.removeEventListener(Items.SHUFFLE, onClickedShuffle);
-			_items.removeFromParent();
-			_items.destroy();
-			
-			super.destroy();
 		}
 		
 		private function onDeActivate(event:SceneEvent):void
@@ -342,7 +346,7 @@ package puzzle.ingame
 		private function onClickedRestart(event:Event):void
 		{
 			SceneManager.current.outScene();
-			SceneManager.current.addScene(InGame, "game");
+			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game", this.data);
 //			keepPlay();
 //			_field.dispatchEvent(new Event("shuffle"));

@@ -1,13 +1,15 @@
 package puzzle.stageSelect
 {
-	import flash.display.Bitmap;
+	import flash.filesystem.File;
 	
 	import customize.Scene;
+	import customize.SceneEvent;
 	import customize.SceneManager;
 	
 	import puzzle.Popup;
-	import puzzle.ingame.InGame;
-	import puzzle.loader.Resources;
+	import puzzle.ingame.InGameScene;
+	import puzzle.loading.LoadingEvent;
+	import puzzle.loading.Resources;
 	
 	import starling.display.Button;
 	import starling.display.Image;
@@ -16,21 +18,11 @@ package puzzle.stageSelect
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.textures.Texture;
 
 	public class StageSelectScene extends Scene
 	{
-		[Embed(source="settingButton.png")]
-		private const settingImage:Class;
-		
-		[Embed(source="stageSelectBackGround2.png")]
-		private const backGroundImage:Class;
-		
-		[Embed(source="stageButtonImage.png")]
-		private const stageButtonImage:Class;
-		
-		[Embed(source="stageBlockButton.png")]
-		private const stageBlockImage:Class;
+		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/stageSelectSpriteSheet");
+		private var _resources:Resources;
 		
 		private var _backGround:Image;
 		private var _stageButtons:Vector.<Button>;
@@ -40,7 +32,68 @@ package puzzle.stageSelect
 		
 		public function StageSelectScene()
 		{
-			_backGround = new Image(Texture.fromBitmap(new backGroundImage() as Bitmap));
+			super();
+		}
+		
+		protected override function onCreate(event:SceneEvent):void
+		{
+			_resources = new Resources(_spriteDir);
+			
+			_resources.addSpriteName("stageSelectSceneSprite0.png");
+			
+			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.loadResource();
+		}
+		
+		protected override function onStart(event:SceneEvent):void
+		{
+			
+		}
+		
+		protected override function onUpdate(event:EnterFrameEvent):void
+		{
+			
+		}
+		
+		protected override function onEnded(event:SceneEvent):void
+		{
+			
+		}
+		
+		protected override function onDestroy(event:SceneEvent):void
+		{
+			_backGround.removeEventListener(TouchEvent.TOUCH, onTouch);
+			_backGround.removeFromParent();
+			_backGround.dispose();
+			_backGround = null;
+			
+			for(var i:int = 0; i < _stageButtons.length; i++)
+			{
+				_stageButtons[i].removeEventListener(Event.TRIGGERED, onClickedStageButton);
+				_stageButtons[i].removeFromParent();
+				_stageButtons[i].dispose();
+				_stageButtons[i] = null;
+			}
+			_stageButtons.splice(0, _stageButtons.length);
+			_stageButtons = null;
+			
+			_settingPopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_settingPopup.removeEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
+			_settingPopup.removeFromParent();
+			_settingPopup.destroy();
+			
+			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.destroy();
+			_resources = null;
+			
+			super.onDestroy(event);
+		}
+		
+		private function onCompleteLoading(event:LoadingEvent):void
+		{
+			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageSelectBackground2"));
 			_backGround.width = 576;
 			_backGround.height = 1024;
 			_backGround.addEventListener(TouchEvent.TOUCH, onTouch);
@@ -49,7 +102,7 @@ package puzzle.stageSelect
 			_stageButtons = new Vector.<Button>();
 			for(var i:int = 0; i < 5; i++)
 			{
-				_stageButtons[i] = new Button(Texture.fromBitmap(new stageButtonImage() as Bitmap));
+				_stageButtons[i] = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageButtonImage"));
 				_stageButtons[i].width = 80;
 				_stageButtons[i].height = 80;
 				_stageButtons[i].alignPivot();
@@ -76,58 +129,26 @@ package puzzle.stageSelect
 			_stageButtons[4].x = 414;
 			_stageButtons[4].y = 224;
 			
-			_settingButton = new Button(Texture.fromBitmap(new settingImage() as Bitmap));
+			_settingButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
 			_settingButton.width = 70;
 			_settingButton.height = 70;
 			_settingButton.x = 576 - 70;
 			_settingButton.addEventListener(Event.TRIGGERED, onClickedSettingButton);
 			addChild(_settingButton);
 			
-			_settingPopup = new SettingPopup();
+			_settingPopup = new SettingPopup(_resources);
 			_settingPopup.init(400, 300);
 			_settingPopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
 			_settingPopup.addEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
 			addChild(_settingPopup);
 		}
 		
-		public override function destroy():void
+		private function onFailedLoading(event:LoadingEvent):void
 		{
-			_backGround.removeEventListener(TouchEvent.TOUCH, onTouch);
-			_backGround.removeFromParent();
-			_backGround.dispose();
-			_backGround = null;
-			
-			for(var i:int = 0; i < _stageButtons.length; i++)
-			{
-				_stageButtons[i].removeEventListener(Event.TRIGGERED, onClickedStageButton);
-				_stageButtons[i].removeFromParent();
-				_stageButtons[i].dispose();
-				_stageButtons[i] = null;
-			}
-			_stageButtons.splice(0, _stageButtons.length);
-			_stageButtons = null;
-			
-			_settingPopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
-			_settingPopup.removeEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
-			_settingPopup.removeFromParent();
-			_settingPopup.destroy();
-			
-			super.destroy();
-		}
-		
-		protected override function onStart(event:Event):void
-		{
-			
-		}
-		
-		protected override function onUpdate(event:EnterFrameEvent):void
-		{
-			
-		}
-		
-		protected override function onEnded(event:Event):void
-		{
-			
+			trace(event.data);
+			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.destroy();
 		}
 		
 		private function onClickedSettingClose(event:Event):void
@@ -149,7 +170,7 @@ package puzzle.stageSelect
 		{
 			var stageNumber:String = Button(event.currentTarget).name;
 			trace(stageNumber);
-			SceneManager.current.addScene(InGame, "game");
+			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game", stageNumber);
 		}
 		

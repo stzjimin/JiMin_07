@@ -1,4 +1,4 @@
-package puzzle.loader
+package puzzle.loading.info
 {
 	import flash.display.Bitmap;
 	import flash.geom.Rectangle;

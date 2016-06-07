@@ -2,7 +2,7 @@ package puzzle.ingame.cell
 {
 	import flash.utils.Dictionary;
 	
-	import puzzle.loader.Resources;
+	import puzzle.loading.Resources;
 	import puzzle.ingame.cell.blocks.Block;
 	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
 	

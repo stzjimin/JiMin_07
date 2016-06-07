@@ -6,7 +6,7 @@ package
 	
 	import customize.SceneManager;
 	
-	import puzzle.ingame.InGame;
+	import puzzle.ingame.InGameScene;
 	import puzzle.stageSelect.StageSelectScene;
 	import puzzle.title.TitleScene;
 	

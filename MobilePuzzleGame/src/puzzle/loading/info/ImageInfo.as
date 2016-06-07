@@ -1,4 +1,4 @@
-package puzzle.loader
+package puzzle.loading.info
 {
 	public class ImageInfo
 	{

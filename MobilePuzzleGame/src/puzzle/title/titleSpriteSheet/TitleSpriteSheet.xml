@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="TitleSpriteSheet.png">
+   <SubTexture name="alpha" x="0" y="461" width="576" height="1024" />
+   <SubTexture name="ari" x="703" y="67" width="223" height="174" />
+   <SubTexture name="facebookLoginButton" x="703" y="0" width="300" height="65" />
+   <SubTexture name="title" x="0" y="0" width="701" height="459" />
+</TextureAtlas>

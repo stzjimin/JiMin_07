@@ -2,7 +2,7 @@ package puzzle.ingame.timer
 {	
 	import com.greensock.TweenLite;
 	
-	import puzzle.loader.Resources;
+	import puzzle.loading.Resources;
 	
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;

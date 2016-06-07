@@ -15,7 +15,7 @@ package puzzle.ingame
 	import puzzle.ingame.util.possibleCheck.Possible;
 	import puzzle.ingame.util.possibleCheck.PossibleChecker;
 	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
-	import puzzle.loader.Resources;
+	import puzzle.loading.Resources;
 	
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
@@ -244,6 +244,8 @@ package puzzle.ingame
 			
 			dispatchEvent(new Event(Forker.GET_FORK));
 			dispatchEvent(new Event(Field.PANG));
+			
+			checkPossibleCell();
 			
 			function onTweenComplete(event:Event):void
 			{

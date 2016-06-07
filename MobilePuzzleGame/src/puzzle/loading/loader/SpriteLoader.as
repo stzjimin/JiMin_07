@@ -1,4 +1,4 @@
-package puzzle.loader
+package puzzle.loading.loader
 {
 	import flash.display.Bitmap;
 	import flash.display.Loader;

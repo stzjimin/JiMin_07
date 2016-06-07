@@ -6,6 +6,9 @@ package customize
 	{
 		public static const START:String = "sceneStart";
 		public static const END:String = "sceneEnd";
+		public static const CREATE:String = "sceneCreate";
+		public static const DESTROY:String = "sceneDestroy";
+		
 		public static const ACTIVATE:String = "gameActivate";
 		public static const DEACTIVATE:String = "gameDeActivate";
 		

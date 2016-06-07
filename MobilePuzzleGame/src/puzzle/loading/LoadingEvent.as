@@ -1,4 +1,4 @@
-package puzzle.loader
+package puzzle.loading
 {
 	import starling.events.Event;
 

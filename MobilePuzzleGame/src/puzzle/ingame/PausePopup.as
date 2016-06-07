@@ -1,7 +1,7 @@
 package puzzle.ingame
 {
 	import puzzle.Popup;
-	import puzzle.loader.Resources;
+	import puzzle.loading.Resources;
 	
 	import starling.display.Button;
 	import starling.display.Image;
@@ -34,7 +34,8 @@ package puzzle.ingame
 		
 		public function init(width:Number, height:Number):void
 		{
-			super.init(width, height, _resources.getSubTexture("IngameSprite1.png", "settingPopup"));
+			super.setCoverFace(576, 1024);
+			super.setPopupImage(width, height, _resources.getSubTexture("IngameSprite1.png", "settingPopup"));
 			
 			_continueButton = new Button(_resources.getSubTexture("IngameSprite1.png", "continue"));
 			_continueButton.width = width * 0.8;

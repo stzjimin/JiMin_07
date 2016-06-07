@@ -4,7 +4,7 @@ package puzzle.ingame.item
 	
 	import customize.CheckBox;
 	
-	import puzzle.loader.Resources;
+	import puzzle.loading.Resources;
 	
 	import starling.display.Button;
 	import starling.display.DisplayObjectContainer;

@@ -1,25 +1,16 @@
 package puzzle.stageSelect
 {
-	import flash.display.Bitmap;
-	
 	import customize.CheckBox;
 	
 	import puzzle.Popup;
-	import puzzle.loader.Resources;
+	import puzzle.loading.Resources;
 	
 	import starling.display.Button;
 	import starling.events.Event;
-	import starling.textures.Texture;
 	import starling.utils.Align;
 
 	public class SettingPopup extends Popup
 	{
-		[Embed(source="settingPopup.png")]
-		private const popupImage:Class;
-		
-		[Embed(source="settingPopupCloseButton2.png")]
-		private const closeImage:Class;
-		
 		public static const CLICK_CLOSE:String = "clickClose";
 		
 		private var _closeButton:Button;
@@ -29,18 +20,19 @@ package puzzle.stageSelect
 		
 		private var _resources:Resources;
 		
-		public function SettingPopup()
+		public function SettingPopup(resources:Resources)
 		{
-//			_resources = resources;
+			_resources = resources;
 			
 			super();
 		}
 		
 		public function init(width:Number, height:Number):void
 		{
-			super.init(width, height, Texture.fromBitmap(new popupImage() as Bitmap));
+			super.setCoverFace(576, 1024);
+			super.setPopupImage(width, height, _resources.getSubTexture("stageSelectSceneSprite0.png", "settingPopup"));
 			
-			_closeButton = new Button(Texture.fromBitmap(new closeImage() as Bitmap));
+			_closeButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingPopupCloseButton2"));
 			_closeButton.width = width * 0.15;
 			_closeButton.height = height * 0.2;
 			_closeButton.alignPivot(Align.RIGHT, Align.TOP);
@@ -49,7 +41,7 @@ package puzzle.stageSelect
 			_closeButton.addEventListener(Event.TRIGGERED, onClickedCloseButton);
 			addChild(_closeButton);
 			
-			_bgm = new SettingContent();
+			_bgm = new SettingContent(_resources);
 			_bgm.init(width * 0.4, height * 0.2, "BGM");
 			_bgm.x = this.backGround.bounds.x + (width * 0.5);
 			_bgm.y = this.backGround.bounds.y + (height * 0.35);
@@ -57,13 +49,15 @@ package puzzle.stageSelect
 			_bgm.addEventListener(CheckBox.SWAP_EMPTY, onEmptyBGM);
 			addChild(_bgm);
 			
-			_effect = new SettingContent();
+			_effect = new SettingContent(_resources);
 			_effect.init(width * 0.4, height * 0.2, "EFFECT");
 			_effect.x = this.backGround.bounds.x + (width * 0.5);
 			_effect.y = this.backGround.bounds.y + (height * 0.65);
 			_effect.addEventListener(CheckBox.SWAP_CHECK, onCheckEffect);
 			_effect.addEventListener(CheckBox.SWAP_EMPTY, onEmptyEffect);
 			addChild(_effect);
+			
+			_resources = null;
 		}
 		
 		private function onEmptyEffect(event:Event):void

@@ -62,8 +62,7 @@ package customize
 			if(_sceneDic == null || _sceneDic[key] == null)
 				return;
 			
-			_sceneDic[key].dispatchEvent(new SceneEvent(SceneEvent.END));
-			_sceneDic[key].destroy();
+			_sceneDic[key].dispatchEvent(new SceneEvent(SceneEvent.DESTROY));
 			delete _sceneDic[key];
 		}
 		
@@ -85,9 +84,10 @@ package customize
 			var scene:Scene = _sceneDic[key];
 			if(data != null)
 				scene.data = Copy.clone(data);
-			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
+			scene.dispatchEvent(new SceneEvent(SceneEvent.CREATE));
 			addChild(scene);
 			_currentScene = scene;
+			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
 		}
 		
 		public function outScene(data:Object = null):void
@@ -96,7 +96,22 @@ package customize
 				return;
 			
 			var scene:Scene = _sceneVector.pop();
-			switchScene(scene.key, data);
+			
+			if(_sceneDic == null || _sceneDic[scene.key] == null)
+				return;
+			
+			if(_currentScene != null)
+			{
+				removeChild(_currentScene);
+				_currentScene.dispatchEvent(new SceneEvent(SceneEvent.END));
+				deleteScene(_currentScene.key);
+			}
+			
+			if(data != null)
+				scene.data = Copy.clone(data);
+			addChild(scene);
+			_currentScene = scene;
+			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
 		}
 		
 		public function switchScene(key:String, data:Object = null):void
@@ -107,15 +122,17 @@ package customize
 			if(_currentScene != null)
 			{
 				removeChild(_currentScene);
+				_currentScene.dispatchEvent(new SceneEvent(SceneEvent.END));
 				deleteScene(_currentScene.key);
 			}
 			
 			var scene:Scene = _sceneDic[key];
 			if(data != null)
 				scene.data = Copy.clone(data);
-			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
+			scene.dispatchEvent(new SceneEvent(SceneEvent.CREATE));
 			addChild(scene);
 			_currentScene = scene;
+			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
 		}
 		
 		private function onActivate(event:SceneEvent):void

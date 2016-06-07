@@ -13,7 +13,7 @@ package puzzle
 	public class Popup extends DisplayObjectContainer
 	{
 		[Embed(source="alpha.png")]
-		private const testImage:Class;
+		private const defaultImage:Class;
 		
 		public static const COVER_CLICKED:String = "coverClicked";
 		
@@ -27,39 +27,49 @@ package puzzle
 		
 		public function destroy():void
 		{
-			_coverFace.removeEventListener(TouchEvent.TOUCH, onTouch);
-			
+			if(_coverFace)
+			{
+				_coverFace.removeEventListener(TouchEvent.TOUCH, onTouch);
+				_coverFace.removeFromParent();
+				_coverFace.dispose();
+			}
+			if(_backGround)
+			{
+				_backGround.removeFromParent();
+				_backGround.dispose();
+			}
 			dispose();
 		}
 		
-		protected function init(width:Number, height:Number, backGroundTexture:Texture):void
-		{
-			trace("super.init");
+		protected function setCoverFace(coverWidth:Number, coverHeight:Number, coverFaceTexture:Texture = null):void
+		{	
+			var coverTexture:Texture;
+			if(coverFaceTexture == null)
+				coverTexture = Texture.fromBitmap(new defaultImage() as Bitmap);
+			else
+				coverTexture = coverFaceTexture;
 			
-			_coverFace = new Image(Texture.fromBitmap(new testImage() as Bitmap));
-			_coverFace.width = 576;
-			_coverFace.height = 1024;
+			_coverFace = new Image(coverTexture);
+			_coverFace.width = coverWidth;
+			_coverFace.height = coverHeight;
 			_coverFace.alpha = 0.5;
 			_coverFace.addEventListener(TouchEvent.TOUCH, onTouch);
 			addChild(_coverFace);
 			
-			setBackGround(width, height, backGroundTexture);
-			
 			this.visible = false;
 		}
 		
-		protected function setBackGround(width:Number, height:Number, backGroundTexture:Texture):void
+		protected function setPopupImage(width:Number, height:Number, backGroundTexture:Texture):void
 		{
-			if(backGroundTexture != null)
-			{
-				_backGround = new Image(backGroundTexture);
-				_backGround.width = width;
-				_backGround.height = height;
-				_backGround.alignPivot();
-				_backGround.x = _coverFace.width/2;
-				_backGround.y = _coverFace.height/2;
-				addChild(_backGround);
-			}
+			if(backGroundTexture == null)
+				return;
+			_backGround = new Image(backGroundTexture);
+			_backGround.width = width;
+			_backGround.height = height;
+			_backGround.alignPivot();
+			_backGround.x = _coverFace.width/2;
+			_backGround.y = _coverFace.height/2;
+			addChild(_backGround);
 		}
 		
 		private function onTouch(event:TouchEvent):void

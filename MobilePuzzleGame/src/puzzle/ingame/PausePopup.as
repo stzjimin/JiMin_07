@@ -1,20 +1,22 @@
 package puzzle.ingame
 {
-	import puzzle.Popup;
 	import puzzle.loading.Resources;
 	
 	import starling.display.Button;
+	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
 	import starling.text.TextField;
 
-	public class PausePopup extends Popup
+	public class PausePopup extends DisplayObjectContainer
 	{	
 		public static const CONTINUE_CLICKED:String = "continueClicked";
 		public static const MENU_CLICKED:String = "menuClicked";
 		public static const RESTART_CLICKED:String = "restartClicked";
 		
 		private var _resources:Resources;
+		
+		private var _backGround:Image;
 		
 		private var _closeButton:Button;
 		
@@ -34,15 +36,17 @@ package puzzle.ingame
 		
 		public function init(width:Number, height:Number):void
 		{
-			super.setCoverFace(576, 1024);
-			super.setPopupImage(width, height, _resources.getSubTexture("IngameSprite1.png", "settingPopup"));
+			_backGround = new Image(_resources.getSubTexture("IngameSprite1.png", "settingPopup"));
+			_backGround.width = width;
+			_backGround.height = height;
+			addChild(_backGround);
 			
 			_continueButton = new Button(_resources.getSubTexture("IngameSprite1.png", "continue"));
 			_continueButton.width = width * 0.8;
 			_continueButton.height = height * 0.2;
 			_continueButton.alignPivot();
-			_continueButton.x = this.width / 2;
-			_continueButton.y = (this.height / 2) - (height * 0.25) + (height * 0.08);
+			_continueButton.x = width / 2;
+			_continueButton.y = (height / 2) - (height * 0.25) + (height * 0.08);
 			_continueButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_continueButton);
 			
@@ -50,8 +54,8 @@ package puzzle.ingame
 			_menuButton.width = width * 0.8;
 			_menuButton.height = height * 0.2;
 			_menuButton.alignPivot();
-			_menuButton.x = this.width/2;
-			_menuButton.y = (this.height / 2) + (height * 0.08);
+			_menuButton.x = width/2;
+			_menuButton.y = (height / 2) + (height * 0.08);
 			_menuButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_menuButton);
 			
@@ -59,21 +63,19 @@ package puzzle.ingame
 			_restartButton.width = width * 0.8;
 			_restartButton.height = height * 0.2;
 			_restartButton.alignPivot();
-			_restartButton.x = this.width/2;
-			_restartButton.y = (this.height / 2) + (height * 0.25) + (height * 0.08);
+			_restartButton.x = width/2;
+			_restartButton.y = (height / 2) + (height * 0.25) + (height * 0.08);
 			_restartButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_restartButton);
 			
 			_resources = null;
 		}
 		
-		public override function destroy():void
+		public function destroy():void
 		{	
 			_continueButton.removeEventListener(Event.TRIGGERED, onTriggered);
 			_menuButton.removeEventListener(Event.TRIGGERED, onTriggered);
 			_restartButton.removeEventListener(Event.TRIGGERED, onTriggered);
-			
-			super.destroy();
 		}
 		
 		private function onTriggered(event:Event):void

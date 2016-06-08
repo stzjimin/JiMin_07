@@ -87,7 +87,6 @@ package customize
 			scene.dispatchEvent(new SceneEvent(SceneEvent.CREATE));
 			addChild(scene);
 			_currentScene = scene;
-			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
 		}
 		
 		public function outScene(data:Object = null):void
@@ -132,7 +131,6 @@ package customize
 			scene.dispatchEvent(new SceneEvent(SceneEvent.CREATE));
 			addChild(scene);
 			_currentScene = scene;
-			scene.dispatchEvent(new SceneEvent(SceneEvent.START));
 		}
 		
 		private function onActivate(event:SceneEvent):void

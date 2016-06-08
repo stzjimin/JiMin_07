@@ -3,7 +3,7 @@ package puzzle.ingame.cell.blocks
 	public class BlockData
 	{
 		private var _row:uint;
-		private var _colum:uint;
+		private var _column:uint;
 		
 		private var _type:String;
 		private var _skill:String;
@@ -11,7 +11,7 @@ package puzzle.ingame.cell.blocks
 		public function BlockData(row:uint = 0, colum:uint = 0, type:String = null, skill:String = null)
 		{
 			_row = row;
-			_colum = colum;
+			_column = colum;
 			_type = type;
 			_skill = skill;
 		}
@@ -46,14 +46,14 @@ package puzzle.ingame.cell.blocks
 			_row = value;
 		}
 
-		public function get colum():uint
+		public function get column():uint
 		{
-			return _colum;
+			return _column;
 		}
 
-		public function set colum(value:uint):void
+		public function set column(value:uint):void
 		{
-			_colum = value;
+			_column = value;
 		}
 
 

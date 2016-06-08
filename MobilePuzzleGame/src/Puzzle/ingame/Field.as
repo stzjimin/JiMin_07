@@ -27,7 +27,7 @@ package puzzle.ingame
 	public class Field extends DisplayObjectContainer implements IAnimatable
 	{	
 		public static const ROW_NUM:uint = 12;
-		public static const COLUM_NUM:uint = 12;
+		public static const COLUMN_NUM:uint = 12;
 		public static const PADDING:uint = 18;
 		
 		public static const PANG:String = "pang";
@@ -37,8 +37,8 @@ package puzzle.ingame
 		
 		private var _rowLine:Image;
 		private var _rowLine2:Image;
-		private var _columLine:Image;
-		private var _columLine2:Image;
+		private var _columnLine:Image;
+		private var _columnLine2:Image;
 		
 		private var _backGround:Image;
 		
@@ -73,7 +73,7 @@ package puzzle.ingame
 			_forker = new Forker();
 			_forker.addEventListener(Forker.GET_FORK, onSucceedFork);
 			
-			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.WIDTH_SIZE), (Field.COLUM_NUM * Cell.HEIGHT_SIZE), 
+			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.WIDTH_SIZE), (Field.COLUMN_NUM * Cell.HEIGHT_SIZE), 
 				_resources.getSubTexture("IngameSprite0.png", "topPadding"), _resources.getSubTexture("IngameSprite0.png", "bottomPadding"),
 				_resources.getSubTexture("IngameSprite0.png", "leftPadding"), _resources.getSubTexture("IngameSprite0.png", "rightPadding"));
 			addChild(_padding);
@@ -82,12 +82,12 @@ package puzzle.ingame
 			_backGround.x = Field.PADDING;
 			_backGround.y = Field.PADDING;
 			_backGround.width = (Field.ROW_NUM * Cell.WIDTH_SIZE);
-			_backGround.height = (Field.COLUM_NUM * Cell.HEIGHT_SIZE);
+			_backGround.height = (Field.COLUMN_NUM * Cell.HEIGHT_SIZE);
 			addChild(_backGround);
 			
 			_cells = new Vector.<Cell>();
-			var columNum:int = 0;
-			for(var i:int = 0; i < COLUM_NUM*ROW_NUM; i++)
+			var columnNum:int = 0;
+			for(var i:int = 0; i < COLUMN_NUM*ROW_NUM; i++)
 			{
 				var cell:Cell = new Cell();
 				var rowNum:int = i%ROW_NUM;
@@ -97,17 +97,17 @@ package puzzle.ingame
 				cell.width = Cell.WIDTH_SIZE;
 				cell.height = Cell.HEIGHT_SIZE;
 				cell.x = Field.PADDING + (rowNum * Cell.WIDTH_SIZE);
-				cell.y = Field.PADDING + (columNum * Cell.HEIGHT_SIZE);
-				cell.row = columNum;
-				cell.colum = rowNum;
-				_cells[i].name = rowNum.toString() + "/" + columNum.toString();
+				cell.y = Field.PADDING + (columnNum * Cell.HEIGHT_SIZE);
+				cell.row = columnNum;
+				cell.column = rowNum;
+				_cells[i].name = rowNum.toString() + "/" + columnNum.toString();
 				cell.init();
 				addChild(cell);
 //				trace("cell.x = " + cell.x);
 //				trace("cell.y = " + cell.y);
 //				trace("cell.row = " + cell.row);
 //				trace("cell.colum = " + cell.colum);
-				if(columNum != 0)
+				if(columnNum != 0)
 				{
 					_cells[i].neigbor[NeigborType.TOP] = _cells[i-ROW_NUM];
 					_cells[i-ROW_NUM].neigbor[NeigborType.BOTTOM] = _cells[i];
@@ -120,17 +120,17 @@ package puzzle.ingame
 //					_cells[i].x -= Block.PADDING_SIZE;
 				}
 				if(rowNum == (ROW_NUM-1))
-					columNum++;
+					columnNum++;
 			}
 			
 			_rowLine = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
 			_rowLine.alignPivot();
 			_rowLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
 			_rowLine2.alignPivot();
-			_columLine = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
-			_columLine.alignPivot();
-			_columLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
-			_columLine2.alignPivot();
+			_columnLine = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columnLine.alignPivot();
+			_columnLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columnLine2.alignPivot();
 			
 			_resources = null;
 		}
@@ -204,13 +204,13 @@ package puzzle.ingame
 			_rowLine2.dispose();
 			_rowLine2 = null;
 			
-			_columLine.removeFromParent();
-			_columLine.dispose();
-			_columLine = null;
+			_columnLine.removeFromParent();
+			_columnLine.dispose();
+			_columnLine = null;
 			
-			_columLine2.removeFromParent();
-			_columLine2.dispose();
-			_columLine2 = null;
+			_columnLine2.removeFromParent();
+			_columnLine2.dispose();
+			_columnLine2 = null;
 			
 			_shuffler.init();
 			_shuffler.removeEventListener(Shuffler.COMPLETE, onCompleteShuffle);
@@ -308,9 +308,9 @@ package puzzle.ingame
 			var line:Image;
 			if(start.x == dest.x)
 			{
-				line = _columLine;
+				line = _columnLine;
 				if(this.getChildIndex(line) > 0)
-					line = _columLine2;
+					line = _columnLine2;
 				line.width = 40;
 				line.height = Math.abs(start.y - dest.y);
 				line.x = start.x;
@@ -378,7 +378,7 @@ package puzzle.ingame
 		
 		public function createBlock(blockData:BlockData, resources:Resources):void
 		{
-			var cell:Cell = getCell(blockData.row, blockData.colum);
+			var cell:Cell = getCell(blockData.row, blockData.column);
 			
 			var block:Block = new Block(resources);
 			block.init(blockData);

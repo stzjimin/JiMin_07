@@ -2,14 +2,17 @@ package puzzle.stageSelect
 {
 	import flash.filesystem.File;
 	
+	import customize.PopupFrame;
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
 	
-	import puzzle.Popup;
 	import puzzle.ingame.InGameScene;
+	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
+	import puzzle.loading.loader.DBLoader;
+	import puzzle.user.User;
 	
 	import starling.display.Button;
 	import starling.display.Image;
@@ -18,17 +21,26 @@ package puzzle.stageSelect
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.text.TextFormat;
 
 	public class StageSelectScene extends Scene
 	{
 		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/stageSelectSpriteSheet");
 		private var _resources:Resources;
 		
+		private var _dbLoader:DBLoader;
+		
 		private var _backGround:Image;
 		private var _stageButtons:Vector.<Button>;
+		private var _buttonIndex:uint = 0;
+		private var _nextButton:Button;
+		private var _prevButton:Button;
+		
+		private var _defaultTextFormat:TextFormat;
 		
 		private var _settingButton:Button;
 		private var _settingPopup:SettingPopup;
+		private var _popupFrame:PopupFrame;
 		
 		public function StageSelectScene()
 		{
@@ -41,14 +53,17 @@ package puzzle.stageSelect
 			
 			_resources.addSpriteName("stageSelectSceneSprite0.png");
 			
-			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
-			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteResourceLoading);
+			_resources.addEventListener(LoadingEvent.FAILED, onFailedResourcLoading);
 			_resources.loadResource();
 		}
 		
 		protected override function onStart(event:SceneEvent):void
 		{
-			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+			_dbLoader.setUserData();
 		}
 		
 		protected override function onUpdate(event:EnterFrameEvent):void
@@ -68,6 +83,8 @@ package puzzle.stageSelect
 			_backGround.dispose();
 			_backGround = null;
 			
+			_defaultTextFormat = null;
+			
 			for(var i:int = 0; i < _stageButtons.length; i++)
 			{
 				_stageButtons[i].removeEventListener(Event.TRIGGERED, onClickedStageButton);
@@ -78,20 +95,35 @@ package puzzle.stageSelect
 			_stageButtons.splice(0, _stageButtons.length);
 			_stageButtons = null;
 			
-			_settingPopup.removeEventListener(Popup.COVER_CLICKED, onClickedCover);
+			_nextButton.removeEventListener(Event.TRIGGERED, onClickedNextButton);
+			_nextButton.removeFromParent();
+			_nextButton.dispose();
+			_nextButton = null;
+			
+			_prevButton.removeEventListener(Event.TRIGGERED, onClickedNextButton);
+			_prevButton.removeFromParent();
+			_prevButton.dispose();
+			_prevButton = null;
+			
+			_popupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			_popupFrame.removeFromParent();
+			_popupFrame.destroy();
+			_popupFrame = null;
+			
 			_settingPopup.removeEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
 			_settingPopup.removeFromParent();
 			_settingPopup.destroy();
+			_settingPopup = null;
 			
-			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
-			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteResourceLoading);
+			_resources.removeEventListener(LoadingEvent.FAILED, onFailedResourcLoading);
 			_resources.destroy();
 			_resources = null;
 			
 			super.onDestroy(event);
 		}
 		
-		private function onCompleteLoading(event:LoadingEvent):void
+		private function onCompleteResourceLoading(event:LoadingEvent):void
 		{
 			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageSelectBackground2"));
 			_backGround.width = 576;
@@ -99,18 +131,21 @@ package puzzle.stageSelect
 			_backGround.addEventListener(TouchEvent.TOUCH, onTouch);
 			addChild(_backGround);
 			
+			_defaultTextFormat = new TextFormat();
+			_defaultTextFormat.bold = true;
+			_defaultTextFormat.size = 40;
+			
 			_stageButtons = new Vector.<Button>();
 			for(var i:int = 0; i < 5; i++)
 			{
-				_stageButtons[i] = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageButtonImage"));
+				_stageButtons[i] = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageBlockButton"));
 				_stageButtons[i].width = 80;
 				_stageButtons[i].height = 80;
 				_stageButtons[i].alignPivot();
-				_stageButtons[i].text = (i+1).toString();
-				_stageButtons[i].textFormat.bold = true;
-				_stageButtons[i].textFormat.size = 40;
-				_stageButtons[i].name = (i+1).toString();
+				_stageButtons[i].textFormat = _defaultTextFormat;
 				_stageButtons[i].addEventListener(Event.TRIGGERED, onClickedStageButton);
+				
+				_stageButtons[i].touchable = false;
 				addChild(_stageButtons[i]);
 			}
 			
@@ -129,41 +164,125 @@ package puzzle.stageSelect
 			_stageButtons[4].x = 414;
 			_stageButtons[4].y = 224;
 			
+			_nextButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
+			_nextButton.width = 80;
+			_nextButton.height = 80;
+			_nextButton.alignPivot();
+			_nextButton.x = 502;
+			_nextButton.y = 913;
+			_nextButton.textFormat = _defaultTextFormat;
+			_nextButton.text = "N";
+			_nextButton.addEventListener(Event.TRIGGERED, onClickedNextButton);
+			addChild(_nextButton);
+			
+			_prevButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
+			_prevButton.width = 80;
+			_prevButton.height = 80;
+			_prevButton.alignPivot();
+			_prevButton.x = 100;
+			_prevButton.y = 913;
+			_prevButton.textFormat = _defaultTextFormat;
+			_prevButton.text = "P";
+			_prevButton.addEventListener(Event.TRIGGERED, onClickedPrevButton);
+			addChild(_prevButton);
+			
 			_settingButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
-			_settingButton.width = 70;
-			_settingButton.height = 70;
-			_settingButton.x = 576 - 70;
+			_settingButton.width = 80;
+			_settingButton.height = 80;
+			_settingButton.x = 576 - 80;
 			_settingButton.addEventListener(Event.TRIGGERED, onClickedSettingButton);
 			addChild(_settingButton);
 			
 			_settingPopup = new SettingPopup(_resources);
 			_settingPopup.init(400, 300);
-			_settingPopup.addEventListener(Popup.COVER_CLICKED, onClickedCover);
 			_settingPopup.addEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
-			addChild(_settingPopup);
+			
+			_popupFrame = new PopupFrame(576, 1024);
+			_popupFrame.setPopup(_settingPopup);
+			_popupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_popupFrame);
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+			_dbLoader.setUserData();
 		}
 		
-		private function onFailedLoading(event:LoadingEvent):void
+		private function onFailedResourcLoading(event:LoadingEvent):void
 		{
 			trace(event.data);
-			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
-			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteResourceLoading);
+			_resources.removeEventListener(LoadingEvent.FAILED, onFailedResourcLoading);
 			_resources.destroy();
+		}
+		
+		private function onCompleteDBLoading(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+			
+			trace(User.getInstance().clearstage);
+			
+			setButtonState();
+		}
+		
+		private function onFailedDBLoading(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+			
+			trace(event.message);
+		}
+		
+		private function setButtonState():void
+		{
+			for(var i:int = 0; i < 5; i++)
+			{
+				_stageButtons[i].text = ((_buttonIndex*5)+i+1).toString();
+				_stageButtons[i].name = ((_buttonIndex*5)+i+1).toString();
+				
+				if(int(_stageButtons[i].name) <= (User.getInstance().clearstage+1))
+				{
+					_stageButtons[i].upState = _resources.getSubTexture("stageSelectSceneSprite0.png", "stageButtonImage");
+					_stageButtons[i].touchable = true;
+				}
+				else
+				{
+					_stageButtons[i].upState = _resources.getSubTexture("stageSelectSceneSprite0.png", "stageBlockButton");
+					_stageButtons[i].touchable = false;
+				}
+			}
+		}
+		
+		private function onClickedNextButton(event:Event):void
+		{
+			if(_buttonIndex >= 10)
+				return;
+			_buttonIndex++;
+			setButtonState();
+		}
+		
+		private function onClickedPrevButton(event:Event):void
+		{
+			if(_buttonIndex <= 0)
+				return;
+			_buttonIndex--;
+			setButtonState();
 		}
 		
 		private function onClickedSettingClose(event:Event):void
 		{
-			_settingPopup.visible = false;
+			_popupFrame.visible = false;
 		}
 		
 		private function onClickedCover(event:Event):void
 		{
-			_settingPopup.visible = false;
+			_popupFrame.visible = false;
 		}
 		
 		private function onClickedSettingButton(event:Event):void
 		{
-			_settingPopup.visible = true;
+			_popupFrame.visible = true;
 		}
 		
 		private function onClickedStageButton(event:Event):void
@@ -181,10 +300,7 @@ package puzzle.stageSelect
 				return;
 			
 			if(touch.phase == TouchPhase.ENDED)
-			{
 				trace(touch.getLocation(this));
-//				SceneManager.current.goScene("game");
-			}
 		}
 	}
 }

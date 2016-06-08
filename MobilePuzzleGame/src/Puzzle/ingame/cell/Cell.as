@@ -22,7 +22,7 @@ package puzzle.ingame.cell
 		private var _height:Number;
 		
 		private var _row:int;
-		private var _colum:int;
+		private var _column:int;
 		
 		private var _color:Quad;
 		
@@ -155,14 +155,14 @@ package puzzle.ingame.cell
 			_row = value;
 		}
 
-		public function get colum():int
+		public function get column():int
 		{
-			return _colum;
+			return _column;
 		}
 
-		public function set colum(value:int):void
+		public function set column(value:int):void
 		{
-			_colum = value;
+			_column = value;
 		}
 	}
 }

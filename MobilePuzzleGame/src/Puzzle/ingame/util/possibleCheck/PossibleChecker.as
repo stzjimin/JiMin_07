@@ -138,11 +138,19 @@ package puzzle.ingame.util.possibleCheck
 		
 		public function outChecker(cell:Cell):void
 		{
-			cell.dispatchEvent(new Event(PossibleCheckerEventType.PULL_PREV));
-			if(cell == _prevCell)
+			if(cell != null)
+			{
+				cell.dispatchEvent(new Event(PossibleCheckerEventType.PULL_PREV));
+				if(cell == _prevCell)
+					_prevCell = null;
+				if(cell == _currentCell)
+					_currentCell = null;
+			}
+			else
+			{
 				_prevCell = null;
-			if(cell == _currentCell)
 				_currentCell = null;
+			}
 		}
 		
 		public function pickPossible():Possible
@@ -227,7 +235,7 @@ package puzzle.ingame.util.possibleCheck
 			function calculPriority(node:Cell, direction:int):int
 			{
 				var rowDist:int = destNode.row - node.row;
-				var columDist:int = destNode.colum - node.colum;
+				var columDist:int = destNode.column - node.column;
 				
 				if(rowDist == 0)
 				{

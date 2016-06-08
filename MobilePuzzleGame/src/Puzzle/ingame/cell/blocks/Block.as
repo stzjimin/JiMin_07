@@ -108,11 +108,13 @@ package puzzle.ingame.cell.blocks
 				return;
 			if(touch.phase == TouchPhase.BEGAN)
 			{
-				this.scale = 0.9;
+				this.y -= 10;
+				this.scale = 1.2;
 			}
 			else if(touch.phase == TouchPhase.ENDED)
 			{
 				this.scale = 1.0;
+				this.y += 10;
 				_clicked = !_clicked;
 				if(_clicked)
 				{

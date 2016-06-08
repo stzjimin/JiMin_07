@@ -13,6 +13,10 @@ package puzzle.user
 		private var _name:String;
 		private var _picture:Bitmap;
 		
+		private var _email:String;
+		private var _playdate:String;
+		private var _clearstage:uint;
+		
 		public function User()
 		{
 			if (!_instance)
@@ -69,5 +73,37 @@ package puzzle.user
 		{
 			_picture = value;
 		}
+
+		public function get email():String
+		{
+			return _email;
+		}
+
+		public function set email(value:String):void
+		{
+			_email = value;
+		}
+
+		public function get playdate():String
+		{
+			return _playdate;
+		}
+
+		public function set playdate(value:String):void
+		{
+			_playdate = value;
+		}
+
+		public function get clearstage():uint
+		{
+			return _clearstage;
+		}
+
+		public function set clearstage(value:uint):void
+		{
+			_clearstage = value;
+		}
+
+
 	}
 }

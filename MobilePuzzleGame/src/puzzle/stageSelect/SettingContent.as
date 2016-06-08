@@ -59,12 +59,15 @@ package puzzle.stageSelect
 			_checkBox.removeEventListener(CheckBox.SWAP_CHECK, onSwapCheck);
 			_checkBox.removeEventListener(CheckBox.SWAP_EMPTY, onSwapEmpty);
 			_checkBox.destroy();
+			_checkBox = null;
 			
 			_backGround.removeFromParent();
 			_backGround.dispose();
+			_backGround = null;
 			
 			_text.removeFromParent();
 			_text.dispose();
+			_text = null;
 			
 			dispose();
 		}

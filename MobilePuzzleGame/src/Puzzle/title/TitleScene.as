@@ -1,9 +1,10 @@
 package puzzle.title
 {
 	import com.greensock.TweenMax;
-
+	
 	import flash.filesystem.File;
 	
+	import customize.PopupFrame;
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
@@ -33,7 +34,7 @@ package puzzle.title
 		
 		private var _facebook:FBExtension;
 		
-		private var _popUp:LoginPopup;
+		private var _popUp:PopupFrame;
 		private var _facebookLoginButton:Button;
 		
 		private var _backGround:Image;
@@ -99,9 +100,13 @@ package puzzle.title
 			_ari.height = 100;
 			addChild(_ari);
 			
-			
 			TweenMax.to(_ari, 10, {bezier:{curviness:1.5, timeResolution:0, values:[{x:90, y:172}, {x:173, y:171}, {x:134, y:119}, {x:102, y:203}, {x:164, y:241}, {x:221, y:216}, {x:222, y:158}, {x:138, y:171}, {x:123, y:270}, {x:222, y:315}, {x:315, y:261}, {x:301, y:186}, {x:188, y:217}, {x:188, y:335}, {x:298, y:366}]}});
 			//			TweenMax.to(_ari, 10, {bezier:{values:[{x:70, y:263}, {x:202, y:149}, {x:121, y:314}, {x:278, y:205}, {x:164, y:350}, {x:309, y:248}, {x:300, y:345}]}});
+			
+			TweenMax.pauseAll();
+			_popUp = new PopupFrame(576, 1024);
+			addChild(_popUp);
+			_popUp.visible = true;
 			
 			_facebook = FBExtension.getInstance();
 			//			_facebook.loadUserInfo();
@@ -129,13 +134,7 @@ package puzzle.title
 		}
 		
 		private function createLoginButton():void
-		{
-			TweenMax.pauseAll();
-			_popUp = new LoginPopup();
-			_popUp.init();
-			addChild(_popUp);
-			_popUp.visible = true;
-			
+		{	
 			_facebookLoginButton = new Button(_resources.getSubTexture("TitleSpriteSheet.png", "facebookLoginButton"));
 			_facebookLoginButton.alignPivot();
 			_facebookLoginButton.x = this.width / 2;
@@ -162,6 +161,10 @@ package puzzle.title
 			setUser(UserType.Facebook);
 			
 			trace(User.getInstance().id);
+			
+			TweenMax.resumeAll();
+			_popUp.removeFromParent();
+			_popUp.destroy();
 //			_facebook.addEventListener(FacebookEvent.LOADED_FRIENDS_LIST, onLoadedFriends);
 //			_facebook.loadFriends();
 		}
@@ -200,8 +203,13 @@ package puzzle.title
 					user.id = FacebookUser.getInstance().id;
 					user.name = FacebookUser.getInstance().name;
 					user.picture = FacebookUser.getInstance().picture;
+					
+					user.email = FacebookUser.getInstance().email;
 					break;
 			}
+			
+			var now:Date = new Date();
+			user.playdate = now.toString();
 		}
 		
 //		private function onLoadedFriends(event:FacebookEvent):void

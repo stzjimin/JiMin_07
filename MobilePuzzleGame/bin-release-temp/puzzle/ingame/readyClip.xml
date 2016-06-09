@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="readyClip.png">
-   <SubTexture name="ready_0" x="0" y="0" width="131" height="197" />
-   <SubTexture name="ready_1" x="133" y="0" width="131" height="197" />
-   <SubTexture name="ready_2" x="266" y="0" width="131" height="197" />
-</TextureAtlas>

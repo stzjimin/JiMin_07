@@ -91,7 +91,8 @@ package puzzle.ingame
 			_record.y = _score.y + (_score.height / 2) + (_record.height / 2) + (height * 0.03);
 			addChild(_record);
 			
-			_restartButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap));
+			_restartButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "RESTART");
+			_restartButton.textFormat = _defaultTextFormat;
 			_restartButton.width = width * 0.25;
 			_restartButton.height = height * 0.15;
 			_restartButton.alignPivot(Align.LEFT);
@@ -100,7 +101,8 @@ package puzzle.ingame
 			_restartButton.addEventListener(Event.TRIGGERED, onClickedButton);
 			addChild(_restartButton);
 			
-			_nextStageButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap));
+			_nextStageButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "NEXT");
+			_nextStageButton.textFormat = _defaultTextFormat;
 			_nextStageButton.width = width * 0.25;
 			_nextStageButton.height = height * 0.15;
 			_nextStageButton.alignPivot(Align.LEFT);
@@ -109,7 +111,8 @@ package puzzle.ingame
 			_nextStageButton.addEventListener(Event.TRIGGERED, onClickedButton);
 			addChild(_nextStageButton);
 			
-			_backButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap));
+			_backButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "MAIN");
+			_backButton.textFormat = _defaultTextFormat;
 			_backButton.width = width * 0.25;
 			_backButton.height = height * 0.15;
 			_backButton.alignPivot(Align.LEFT);

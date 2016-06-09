@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="defaultProgress.png">
-   <SubTexture name="frame_01" x="0" y="0" width="50" height="52" />
-   <SubTexture name="frame_02" x="52" y="0" width="50" height="52" />
-   <SubTexture name="frame_03" x="0" y="54" width="50" height="52" />
-   <SubTexture name="frame_04" x="52" y="54" width="50" height="52" />
-</TextureAtlas>

@@ -3,11 +3,14 @@ package puzzle.stageSelect
 	import customize.CheckBox;
 	
 	import puzzle.loading.Resources;
+	import puzzle.user.User;
 	
 	import starling.display.Button;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
+	import starling.text.TextField;
+	import starling.textures.Texture;
 	import starling.utils.Align;
 
 	public class SettingPopup extends DisplayObjectContainer
@@ -17,6 +20,9 @@ package puzzle.stageSelect
 		private var _backGround:Image;
 		
 		private var _closeButton:Button;
+		
+		private var _userPicture:Image;
+		private var _userName:TextField;
 		
 		private var _bgm:SettingContent;
 		private var _effect:SettingContent;
@@ -45,6 +51,22 @@ package puzzle.stageSelect
 			_closeButton.y = (height * 0.01);
 			_closeButton.addEventListener(Event.TRIGGERED, onClickedCloseButton);
 			addChild(_closeButton);
+			
+			_userPicture = new Image(Texture.fromBitmap(User.getInstance().picture));
+			_userPicture.width = width * 0.3;
+			_userPicture.height = _userPicture.width;
+			_userPicture.alignPivot();
+			_userPicture.y = _backGround.height * 0.55;
+			_userPicture.x = _backGround.width * 0.23;
+			addChild(_userPicture);
+			
+			_userName = new TextField(_userPicture.width, height * 0.15, User.getInstance().name);
+			_userName.format.bold = true;
+			_userName.format.size = 20;
+			_userName.alignPivot();
+			_userName.x = _userPicture.x;
+			_userName.y = _userPicture.y + (_userPicture.height/2) + (_userName.height/2);
+			addChild(_userName);
 			
 			_bgm = new SettingContent(_resources);
 			_bgm.init(width * 0.4, height * 0.2, "BGM");

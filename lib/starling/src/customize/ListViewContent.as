@@ -6,6 +6,7 @@ package customize
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
+	import starling.textures.Texture;
 
 	public class ListViewContent extends DisplayObjectContainer
 	{
@@ -18,11 +19,11 @@ package customize
 			super();
 		}
 		
-		public function init(backGround:Image):void
+		public function init(backGroundTexture:Texture):void
 		{
-			if(backGround == null)
+			if(backGroundTexture == null)
 				return;
-			_backGround = backGround;
+			_backGround = new Image(backGroundTexture);
 			_backGround.addEventListener(TouchEvent.TOUCH, onBackGroundTouch);
 			addChild(_backGround);
 		}

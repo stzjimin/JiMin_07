@@ -25,6 +25,7 @@ package puzzle.ingame
 		
 		private var _bound:Rectangle;
 		private var _object:DisplayObjectContainer;
+		private var _padding:Number;
 		
 		private var _beganLocation:Point;
 		private var _prevLocation:Point;
@@ -42,6 +43,7 @@ package puzzle.ingame
 			_juggler = new Juggler();
 			_slashFlag = false;
 			_type = ThrowProps.TYPE_DOWN;
+			_padding = padding
 			
 			_mask.drawRectangle(padding, padding, _bound.width-(padding*2), _bound.height-(padding*2));
 			addChild(_mask);
@@ -167,7 +169,7 @@ package puzzle.ingame
 					{
 						vers = _bound.right - objectBound.right;
 						
-						targetPoint = new Point(_object.x + vers, _object.y);
+						targetPoint = new Point(_object.x + vers - _padding, _object.y);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y, ease:Back.easeOut});
 					}
 					else
@@ -187,7 +189,7 @@ package puzzle.ingame
 					{
 						vers = _bound.bottom - objectBound.bottom;
 						
-						targetPoint = new Point(_object.x, _object.y + vers);
+						targetPoint = new Point(_object.x, _object.y + vers - _padding);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y, ease:Back.easeOut});
 					}
 					else

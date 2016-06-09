@@ -3,8 +3,11 @@ package puzzle.title
 	import com.greensock.TweenMax;
 	
 	import flash.filesystem.File;
+	import flash.utils.Dictionary;
 	
 	import customize.PopupFrame;
+	import customize.Progress;
+	import customize.ProgressFrame;
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
@@ -29,12 +32,15 @@ package puzzle.title
 		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/title/titleSpriteSheet");
 		private var _resources:Resources;
 		
+		private var _progress:Progress;
+		private var _progressFrame:ProgressFrame;
+		
 		private var _juggler:Juggler;
 		private var _ariTween:Tween;
 		
 		private var _facebook:FBExtension;
 		
-		private var _popUp:PopupFrame;
+		private var _popupFrame:PopupFrame;
 		private var _facebookLoginButton:Button;
 		
 		private var _backGround:Image;
@@ -84,6 +90,18 @@ package puzzle.title
 			_ari.dispose();
 			_ari = null;
 			
+			_progress.removeFromParent();
+			_progress.destroy();
+			_progress = null;
+			
+			_progressFrame.removeFromParent();
+			_progressFrame.destroy();
+			_progressFrame = null;
+			
+			_popupFrame.removeFromParent();
+			_popupFrame.destroy();
+			_popupFrame = null;
+			
 			super.onDestroy(event);
 		}
 		
@@ -102,15 +120,23 @@ package puzzle.title
 			
 			TweenMax.to(_ari, 10, {bezier:{curviness:1.5, timeResolution:0, values:[{x:90, y:172}, {x:173, y:171}, {x:134, y:119}, {x:102, y:203}, {x:164, y:241}, {x:221, y:216}, {x:222, y:158}, {x:138, y:171}, {x:123, y:270}, {x:222, y:315}, {x:315, y:261}, {x:301, y:186}, {x:188, y:217}, {x:188, y:335}, {x:298, y:366}]}});
 			//			TweenMax.to(_ari, 10, {bezier:{values:[{x:70, y:263}, {x:202, y:149}, {x:121, y:314}, {x:278, y:205}, {x:164, y:350}, {x:309, y:248}, {x:300, y:345}]}});
-			
 			TweenMax.pauseAll();
-			_popUp = new PopupFrame(576, 1024);
-			addChild(_popUp);
-			_popUp.visible = true;
+			
+			_popupFrame = new PopupFrame(576, 1024);
+			addChild(_popupFrame);
+//			_popupFrame.visible = true;
+			_popupFrame.show();
+			
+			_progress = new Progress();
+			_progress.init(100, 100);
+			
+			_progressFrame = new ProgressFrame(576, 1024);
+			_progressFrame.setContent(_progress);
+			addChild(_progressFrame);
 			
 			_facebook = FBExtension.getInstance();
 			//			_facebook.loadUserInfo();
-			//			_facebook.logout();
+//			_facebook.logout();
 			var isToken:Boolean = _facebook.init();
 			
 			if(!isToken)
@@ -142,7 +168,7 @@ package puzzle.title
 			_facebookLoginButton.width = 250;
 			_facebookLoginButton.height = 100;
 			_facebookLoginButton.addEventListener(Event.TRIGGERED, onClickedLoginButton);
-			_popUp.addChild(_facebookLoginButton);
+			_popupFrame.addChild(_facebookLoginButton);
 		}
 		
 		private function onFailToken(event:FacebookEvent):void
@@ -162,9 +188,6 @@ package puzzle.title
 			
 			trace(User.getInstance().id);
 			
-			TweenMax.resumeAll();
-			_popUp.removeFromParent();
-			_popUp.destroy();
 //			_facebook.addEventListener(FacebookEvent.LOADED_FRIENDS_LIST, onLoadedFriends);
 //			_facebook.loadFriends();
 		}
@@ -175,17 +198,20 @@ package puzzle.title
 			_facebook.login();
 		}
 		
+		private function removePopup():void
+		{
+//			_popupFrame.visible = false;
+			_popupFrame.hide();
+			TweenMax.resumeAll();
+		}
+		
 		private function onSuccessLogin(event:FacebookEvent):void
 		{
 			trace("로그인 성공");
-			TweenMax.resumeAll();
 			_facebook.removeEventListener(FacebookEvent.LOGIN_SUCCESS, onSuccessLogin);
 			_facebookLoginButton.removeEventListener(Event.TRIGGERED, onClickedLoginButton);
 			_facebookLoginButton.removeFromParent();
 			_facebookLoginButton.dispose();
-			
-			_popUp.removeFromParent();
-			_popUp.destroy();
 			
 			setUser(UserType.Facebook);
 			
@@ -196,39 +222,43 @@ package puzzle.title
 		{
 			var user:User = User.getInstance();
 			
+			_progressFrame.startProgress();
+			
 			switch(userType)
 			{
 				case UserType.Facebook :
 					user.userType = UserType.Facebook;
 					user.id = FacebookUser.getInstance().id;
 					user.name = FacebookUser.getInstance().name;
-					user.picture = FacebookUser.getInstance().picture;
+					user.setPicture(completeLoadPicture);
+//					user.picture = FacebookUser.getInstance().picture;
 					
 					user.email = FacebookUser.getInstance().email;
+					_facebook.addEventListener(FacebookEvent.LOADED_FRIENDS_LIST, onLoadedFriends);
+					_facebook.loadFriends();
 					break;
 			}
 			
 			var now:Date = new Date();
 			user.playdate = now.toString();
+			
+			function completeLoadPicture():void
+			{
+				_progressFrame.stopProgress();
+				removePopup();
+			}
 		}
 		
-//		private function onLoadedFriends(event:FacebookEvent):void
-//		{
-//			var friends:Dictionary = FacebookUser.getInstance().friends;
-//			
-//			for(var key:String in friends)
-//			{
-//				trace(friends[key].name);
-//			}
-//			
-////			_facebook.score();
-////			trace("친구창");
-////			trace(event.message);
-////			var jsonObject:Object = JSON.parse(event.message);
-////			trace(jsonObject);
-////			trace(jsonObject[0].id);
-////			trace(jsonObject[0].name);
-//		}
+		private function onLoadedFriends(event:FacebookEvent):void
+		{
+			_facebook.removeEventListener(FacebookEvent.LOADED_FRIENDS_LIST, onLoadedFriends);
+			var friends:Dictionary = FacebookUser.getInstance().friends;
+			
+			for(var key:String in friends)
+			{
+				trace(friends[key].name);
+			}
+		}
 		
 		private function onTouch(event:TouchEvent):void
 		{

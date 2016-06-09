@@ -7,6 +7,7 @@ package puzzle.ingame
 	import customize.ListView;
 	import customize.ListViewContent;
 	import customize.PopupFrame;
+	import customize.Progress;
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
@@ -30,7 +31,6 @@ package puzzle.ingame
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.text.TextField;
-	import starling.textures.Texture;
 	import starling.utils.Color;
 	
 	public class InGameScene extends Scene
@@ -46,6 +46,8 @@ package puzzle.ingame
 		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/ingameSpriteSheet");
 		private var _resources:Resources;
 		private var _dbLoader:DBLoader;
+		
+		private var _progress:Progress;
 		
 		private var _backGround:Image;
 		
@@ -69,9 +71,8 @@ package puzzle.ingame
 		private var _pausePopupFrame:PopupFrame;
 		private var _pauseButton:Button;
 		
-		private var _listView:ListView;
-		private var _throwProps:ThrowProps;
-		private var _listViewPopupFrame:PopupFrame;
+		private var _rankingPopup:RankingPopup;
+		private var _rankingPopupFrame:PopupFrame;
 		
 		private var _blockDatas:Vector.<BlockData>;
 		
@@ -152,13 +153,13 @@ package puzzle.ingame
 			_pausePopup.destroy();
 			_pausePopup = null;
 			
-			_listViewPopupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
-			_listViewPopupFrame.removeFromParent();
-			_listViewPopupFrame.destroy();
-			_listViewPopupFrame = null;
+			_rankingPopupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			_rankingPopupFrame.removeFromParent();
+			_rankingPopupFrame.destroy();
+			_rankingPopupFrame = null;
 			
-			_listView.destroy();
-			_listView = null;
+//			_listView.destroy();
+//			_listView = null;
 			
 			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
 			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
@@ -295,23 +296,26 @@ package puzzle.ingame
 			_pausePopup.addEventListener(PausePopup.RESTART_CLICKED, onClickedRestart);
 			
 			_pausePopupFrame = new PopupFrame(576, 1024);
-			_pausePopupFrame.setPopup(_pausePopup);
+			_pausePopupFrame.setContent(_pausePopup);
 			_pausePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
 			addChild(_pausePopupFrame);
 			
-			_listView = new ListView();
-			_listView.init(new Image(Texture.fromBitmap(new popupBackGroundImage() as Bitmap)), 400, 300, 10);
-			_listView.isFill = false;
-			_listView.type = ListView.TYPE_DOWN;
-			_listView.contentHeight = 300;
+//			_listView = new ListView();
+//			_listView.init(new Image(Texture.fromBitmap(new popupBackGroundImage() as Bitmap)), 400, 300, 10);
+//			_listView.isFill = false;
+//			_listView.type = ListView.TYPE_DOWN;
+//			_listView.contentHeight = 300;
 			
 //			_throwProps = new ThrowProps(300, 200);
 //			_throwProps.setObject(_listView);
 			
-			_listViewPopupFrame = new PopupFrame(576, 1024);
-			_listViewPopupFrame.setPopup(_listView);
-			_listViewPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
-			addChild(_listViewPopupFrame);
+			_rankingPopup = new RankingPopup(_resources);
+			_rankingPopup.init(500, 700);
+			
+			_rankingPopupFrame = new PopupFrame(576, 1024);
+			_rankingPopupFrame.setContent(_rankingPopup);
+			_rankingPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_rankingPopupFrame);
 			
 			var blockData:BlockData;
 			while(_blockDatas.length != 0)
@@ -370,6 +374,7 @@ package puzzle.ingame
 			_comboTimer.startNewComboTime();
 			_score += 100;
 			updateScore();
+			_field.checkPossibleCell();
 		}
 		
 		private function onCompletePossibleCheck(event:CheckEvent):void
@@ -384,11 +389,16 @@ package puzzle.ingame
 				trace(_stageNumber);
 //				_paused = true;
 				
-				_dbLoader = new DBLoader(User.getInstance());
-				_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
-				_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+//				_dbLoader = new DBLoader(User.getInstance());
+//				_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
+//				_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
 				
-				_dbLoader.selectScoreData(_stageNumber);
+				_dbLoader = new DBLoader(User.getInstance());
+				_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
+				_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+				
+				_dbLoader.setScoreData(_stageNumber, _score);
+//				_dbLoader.selectScoreData(_stageNumber);
 //				if(User.getInstance().clearstage  < _stageNumber)
 //				{
 //					trace("업데이트");
@@ -405,6 +415,28 @@ package puzzle.ingame
 			}
 		}
 		
+		private function onCompleteSetScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+			_dbLoader.destroy();
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+			
+			_dbLoader.selectScoreData(_stageNumber);
+		}
+		
+		private function onFailedSetScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+			_dbLoader.destroy();
+			
+			trace(event.message);
+		}
+		
 		private function onCompleteLoadingScore(event:DBLoaderEvent):void
 		{
 			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
@@ -416,17 +448,10 @@ package puzzle.ingame
 			
 			trace("jsonLength = " + jsonObject.length);
 			
-			var viewContent:ListViewContent;
-			for(var i:int = 0; i < jsonObject.length; i++)
-			{
-				viewContent = new ListViewContent();
-				viewContent.init(new Image(Texture.fromBitmap(new popupTitleImage() as Bitmap)));
-				viewContent.name = (jsonObject[i].id + " = " + jsonObject[i].score);
-				_listView.addContent(viewContent);
-			}
-			viewContent = null;
+			_rankingPopup.setRanking(jsonObject);
 			
-			_listViewPopupFrame.visible = true;
+//			_rankingPopupFrame.visible = true;
+			_rankingPopupFrame.show();
 		}
 		
 		private function onFailedLoadingScore(event:DBLoaderEvent):void
@@ -494,8 +519,10 @@ package puzzle.ingame
 		private function keepPlay():void
 		{
 			_paused = false;
-			_pausePopupFrame.visible = false;
-			_listViewPopupFrame.visible = false;
+//			_pausePopupFrame.visible = false;
+			_pausePopupFrame.hide();
+//			_rankingPopupFrame.visible = false;
+			_rankingPopupFrame.hide();
 //			_field.touchable = true;
 		}
 		
@@ -536,12 +563,14 @@ package puzzle.ingame
 			_paused = !_paused;
 			if(_paused)
 			{
-				_pausePopupFrame.visible = true;
+//				_pausePopupFrame.visible = true;
+				_pausePopupFrame.show();
 //				_field.touchable = false;
 			}
 			else
 			{
-				_pausePopupFrame.visible = false;
+//				_pausePopupFrame.visible = false;
+				_pausePopupFrame.hide();
 //				_field.touchable = true;
 				//				SceneManager.current.goScene("title");
 			}

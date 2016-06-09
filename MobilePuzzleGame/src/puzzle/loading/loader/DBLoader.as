@@ -46,7 +46,8 @@ package puzzle.loading.loader
 						dbLoader.removeEventListener(Event.COMPLETE, onCompleteInsertUser);
 						dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildInsertUser);
 						
-						dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+						checkID(onCompleteCheck);
+//						dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
 					}
 					
 					function onFaildInsertUser(event:IOErrorEvent):void
@@ -126,24 +127,137 @@ package puzzle.loading.loader
 			
 			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/selectScore.php?stage="+stageNumber.toString());
 			dbLoader = new URLLoader();
-			dbLoader.addEventListener(Event.COMPLETE, onCompleteUpdateUser);
-			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
+			dbLoader.addEventListener(Event.COMPLETE, onCompleteSelectScore);
+			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
 			dbLoader.load(urlRequest);
 			
-			function onCompleteUpdateUser(event:Event):void
+			function onCompleteSelectScore(event:Event):void
 			{
-				dbLoader.removeEventListener(Event.COMPLETE, onCompleteUpdateUser);
-				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteSelectScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
 				
 				var result:String = dbLoader.data as String;
 				
 				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE, result));
 			}
 			
-			function onFaildUpdateUser(event:IOErrorEvent):void
+			function onFaildSelectScore(event:IOErrorEvent):void
 			{
-				dbLoader.removeEventListener(Event.COMPLETE, onCompleteUpdateUser);
-				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteSelectScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
+				
+				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.FAILED, event.text));
+			}
+		}
+		
+		public function setScoreData(stage:uint, score:uint):void
+		{
+			checkScore(onCompleteCheck, stage, score);
+			
+			function onCompleteCheck(result:int):void
+			{
+				if(result == 0)
+					insertScoreData(stage, score);
+				else if(result == 1)
+					updataScoreData(stage, score);
+				else
+					dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+			}
+		}
+		
+		private function checkScore(resultFunction:Function, stage:uint, score:uint):void
+		{
+			var urlRequest:URLRequest;
+			var dbLoader:URLLoader;
+			
+			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/selectUserScore.php?id="+_user.id+"&stage="+stage.toString());
+			dbLoader = new URLLoader();
+			dbLoader.addEventListener(Event.COMPLETE, onCompleteSelectScore);
+			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
+			dbLoader.load(urlRequest);
+			
+			function onCompleteSelectScore(event:Event):void
+			{
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteSelectScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
+				
+				trace(dbLoader.data);
+				var result:String = dbLoader.data as String;
+				var jsonObject:Object = JSON.parse(result);
+				
+				if(jsonObject.length == 0)
+				{
+					resultFunction(0);
+					return;
+				}
+				
+				if(int(jsonObject[0].score) < score)
+					resultFunction(1);
+				else
+					resultFunction(-1);
+//				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+			}
+			
+			function onFaildSelectScore(event:IOErrorEvent):void
+			{
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteSelectScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
+				
+				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.FAILED, event.text));
+			}
+		}
+		
+		private function insertScoreData(stageNumber:uint, score:uint):void
+		{
+			var urlRequest:URLRequest;
+			var dbLoader:URLLoader;
+			
+			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/insertScore.php?id="+_user.id+"&stage="+stageNumber.toString()+"&score="+score.toString());
+			dbLoader = new URLLoader();
+			dbLoader.addEventListener(Event.COMPLETE, onCompleteInsertScore);
+			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildInsertScore);
+			dbLoader.load(urlRequest);
+			
+			function onCompleteInsertScore(event:Event):void
+			{
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteInsertScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildInsertScore);
+				
+				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+			}
+			
+			function onFaildInsertScore(event:IOErrorEvent):void
+			{
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteInsertScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildInsertScore);
+				
+				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.FAILED, event.text));
+			}
+		}
+		
+		private function updataScoreData(stageNumber:uint, score:uint):void
+		{
+			var urlRequest:URLRequest;
+			var dbLoader:URLLoader;
+			
+			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/updateScore.php?id="+_user.id+"&stage="+stageNumber.toString()+"&target=score"+"&value="+score.toString());
+			dbLoader = new URLLoader();
+			dbLoader.addEventListener(Event.COMPLETE, onCompleteUpdateScore);
+			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateScore);
+			dbLoader.load(urlRequest);
+			
+			function onCompleteUpdateScore(event:Event):void
+			{
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteUpdateScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateScore);
+				
+				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+			}
+			
+			function onFaildUpdateScore(event:IOErrorEvent):void
+			{
+				dbLoader.removeEventListener(Event.COMPLETE, onCompleteUpdateScore);
+				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateScore);
 				
 				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.FAILED, event.text));
 			}

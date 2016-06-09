@@ -6,6 +6,7 @@ package customize
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
+	import starling.textures.Texture;
 	
 	public class ListView extends DisplayObjectContainer
 	{
@@ -29,8 +30,11 @@ package customize
 			super();
 		}
 		
-		public function init(backGround:Image, width:Number, height:Number, padding:Number):void
+		public function init(backGroundTexture:Texture, width:Number, height:Number, padding:Number):void
 		{
+			if(backGroundTexture == null)
+				return;
+			
 			_throwProps = new ThrowProps(width, height, padding);
 			_throwProps.type = ThrowProps.TYPE_DOWN;
 			_contentContainer = new Sprite();
@@ -41,9 +45,7 @@ package customize
 			_type = ListView.TYPE_DOWN;
 			_padding = padding;
 			
-			if(backGround == null)
-				return;
-			_backGround = backGround;
+			_backGround = new Image(backGroundTexture);
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
@@ -106,6 +108,12 @@ package customize
 			setListView();
 		}
 		
+		public function deleteAllContent():void
+		{
+			for(var i:int = _contents.length-1; i >= 0; i--)
+				deleteContent(_contents[i]);
+		}
+		
 		private function setListView():void
 		{
 			var contentHeight:Number;
@@ -125,14 +133,14 @@ package customize
 					_contents[i].height = _backGround.height - (_padding*2);
 					_contents[i].y = _padding;
 					_contents[i].width = contentWidth;
-					_contents[i].x = i*contentWidth;
+					_contents[i].x = (i*(contentWidth+_padding)) + _padding;
 				}
 				else
 				{
 					_contents[i].width = _backGround.width - (_padding*2);
 					_contents[i].x = _padding;
 					_contents[i].height = contentHeight;
-					_contents[i].y = i*contentHeight;
+					_contents[i].y = (i*(contentHeight+_padding)) + _padding;
 				}
 			}
 			_throwProps.setObject(_contentContainer);

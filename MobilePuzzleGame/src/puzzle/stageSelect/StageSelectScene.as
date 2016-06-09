@@ -3,6 +3,8 @@ package puzzle.stageSelect
 	import flash.filesystem.File;
 	
 	import customize.PopupFrame;
+	import customize.Progress;
+	import customize.ProgressFrame;
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
@@ -29,6 +31,9 @@ package puzzle.stageSelect
 		private var _resources:Resources;
 		
 		private var _dbLoader:DBLoader;
+		
+		private var _progress:Progress;
+		private var _progressFrame:ProgressFrame;
 		
 		private var _backGround:Image;
 		private var _stageButtons:Vector.<Button>;
@@ -115,6 +120,14 @@ package puzzle.stageSelect
 			_settingPopup.destroy();
 			_settingPopup = null;
 			
+			_progress.removeFromParent();
+			_progress.destroy();
+			_progress = null;
+			
+			_progressFrame.removeFromParent();
+			_progressFrame.destroy();
+			_progressFrame = null;
+			
 			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteResourceLoading);
 			_resources.removeEventListener(LoadingEvent.FAILED, onFailedResourcLoading);
 			_resources.destroy();
@@ -198,14 +211,22 @@ package puzzle.stageSelect
 			_settingPopup.addEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
 			
 			_popupFrame = new PopupFrame(576, 1024);
-			_popupFrame.setPopup(_settingPopup);
+			_popupFrame.setContent(_settingPopup);
 			_popupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
 			addChild(_popupFrame);
+			
+			_progress = new Progress();
+			_progress.init(100, 100);
+			
+			_progressFrame = new ProgressFrame(576, 1024);
+			_progressFrame.setContent(_progress);
+			addChild(_progressFrame);
 			
 			_dbLoader = new DBLoader(User.getInstance());
 			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
 			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
 			_dbLoader.setUserData();
+			_progressFrame.startProgress();
 		}
 		
 		private function onFailedResourcLoading(event:LoadingEvent):void
@@ -218,6 +239,7 @@ package puzzle.stageSelect
 		
 		private function onCompleteDBLoading(event:DBLoaderEvent):void
 		{
+			_progressFrame.stopProgress();
 			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
 			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
 			
@@ -228,6 +250,7 @@ package puzzle.stageSelect
 		
 		private function onFailedDBLoading(event:DBLoaderEvent):void
 		{
+			_progressFrame.stopProgress();
 			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
 			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
 			
@@ -272,17 +295,20 @@ package puzzle.stageSelect
 		
 		private function onClickedSettingClose(event:Event):void
 		{
-			_popupFrame.visible = false;
+//			_popupFrame.visible = false;
+			_popupFrame.hide();
 		}
 		
 		private function onClickedCover(event:Event):void
 		{
-			_popupFrame.visible = false;
+//			_popupFrame.visible = false;
+			_popupFrame.hide();
 		}
 		
 		private function onClickedSettingButton(event:Event):void
 		{
-			_popupFrame.visible = true;
+//			_popupFrame.visible = true;
+			_popupFrame.show();
 		}
 		
 		private function onClickedStageButton(event:Event):void

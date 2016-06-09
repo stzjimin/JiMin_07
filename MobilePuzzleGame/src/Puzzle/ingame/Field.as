@@ -245,7 +245,7 @@ package puzzle.ingame
 			dispatchEvent(new Event(Forker.GET_FORK));
 			dispatchEvent(new Event(Field.PANG));
 			
-			checkPossibleCell();
+//			checkPossibleCell();
 			
 			function onTweenComplete(event:Event):void
 			{
@@ -278,7 +278,7 @@ package puzzle.ingame
 			_juggler.add(tween1);
 			_juggler.add(tween2);
 			
-			checkPossibleCell();
+//			checkPossibleCell();
 			
 			possible.distroy();
 			

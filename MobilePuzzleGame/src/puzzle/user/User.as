@@ -1,7 +1,10 @@
 package puzzle.user
 {
 	import flash.display.Bitmap;
+	import flash.display.Loader;
 	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
+	import flash.net.URLRequest;
 
 	public class User
 	{
@@ -26,6 +29,26 @@ package puzzle.user
 			else
 			{
 				throw new IllegalOperationError("User가 이미 만들어져있습니다. User는 싱글톤 클래스에요!!");
+			}
+		}
+		
+		public function setPicture(resultFunction:Function):void
+		{
+			switch(_userType)
+			{
+				case UserType.Facebook :
+					var pictureURL:URLRequest = new URLRequest("https://graph.facebook.com/"+_id+"/picture");
+					var loader:Loader = new Loader();
+					loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadedUserImage);
+					loader.load(pictureURL);
+					break;
+			}
+			
+			function onLoadedUserImage(event:Event):void
+			{
+				_picture = loader.content as Bitmap;
+				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedUserImage);
+				resultFunction();
 			}
 		}
 		
@@ -103,7 +126,5 @@ package puzzle.user
 		{
 			_clearstage = value;
 		}
-
-
 	}
 }

@@ -36,6 +36,7 @@ package customize
 				_coverFace.dispose();
 				_coverFace = null;
 			}
+			
 			dispose();
 		}
 		
@@ -62,9 +63,12 @@ package customize
 			addChild(_coverFace);
 		}
 		
-		public function setPopup(popUp:DisplayObjectContainer, width:Number = 0, height:Number = 0):void
+		public function setContent(content:DisplayObjectContainer, width:Number = 0, height:Number = 0):void
 		{
-			_popUp = popUp;
+			if(_popUp != null)
+				_popUp.removeFromParent();
+			
+			_popUp = content;
 			if(width != 0)
 				_popUp.width = width;
 			if(height != 0)
@@ -73,6 +77,21 @@ package customize
 			_popUp.x = _coverFace.width/2;
 			_popUp.y = _coverFace.height/2;
 			addChild(_popUp);
+		}
+		
+		public function show():void
+		{
+			this.visible = true;
+		}
+		
+		public function hide():void
+		{
+			this.visible = false;
+		}
+		
+		public function setCoverAlpha(value:Number):void
+		{
+			_coverFace.alpha = value;
 		}
 		
 		private function onTouch(event:TouchEvent):void

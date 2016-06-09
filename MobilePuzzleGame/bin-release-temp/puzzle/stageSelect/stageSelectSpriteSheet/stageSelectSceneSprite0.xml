@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="stageSelectSceneSprite0.png">
+   <SubTexture name="alpha" x="0" y="0" width="576" height="1024" />
+   <SubTexture name="CheckBoxOFF" x="1310" y="44" width="27" height="24" />
+   <SubTexture name="CheckBoxON" x="1310" y="70" width="27" height="24" />
+   <SubTexture name="people" x="1156" y="44" width="152" height="152" />
+   <SubTexture name="settingButton" x="0" y="1429" width="64" height="64" />
+   <SubTexture name="settingPopup" x="0" y="1026" width="490" height="327" />
+   <SubTexture name="settingPopupCloseButton2" x="0" y="1355" width="76" height="72" />
+   <SubTexture name="settingPopupFrame" x="1156" y="0" width="195" height="42" />
+   <SubTexture name="stageBlockButton" x="1353" y="0" width="95" height="95" />
+   <SubTexture name="stageButtonImage" x="1156" y="198" width="95" height="95" />
+   <SubTexture name="stageSelectBackground2" x="578" y="0" width="576" height="1024" />
+</TextureAtlas>

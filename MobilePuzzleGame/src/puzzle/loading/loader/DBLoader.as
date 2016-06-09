@@ -73,12 +73,15 @@ package puzzle.loading.loader
 						
 						var result:String = dbLoader.data as String;
 						var jsonObject:Object = JSON.parse(result);
-						trace(jsonObject[0].id);
-						trace(jsonObject[0].name);
-						trace(jsonObject[0].playdate);
-						trace(jsonObject[0].clearstage);
-						_user.clearstage = jsonObject[0].clearstage;
-						dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+						if(!_user.clearstage || _user.clearstage <= int(jsonObject[0].clearstage))
+						{
+							_user.clearstage = jsonObject[0].clearstage;
+							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+						}
+						else
+						{
+							updateUserData("clearstage", _user.clearstage.toString());
+						}
 					}
 					
 					function onFaildSelectUser(event:IOErrorEvent):void

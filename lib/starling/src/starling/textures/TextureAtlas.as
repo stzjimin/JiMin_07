@@ -86,6 +86,8 @@ package starling.textures
             
             if (atlasXml)
                 parseAtlasXml(atlasXml);
+			else
+				trace("null");
         }
         
         /** Disposes the atlas texture. */

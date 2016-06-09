@@ -16,8 +16,6 @@ package puzzle.ingame.timer
 		[Embed(source="fillBar.png")]
 		private const fillBarImage:Class;
 		
-		public static const COMBOED:String = "comboed";
-		
 		private var _comboTime:Number;
 		private var _comboJuggler:Juggler;
 		
@@ -64,8 +62,14 @@ package puzzle.ingame.timer
 			dispose();
 		}
 		
-		public function startNewComboTime():void
+		public function checkCombo():Boolean
 		{
+			return startNewComboTime();
+		}
+		
+		private function startNewComboTime():Boolean
+		{
+			var combo:Boolean = false;
 			if(_comboTween == null)
 			{
 				trace("콤보시작");
@@ -74,6 +78,7 @@ package puzzle.ingame.timer
 				_comboTween.scaleXTo(0);
 				_comboTween.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
 				_comboJuggler.add(_comboTween);
+				combo = false;
 			}
 			else
 			{
@@ -82,9 +87,11 @@ package puzzle.ingame.timer
 				_comboTween.reset(_comboBar, _comboTime);
 				_comboTween.scaleXTo(0);
 				
-				dispatchEvent(new Event(ComboTimer.COMBOED, false, _comboCount));
+				combo = true;
+//				dispatchEvent(new Event(ComboTimer.COMBOED, false, _comboCount));
 			}
 			_comboBar.visible = true;
+			return combo;
 		}
 		
 		public function advanceTime(time:Number):void
@@ -97,7 +104,19 @@ package puzzle.ingame.timer
 			trace("콤보끝");
 			_comboTween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
 			_comboTween = null;
+			_comboCount = 0;
 			_comboBar.visible = false;
 		}
+
+		public function get comboCount():uint
+		{
+			return _comboCount;
+		}
+
+		public function set comboCount(value:uint):void
+		{
+			_comboCount = value;
+		}
+
 	}
 }

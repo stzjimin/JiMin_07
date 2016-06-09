@@ -11,6 +11,7 @@ package puzzle.stageSelect
 	
 	import puzzle.ingame.InGameScene;
 	import puzzle.loading.DBLoaderEvent;
+	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
@@ -54,6 +55,8 @@ package puzzle.stageSelect
 		
 		protected override function onCreate(event:SceneEvent):void
 		{
+			Loading.getInstance().showLoading(this);
+			
 			_resources = new Resources(_spriteDir);
 			
 			_resources.addSpriteName("stageSelectSceneSprite0.png");
@@ -65,10 +68,7 @@ package puzzle.stageSelect
 		
 		protected override function onStart(event:SceneEvent):void
 		{
-			_dbLoader = new DBLoader(User.getInstance());
-			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-			_dbLoader.setUserData();
+			loadUser();
 		}
 		
 		protected override function onUpdate(event:EnterFrameEvent):void
@@ -138,6 +138,8 @@ package puzzle.stageSelect
 		
 		private function onCompleteResourceLoading(event:LoadingEvent):void
 		{
+			Loading.getInstance().completeLoading();
+			
 			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageSelectBackground2"));
 			_backGround.width = 576;
 			_backGround.height = 1024;
@@ -222,6 +224,11 @@ package puzzle.stageSelect
 			_progressFrame.setContent(_progress);
 			addChild(_progressFrame);
 			
+			loadUser();
+		}
+		
+		private function loadUser():void
+		{
 			_dbLoader = new DBLoader(User.getInstance());
 			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
 			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);

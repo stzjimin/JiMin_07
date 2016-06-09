@@ -2,6 +2,7 @@ package customize
 {
 	import flash.errors.IllegalOperationError;
 	
+	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
 	import starling.textures.Texture;
 
@@ -33,12 +34,14 @@ package customize
 		{
 			show();
 			_progress.start();
+			Starling.juggler.add(_progress);
 		}
 		
 		public function stopProgress():void
 		{
 			hide();
 			_progress.stop();
+			Starling.juggler.remove(_progress);
 		}
 	}
 }

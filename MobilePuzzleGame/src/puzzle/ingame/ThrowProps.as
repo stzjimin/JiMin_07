@@ -131,9 +131,9 @@ package puzzle.ingame
 					targetPoint = new Point(_object.x + distanceX, _object.y);
 				else if(_type == ThrowProps.TYPE_DOWN)
 					targetPoint = new Point(_object.x, _object.y + distanceY);
-				_object.x = targetPoint.x;
-				_object.y = targetPoint.y;
-//				TweenMax.to(_object, 0.3, {x:targetPoint.x, y:targetPoint.y});
+//				_object.x = targetPoint.x;
+//				_object.y = targetPoint.y;
+				TweenMax.to(_object, 0.3, {x:targetPoint.x, y:targetPoint.y});
 				
 				_prevLocation = _currentLocation.clone();
 			}

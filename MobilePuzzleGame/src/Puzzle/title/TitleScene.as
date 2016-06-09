@@ -12,6 +12,7 @@ package puzzle.title
 	import customize.SceneEvent;
 	import customize.SceneManager;
 	
+	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.user.User;
@@ -54,8 +55,9 @@ package puzzle.title
 		
 		protected override function onCreate(event:SceneEvent):void
 		{
-			_resources = new Resources(_spriteDir);
+			_resources = new Resources(_spriteDir, null, _spriteDir);
 			_resources.addSpriteName("TitleSpriteSheet.png");
+			_resources.addImageName("loadingImage.png");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
@@ -107,6 +109,8 @@ package puzzle.title
 		
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
+			Loading.getInstance().init(576, 1024, _resources.getImageFile("loadingImage.png"));
+			
 			_backGround = new Image(_resources.getSubTexture("TitleSpriteSheet.png", "title"));
 			_backGround.width = 576;
 			_backGround.height = 1024;

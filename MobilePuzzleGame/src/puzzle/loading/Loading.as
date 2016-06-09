@@ -2,6 +2,8 @@ package puzzle.loading
 {
 	import flash.errors.IllegalOperationError;
 	
+	import customize.Scene;
+	
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.textures.Texture;
@@ -36,6 +38,16 @@ package puzzle.loading
 			_backGround.width = screenWidth;
 			_backGround.height = screenHeight;
 			addChild(_backGround);
+		}
+		
+		public function showLoading(scene:Scene):void
+		{
+			scene.addChild(this);
+		}
+		
+		public function completeLoading():void
+		{
+			this.removeFromParent();
 		}
 	}
 }

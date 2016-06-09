@@ -9,10 +9,11 @@ package puzzle.loading
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	
+	import puzzle.loading.loader.SpriteLoader;
+	
 	import starling.events.EventDispatcher;
 	import starling.textures.Texture;
-	import puzzle.loading.info.SpriteSheet;
-	import puzzle.loading.loader.SpriteLoader;
+	import starling.textures.TextureAtlas;
 	
 	public class Resources extends EventDispatcher
 	{	
@@ -105,6 +106,7 @@ package puzzle.loading
 				var imageURLRequest:URLRequest;
 				for(var j:int = 0; j < _imageName.length; j++)
 				{
+					trace(_imageDir.resolvePath(_imageName[j]).url);
 					imageURLRequest = new URLRequest(_imageDir.resolvePath(_imageName[j]).url);
 					imageLoader = new Loader();
 					imageLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageLoaded);
@@ -178,9 +180,9 @@ package puzzle.loading
 		
 		private function onCompleteSpriteLoad(name:String, spriteBitmap:Bitmap, xml:XML):void
 		{
-			var spriteSheet:SpriteSheet = new SpriteSheet(name, spriteBitmap, xml);
+//			var spriteSheet:SpriteSheet = new SpriteSheet(name, spriteBitmap, xml);
+			var spriteSheet:TextureAtlas = new TextureAtlas(Texture.fromBitmap(spriteBitmap), xml);
 			_spriteSheetDic[name] = spriteSheet;
-			trace(spriteSheet.name);
 			_loadedCount++;
 			checkLoadComplete(name);
 		}
@@ -233,12 +235,12 @@ package puzzle.loading
 		
 		public function getSubTexture(spriteFileName:String, subTextureName:String):Texture
 		{
-			return (SpriteSheet(_spriteSheetDic[spriteFileName]).subTextures[subTextureName] as Texture);
+			return (TextureAtlas(_spriteSheetDic[spriteFileName]).getTexture(subTextureName));
 		}
 		
-		public function getSpriteSheet(spriteFileName:String):SpriteSheet
+		public function getSpriteSheet(spriteFileName:String):TextureAtlas
 		{
-			return (_spriteSheetDic[spriteFileName] as SpriteSheet);
+			return (_spriteSheetDic[spriteFileName] as TextureAtlas);
 		}
 	}
 }

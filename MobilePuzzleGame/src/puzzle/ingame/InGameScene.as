@@ -4,8 +4,6 @@ package puzzle.ingame
 	import flash.display.Bitmap;
 	import flash.filesystem.File;
 	
-	import customize.ListView;
-	import customize.ListViewContent;
 	import customize.PopupFrame;
 	import customize.Progress;
 	import customize.Scene;
@@ -20,17 +18,22 @@ package puzzle.ingame
 	import puzzle.ingame.timer.Timer;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	import puzzle.loading.DBLoaderEvent;
+	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
 	import puzzle.user.User;
 	
 	import starling.animation.Juggler;
+	import starling.core.Starling;
 	import starling.display.Button;
 	import starling.display.Image;
+	import starling.display.MovieClip;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.text.TextField;
+	import starling.textures.Texture;
+	import starling.textures.TextureAtlas;
 	import starling.utils.Color;
 	
 	public class InGameScene extends Scene
@@ -41,6 +44,12 @@ package puzzle.ingame
 		[Embed(source="PopupTitle.png")]
 		private const popupTitleImage:Class;
 		
+		[Embed(source="readyClip.png")]
+		private const readyClip:Class;
+		
+		[Embed(source="readyClip.xml", mimeType="application/octet-stream")]
+		private const readyXML:Class;
+		
 		private var _stageNumber:uint;
 		
 		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/ingameSpriteSheet");
@@ -48,6 +57,8 @@ package puzzle.ingame
 		private var _dbLoader:DBLoader;
 		
 		private var _progress:Progress;
+		
+		private var _isClear:Boolean;
 		
 		private var _backGround:Image;
 		
@@ -71,8 +82,11 @@ package puzzle.ingame
 		private var _pausePopupFrame:PopupFrame;
 		private var _pauseButton:Button;
 		
-		private var _rankingPopup:RankingPopup;
-		private var _rankingPopupFrame:PopupFrame;
+		private var _resultPopup:ResultPopup;
+		private var _resultPopupFrame:PopupFrame;
+		
+		private var _readyTextures:TextureAtlas;
+		private var _readyMovie:MovieClip;
 		
 		private var _blockDatas:Vector.<BlockData>;
 		
@@ -84,7 +98,10 @@ package puzzle.ingame
 		
 		protected override function onCreate(event:SceneEvent):void
 		{
+			Loading.getInstance().showLoading(this);
+			
 			_stageNumber = int(this.data);
+			_isClear = false;
 			
 			_resources = new Resources(_spirteDir, null, null);
 			
@@ -120,7 +137,6 @@ package puzzle.ingame
 			_timer.destroy();
 			_timer = null;
 			
-			_comboTimer.removeEventListener(ComboTimer.COMBOED, onCombo);
 			_comboTimer.removeFromParent();
 			_comboTimer.destroy();
 			_comboTimer = null;
@@ -153,13 +169,12 @@ package puzzle.ingame
 			_pausePopup.destroy();
 			_pausePopup = null;
 			
-			_rankingPopupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
-			_rankingPopupFrame.removeFromParent();
-			_rankingPopupFrame.destroy();
-			_rankingPopupFrame = null;
-			
-//			_listView.destroy();
-//			_listView = null;
+			_resultPopup.removeEventListener(ResultPopup.CLICKED_BACK, onClickedMenu);
+			_resultPopup.removeEventListener(ResultPopup.CLICKED_NEXT, onClickedNext);
+			_resultPopup.removeEventListener(ResultPopup.CLICKED_RESTART, onClickedRestart);
+			_resultPopupFrame.removeFromParent();
+			_resultPopupFrame.destroy();
+			_resultPopupFrame = null;
 			
 			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
 			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
@@ -183,11 +198,13 @@ package puzzle.ingame
 			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
 			_resources.destroy();
-			//			NativeApplication.nativeApplication.exit();
+			NativeApplication.nativeApplication.exit();
 		}
 		
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
+			Loading.getInstance().completeLoading();
+			
 			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
 			
 			_score = 0;
@@ -229,7 +246,6 @@ package puzzle.ingame
 			
 			_comboTimer = new ComboTimer();
 			_comboTimer.init(520, 65, 100, 30, 3);
-			_comboTimer.addEventListener(ComboTimer.COMBOED, onCombo);
 			addChild(_comboTimer);
 			
 			_items = new Items(_resources);
@@ -300,22 +316,15 @@ package puzzle.ingame
 			_pausePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
 			addChild(_pausePopupFrame);
 			
-//			_listView = new ListView();
-//			_listView.init(new Image(Texture.fromBitmap(new popupBackGroundImage() as Bitmap)), 400, 300, 10);
-//			_listView.isFill = false;
-//			_listView.type = ListView.TYPE_DOWN;
-//			_listView.contentHeight = 300;
+			_resultPopup = new ResultPopup(_resources);
+			_resultPopup.init(500, 700);
+			_resultPopup.addEventListener(ResultPopup.CLICKED_BACK, onClickedMenu);
+			_resultPopup.addEventListener(ResultPopup.CLICKED_NEXT, onClickedNext);
+			_resultPopup.addEventListener(ResultPopup.CLICKED_RESTART, onClickedRestart);
 			
-//			_throwProps = new ThrowProps(300, 200);
-//			_throwProps.setObject(_listView);
-			
-			_rankingPopup = new RankingPopup(_resources);
-			_rankingPopup.init(500, 700);
-			
-			_rankingPopupFrame = new PopupFrame(576, 1024);
-			_rankingPopupFrame.setContent(_rankingPopup);
-			_rankingPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
-			addChild(_rankingPopupFrame);
+			_resultPopupFrame = new PopupFrame(576, 1024);
+			_resultPopupFrame.setContent(_resultPopup);
+			addChild(_resultPopupFrame);
 			
 			var blockData:BlockData;
 			while(_blockDatas.length != 0)
@@ -332,23 +341,18 @@ package puzzle.ingame
 			_playJuggler.add(_timer);
 			_playJuggler.add(_comboTimer);
 			
-			_paused = false;
+			var xnl:XML = new XML(new readyXML());
+			_readyTextures = new TextureAtlas(Texture.fromBitmap(new readyClip() as Bitmap), xnl);
+			_readyMovie = new MovieClip(_readyTextures.getTextures("ready_"), 10);
+			_readyMovie.width = 300;
+			_readyMovie.height = 500;
+			_readyMovie.alignPivot();
+			_readyMovie.x = _backGround.width / 2;
+			_readyMovie.y = _backGround.height / 2;
+			
+			readyTime();
 			
 			trace(flash.display.Screen.mainScreen.bounds);
-			//			
-			//			_button = new Button(Texture.fromBitmap(new buttonImage() as Bitmap));
-			//			_button.x = 300;
-			//			_button.y = 800;
-			//			_button.addEventListener(Event.TRIGGERED, onTriggered2);
-			//			addChild(_button);
-			
-			//			this.alignPivot();
-			//			
-			//			this.x = flash.display.Screen.mainScreen.bounds.width / 2;
-			//			this.y = flash.display.Screen.mainScreen.bounds.height / 2;
-			//			
-			//			this.width = flash.display.Screen.mainScreen.bounds.width /11 * 10; 
-			//			this.height = flash.display.Screen.mainScreen.bounds.height /11 * 10;
 		}
 		
 		private function onDeActivate(event:SceneEvent):void
@@ -356,23 +360,43 @@ package puzzle.ingame
 			_pauseButton.dispatchEvent(new Event(Event.TRIGGERED));
 		}
 		
+		private function readyTime():void
+		{
+			this.touchable = false;
+			addChild(_readyMovie);
+			Starling.juggler.add(_readyMovie);
+			Starling.juggler.delayCall(goTime, 1.5);
+		}
+		
+		private function goTime():void
+		{
+			Starling.juggler.remove(_readyMovie);
+			_readyMovie.removeFromParent();
+			_paused = false;
+			this.touchable = true;
+		}
+		
 		private function updateScore():void
 		{
 			_scoreTextField.text = _score.toString();
 		}
 		
-		private function onCombo(event:Event):void
+		private function onCombo():void
 		{
-			trace("현제 콤보 : " + event.data);
+			trace("현제 콤보 : " + _comboTimer.comboCount);
 			_timer.addTime(0.5);
-			_score += (100 * int(event.data));
-			updateScore();
+			_score += (100 * int(_comboTimer.comboCount));
 		}
 		
 		private function onCompletePang(event:Event):void
 		{
-			_comboTimer.startNewComboTime();
+			var combo:Boolean;
 			_score += 100;
+			
+			combo = _comboTimer.checkCombo();
+			if(combo)
+				onCombo();
+			
 			updateScore();
 			_field.checkPossibleCell();
 		}
@@ -387,31 +411,19 @@ package puzzle.ingame
 				trace("클리어");
 				trace(User.getInstance().clearstage);
 				trace(_stageNumber);
-//				_paused = true;
+				_isClear = true;
 				
-//				_dbLoader = new DBLoader(User.getInstance());
-//				_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
-//				_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+				if(User.getInstance().clearstage < _stageNumber)
+					User.getInstance().clearstage = _stageNumber;
+				
+				_playJuggler.remove(_timer);
+				_playJuggler.remove(_comboTimer);
 				
 				_dbLoader = new DBLoader(User.getInstance());
 				_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
 				_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
 				
 				_dbLoader.setScoreData(_stageNumber, _score);
-//				_dbLoader.selectScoreData(_stageNumber);
-//				if(User.getInstance().clearstage  < _stageNumber)
-//				{
-//					trace("업데이트");
-//					_dbLoader = new DBLoader(User.getInstance());
-//					_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-//					_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-//					
-//					_dbLoader.updateUserData(DBLoaderEvent.COLUMN_CLEARSTAGE, _stageNumber.toString());
-//				}
-//				else
-//				{
-//					outThisGame();
-//				}
 			}
 		}
 		
@@ -448,10 +460,22 @@ package puzzle.ingame
 			
 			trace("jsonLength = " + jsonObject.length);
 			
-			_rankingPopup.setRanking(jsonObject);
+			if(_isClear)
+			{
+				_resultPopup.setTitleMessage("성공!!");
+				_resultPopup.setScore(_score);
+				_resultPopup.setRecord("1111");
+			}
+			else
+			{
+				_resultPopup.setTitleMessage("실패");
+				_resultPopup.setScore(0);
+				_resultPopup.setRecord("0");
+			}
 			
-//			_rankingPopupFrame.visible = true;
-			_rankingPopupFrame.show();
+			_resultPopup.setRanking(jsonObject);
+			
+			_resultPopupFrame.show();
 		}
 		
 		private function onFailedLoadingScore(event:DBLoaderEvent):void
@@ -468,23 +492,21 @@ package puzzle.ingame
 			SceneManager.current.outScene(_stageNumber);
 		}
 		
-		private function onCompleteDBLoading(event:DBLoaderEvent):void
-		{
-			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-			_dbLoader.destroy();
-			
-//			outThisGame();
-		}
-		
-		private function onFailedDBLoading(event:DBLoaderEvent):void
-		{
-			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-			_dbLoader.destroy();
-			
-			trace(event.message);
-		}
+//		private function onCompleteDBLoading(event:DBLoaderEvent):void
+//		{
+//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+//			_dbLoader.destroy();
+//		}
+//		
+//		private function onFailedDBLoading(event:DBLoaderEvent):void
+//		{
+//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+//			_dbLoader.destroy();
+//			
+//			trace(event.message);
+//		}
 		
 		private function onGetFork(event:Event):void
 		{
@@ -512,18 +534,14 @@ package puzzle.ingame
 		private function onClickedShuffle(event:Event):void
 		{
 			trace("shuffle");
-//			_field.dispatchEvent(new Event("shuffle"));
 			_field.shuffle();
 		}
 		
 		private function keepPlay():void
 		{
 			_paused = false;
-//			_pausePopupFrame.visible = false;
 			_pausePopupFrame.hide();
-//			_rankingPopupFrame.visible = false;
-			_rankingPopupFrame.hide();
-//			_field.touchable = true;
+			_resultPopupFrame.hide();
 		}
 		
 		private function onClickedContinue(event:Event):void
@@ -540,9 +558,14 @@ package puzzle.ingame
 		{
 			outThisGame();
 			SceneManager.current.addScene(InGameScene, "game");
-			SceneManager.current.goScene("game", this.data);
-//			keepPlay();
-//			_field.dispatchEvent(new Event("shuffle"));
+			SceneManager.current.goScene("game", _stageNumber);
+		}
+		
+		private function onClickedNext(event:Event):void
+		{
+			outThisGame();
+			SceneManager.current.addScene(InGameScene, "game");
+			SceneManager.current.goScene("game", _stageNumber + 1);
 		}
 		
 		private function onClickedCover(event:Event):void
@@ -555,7 +578,12 @@ package puzzle.ingame
 			trace("끝");
 			_paused = false;
 			_field.touchable = false;
-//			SceneManager.current.outScene();
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+			
+			_dbLoader.selectScoreData(_stageNumber);
 		}
 		
 		private function onClickedSettingButton(event:Event):void
@@ -563,16 +591,11 @@ package puzzle.ingame
 			_paused = !_paused;
 			if(_paused)
 			{
-//				_pausePopupFrame.visible = true;
 				_pausePopupFrame.show();
-//				_field.touchable = false;
 			}
 			else
 			{
-//				_pausePopupFrame.visible = false;
 				_pausePopupFrame.hide();
-//				_field.touchable = true;
-				//				SceneManager.current.goScene("title");
 			}
 		}
 	}

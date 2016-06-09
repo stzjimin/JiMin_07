@@ -1,33 +1,38 @@
 package  
 {
 	import flash.display.Sprite;
-	import flash.display.StageAlign;
-	import flash.display.StageScaleMode;
+	import flash.geom.Rectangle;
 	
 	import customize.SceneManager;
 	
-	import puzzle.ingame.InGameScene;
 	import puzzle.stageSelect.StageSelectScene;
 	import puzzle.title.TitleScene;
 	
 	import starling.core.Starling;
 	import starling.events.Event;
+	import starling.utils.RectangleUtil;
+	import starling.utils.ScaleMode;
 	
-	[SWF(frameRate = "60", width="576", height="1024", backgroundColor="#FFFFF0")]
+	[SWF(frameRate = "60", backgroundColor="#FFFFF0")]
 	public class PuzzleGame extends Sprite
 	{
+		public static const WIDTH:int = 576;  
+		public static const HEIGHT:int = 1024;  
+		
 		private var _starlingCore:Starling;
 		
 		public function PuzzleGame()
 		{
-			super();
+			var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, WIDTH, HEIGHT), new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight), ScaleMode.SHOW_ALL); 
 			
 			// support autoOrients
-			stage.align = StageAlign.TOP;
-			stage.scaleMode = StageScaleMode.NO_SCALE;
+//			stage.align = StageAlign.TOP;
+//			stage.scaleMode = StageScaleMode.NO_SCALE;
 			
 			Starling.multitouchEnabled = true;
-			_starlingCore = new Starling(SceneManager, stage);
+			_starlingCore = new Starling(SceneManager, stage, viewPort);
+			_starlingCore.stage.stageWidth  = WIDTH; 
+			_starlingCore.stage.stageHeight = HEIGHT;
 			_starlingCore.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
 			_starlingCore.showStats = true;
 		}

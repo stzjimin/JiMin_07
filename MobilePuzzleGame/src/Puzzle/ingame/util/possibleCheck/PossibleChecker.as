@@ -153,6 +153,14 @@ package puzzle.ingame.util.possibleCheck
 			}
 		}
 		
+		public function outPrevCell():void
+		{
+			if(_prevCell == null)
+				return;
+			
+			outChecker(_prevCell);
+		}
+		
 		public function pickPossible():Possible
 		{
 			for(var key:Cell in _possibles)

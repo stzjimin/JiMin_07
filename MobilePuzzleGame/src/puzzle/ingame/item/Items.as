@@ -5,6 +5,7 @@ package puzzle.ingame.item
 	import customize.CheckBox;
 	
 	import puzzle.loading.Resources;
+	import puzzle.user.User;
 	
 	import starling.display.Button;
 	import starling.display.DisplayObjectContainer;
@@ -31,9 +32,9 @@ package puzzle.ingame.item
 		{
 			_resources = resources;
 			
-			_fork = new CheckBox(_resources.getSubTexture("IngameSprite2.png", "fork"), Texture.fromBitmap(new forkSelectImage() as Bitmap));
-			_shuffle = new Button(_resources.getSubTexture("IngameSprite2.png", "shuffle"));
-			_search = new Button(_resources.getSubTexture("IngameSprite2.png", "search"));
+			_fork = new CheckBox(_resources.getSubTexture("IngameSprite2.png", "fork"), Texture.fromBitmap(new forkSelectImage() as Bitmap), User.getInstance().fork.toString());
+			_shuffle = new Button(_resources.getSubTexture("IngameSprite2.png", "shuffle"), User.getInstance().shuffle.toString());
+			_search = new Button(_resources.getSubTexture("IngameSprite2.png", "search"), User.getInstance().search.toString());
 		}
 		
 		public function init(width:Number, height:Number):void

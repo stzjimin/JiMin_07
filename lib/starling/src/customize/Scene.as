@@ -15,6 +15,9 @@ package customize
 			addEventListener(EnterFrameEvent.ENTER_FRAME, onUpdate);
 			addEventListener(SceneEvent.END, onEnded);
 			addEventListener(SceneEvent.DESTROY, onDestroy);
+			
+			addEventListener(SceneEvent.ACTIVATE, onActivate);
+			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
 		}
 		
 		/**
@@ -64,14 +67,36 @@ package customize
 		 */		
 		protected function onDestroy(event:SceneEvent):void
 		{
-			trace("이기되나?");
 			removeEventListener(SceneEvent.CREATE, onCreate);
 			removeEventListener(SceneEvent.START, onStart);
 			removeEventListener(EnterFrameEvent.ENTER_FRAME, onUpdate);
 			removeEventListener(SceneEvent.END, onEnded);
 			removeEventListener(SceneEvent.DESTROY, onDestroy);
 			
+			removeEventListener(SceneEvent.ACTIVATE, onActivate);
+			removeEventListener(SceneEvent.DEACTIVATE, onDeActivate);
+			
 			dispose();
+		}
+		
+		/**
+		 * 게임이 엑티브될때 호출됩니다.
+		 * @param event
+		 * 
+		 */
+		protected function onActivate(event:SceneEvent):void
+		{
+			
+		}
+		
+		/**
+		 * 게임이 디엑티브될대 호출됩니다. 
+		 * @param event
+		 * 
+		 */		
+		protected function onDeActivate(event:SceneEvent):void
+		{
+			
 		}
 
 		public function get data():Object

@@ -1,6 +1,5 @@
 package customize
 {
-	import puzzle.ingame.ThrowProps;
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;

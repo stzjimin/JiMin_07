@@ -73,15 +73,39 @@ package puzzle.loading.loader
 						
 						var result:String = dbLoader.data as String;
 						var jsonObject:Object = JSON.parse(result);
-						if(!_user.clearstage || _user.clearstage <= int(jsonObject[0].clearstage))
+						var setString:String = "";
+						
+						var serverDate:Date = new Date(jsonObject[0].playdate);
+						var userDate:Date = new Date(_user.playdate);
+						
+						if(serverDate.getTime() < userDate.getTime())
 						{
-							_user.clearstage = jsonObject[0].clearstage;
-							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+							setString = setString.concat("playdate = " + _user.playdate + ",");
+							
+							var vers:Number = userDate.getTime() - serverDate.getTime();
+							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.PLAYDATE_CHANGE, vers.toString()));
 						}
 						else
-						{
-							updateUserData("clearstage", _user.clearstage.toString());
-						}
+							trace("님 혹시 트레이서?");
+						
+						if(!_user.clearstage || _user.clearstage <= int(jsonObject[0].clearstage))
+							_user.clearstage = jsonObject[0].clearstage;
+						else
+							setString = setString.concat("clearstage = " + _user.clearstage.toString() + ",");
+						
+						if(jsonObject[0].fork != _user.fork)
+							_user.fork = jsonObject[0].fork;
+						if(jsonObject[0].search != _user.search)
+							_user.search = jsonObject[0].search;
+						if(jsonObject[0].shuffle != _user.shuffle)
+							_user.shuffle = jsonObject[0].shuffle;
+						if(jsonObject[0].heart != _user.heart)
+							_user.heart = jsonObject[0].heart;
+						
+						if(setString == "")
+							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
+						else
+							updateUserData(setString);
 					}
 					
 					function onFaildSelectUser(event:IOErrorEvent):void
@@ -95,12 +119,17 @@ package puzzle.loading.loader
 			}
 		}
 		
-		public function updateUserData(target:String, value:String):void
+		public function updateUserData(setString:String):void
 		{
 			var urlRequest:URLRequest;
 			var dbLoader:URLLoader;
 			
-			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/updateUser.php?id="+_user.id+"&target="+target+"&value="+value);
+			if(setString.charAt(setString.length) == ',')
+				setString = setString.substr(setString.length-1, 1);
+			
+			trace("setString = " + setString);
+			
+			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/updateUser.php?set="+setString);
 			dbLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCompleteUpdateUser);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
@@ -119,6 +148,7 @@ package puzzle.loading.loader
 				dbLoader.removeEventListener(Event.COMPLETE, onCompleteUpdateUser);
 				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
 				
+				trace("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.FAILED, event.text));
 			}
 		}

@@ -11,6 +11,8 @@ package puzzle.title
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
+	import customize.Sound;
+	import customize.SoundManager;
 	
 	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
@@ -30,7 +32,9 @@ package puzzle.title
 	
 	public class TitleScene extends Scene
 	{	
-		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/title/titleSpriteSheet");
+		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/titleSpriteSheet");
+		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/sound");
+		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/image");
 		private var _resources:Resources;
 		
 		private var _progress:Progress;
@@ -47,6 +51,8 @@ package puzzle.title
 		private var _backGround:Image;
 		private var _ari:Image;
 		
+		private var _soundManager:SoundManager;
+		
 		public function TitleScene()
 		{
 			super();
@@ -55,9 +61,12 @@ package puzzle.title
 		
 		protected override function onCreate(event:SceneEvent):void
 		{
-			_resources = new Resources(_spriteDir, null, _spriteDir);
+			_soundManager = new SoundManager;
+			_resources = new Resources(_spriteDir, _soundDir, _imageDir);
+			
 			_resources.addSpriteName("TitleSpriteSheet.png");
 			_resources.addImageName("loadingImage.png");
+			_resources.addSoundName("Rose.mp3");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
@@ -104,12 +113,36 @@ package puzzle.title
 			_popupFrame.destroy();
 			_popupFrame = null;
 			
+			_soundManager.destroy();
+			_soundManager = null;
+			
 			super.onDestroy(event);
+		}
+		
+		protected override function onActivate(event:SceneEvent):void
+		{
+			if(_soundManager)
+			{
+				_soundManager.wakeAll();
+			}
+			super.onActivate(event);
+		}
+		
+		protected override function onDeActivate(event:SceneEvent):void
+		{
+			if(_soundManager)
+			{
+				_soundManager.stopAll();
+			}
+			super.onDeActivate(event);
 		}
 		
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
 			Loading.getInstance().init(576, 1024, _resources.getImageFile("loadingImage.png"));
+			
+			_soundManager.addSound("Rose.mp3", _resources.getSoundFile("Rose.mp3"));
+			_soundManager.play("Rose.mp3", Sound.INFINITE, true);
 			
 			_backGround = new Image(_resources.getSubTexture("TitleSpriteSheet.png", "title"));
 			_backGround.width = 576;
@@ -225,6 +258,7 @@ package puzzle.title
 		private function setUser(userType:String):void
 		{
 			var user:User = User.getInstance();
+			User.getInstance().loadUserState();
 			
 			_progressFrame.startProgress();
 			

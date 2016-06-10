@@ -8,6 +8,8 @@ package puzzle.stageSelect
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
+	import customize.Sound;
+	import customize.SoundManager;
 	
 	import puzzle.ingame.InGameScene;
 	import puzzle.loading.DBLoaderEvent;
@@ -28,7 +30,9 @@ package puzzle.stageSelect
 
 	public class StageSelectScene extends Scene
 	{
-		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/stageSelectSpriteSheet");
+		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/stageSelectSpriteSheet");
+		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/sound");
+		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/image");
 		private var _resources:Resources;
 		
 		private var _dbLoader:DBLoader;
@@ -48,6 +52,8 @@ package puzzle.stageSelect
 		private var _settingPopup:SettingPopup;
 		private var _popupFrame:PopupFrame;
 		
+		private var _soundManager:SoundManager;
+		
 		public function StageSelectScene()
 		{
 			super();
@@ -56,10 +62,12 @@ package puzzle.stageSelect
 		protected override function onCreate(event:SceneEvent):void
 		{
 			Loading.getInstance().showLoading(this);
+			_soundManager = new SoundManager;
 			
-			_resources = new Resources(_spriteDir);
+			_resources = new Resources(_spriteDir, _soundDir, _imageDir);
 			
 			_resources.addSpriteName("stageSelectSceneSprite0.png");
+			_resources.addSoundName("White.mp3");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteResourceLoading);
 			_resources.addEventListener(LoadingEvent.FAILED, onFailedResourcLoading);
@@ -69,6 +77,8 @@ package puzzle.stageSelect
 		protected override function onStart(event:SceneEvent):void
 		{
 			loadUser();
+			if(_soundManager)
+				_soundManager.wakeAll();
 		}
 		
 		protected override function onUpdate(event:EnterFrameEvent):void
@@ -78,7 +88,8 @@ package puzzle.stageSelect
 		
 		protected override function onEnded(event:SceneEvent):void
 		{
-			
+			if(_soundManager)
+				_soundManager.stopAll();
 		}
 		
 		protected override function onDestroy(event:SceneEvent):void
@@ -115,6 +126,10 @@ package puzzle.stageSelect
 			_popupFrame.destroy();
 			_popupFrame = null;
 			
+			_settingPopup.removeEventListener(SettingPopup.BGM_SWAP_CHECK, onSwapBGM);
+			_settingPopup.removeEventListener(SettingPopup.BGM_SWAP_EMPTY, onSwapBGM);
+			_settingPopup.removeEventListener(SettingPopup.EFFECT_SWAP_CHECK, onSwapEffect);
+			_settingPopup.removeEventListener(SettingPopup.EFFECT_SWAP_EMPTY, onSwapEffect);
 			_settingPopup.removeEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
 			_settingPopup.removeFromParent();
 			_settingPopup.destroy();
@@ -133,12 +148,35 @@ package puzzle.stageSelect
 			_resources.destroy();
 			_resources = null;
 			
+			_soundManager.destroy();
+			_soundManager = null;
+			
 			super.onDestroy(event);
+		}
+		
+		protected override function onActivate(event:SceneEvent):void
+		{
+			if(_soundManager)
+			{
+				_soundManager.wakeAll();
+			}
+			super.onActivate(event);
+		}
+		
+		protected override function onDeActivate(event:SceneEvent):void
+		{
+			if(_soundManager)
+			{
+				_soundManager.stopAll();
+			}
+			super.onDeActivate(event);
 		}
 		
 		private function onCompleteResourceLoading(event:LoadingEvent):void
 		{
 			Loading.getInstance().completeLoading();
+			
+			_soundManager.addSound("White.mp3", _resources.getSoundFile("White.mp3"));
 			
 			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageSelectBackground2"));
 			_backGround.width = 576;
@@ -211,6 +249,10 @@ package puzzle.stageSelect
 			_settingPopup = new SettingPopup(_resources);
 			_settingPopup.init(400, 300);
 			_settingPopup.addEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
+			_settingPopup.addEventListener(SettingPopup.BGM_SWAP_CHECK, onSwapBGM);
+			_settingPopup.addEventListener(SettingPopup.BGM_SWAP_EMPTY, onSwapBGM);
+			_settingPopup.addEventListener(SettingPopup.EFFECT_SWAP_CHECK, onSwapEffect);
+			_settingPopup.addEventListener(SettingPopup.EFFECT_SWAP_EMPTY, onSwapEffect);
 			
 			_popupFrame = new PopupFrame(576, 1024);
 			_popupFrame.setContent(_settingPopup);
@@ -223,6 +265,8 @@ package puzzle.stageSelect
 			_progressFrame = new ProgressFrame(576, 1024);
 			_progressFrame.setContent(_progress);
 			addChild(_progressFrame);
+			
+			_soundManager.play("White.mp3", Sound.INFINITE);
 			
 			loadUser();
 		}
@@ -324,6 +368,34 @@ package puzzle.stageSelect
 			trace(stageNumber);
 			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game", stageNumber);
+		}
+		
+		private function onSwapBGM(event:Event):void
+		{
+			if(event.type == SettingPopup.BGM_SWAP_CHECK)
+			{
+				_soundManager.isBgmActive = true;
+				User.getInstance().bgmActive = true;
+			}
+			else
+			{
+				_soundManager.isBgmActive = false;
+				User.getInstance().bgmActive = false;
+			}
+		}
+		
+		private function onSwapEffect(event:Event):void
+		{
+			if(event.type == SettingPopup.EFFECT_SWAP_CHECK)
+			{
+				_soundManager.isEffectActive = true;
+				User.getInstance().soundEffectActive = true;
+			}
+			else
+			{
+				_soundManager.isEffectActive = false;
+				User.getInstance().soundEffectActive = false;
+			}
 		}
 		
 		private function onTouch(event:TouchEvent):void

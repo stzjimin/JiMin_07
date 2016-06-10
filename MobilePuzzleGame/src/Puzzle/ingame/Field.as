@@ -243,7 +243,7 @@ package puzzle.ingame
 			_juggler.add(tween2);
 			
 			dispatchEvent(new Event(Forker.GET_FORK));
-			dispatchEvent(new Event(Field.PANG));
+//			dispatchEvent(new Event(Field.PANG));
 			
 //			checkPossibleCell();
 			
@@ -384,15 +384,16 @@ package puzzle.ingame
 			block.init(blockData);
 			cell.addBlock(block);
 		}
-
-		public function get isFork():Boolean
+		
+		public function forkChecked():void
 		{
-			return _isFork;
+			_isFork = true;
+			_possibleChecker.outPrevCell();
 		}
-
-		public function set isFork(value:Boolean):void
+		
+		public function forkEmptyed():void
 		{
-			_isFork = value;
+			_isFork = false;
 		}
 	}
 }

@@ -15,7 +15,7 @@ package puzzle.ingame.item.fork
 		}
 		
 		public function fork(selectBlock:Block, cells:Vector.<Cell>):void
-		{
+		{	
 			for(var i:int = 0; i < cells.length; i++)
 			{
 				if(cells[i].block == null || cells[i].block == selectBlock)

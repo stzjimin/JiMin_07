@@ -72,6 +72,11 @@ package puzzle.stageSelect
 			dispose();
 		}
 		
+		public function swapState():void
+		{
+			_checkBox.dispatchEvent(new Event(Event.TRIGGERED));
+		}
+		
 		private function onSwapCheck(event:Event):void
 		{
 			dispatchEvent(new Event(CheckBox.SWAP_CHECK));

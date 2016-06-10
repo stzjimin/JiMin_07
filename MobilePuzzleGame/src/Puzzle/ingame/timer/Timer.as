@@ -128,5 +128,10 @@ package puzzle.ingame.timer
 		{
 			_juggler.advanceTime(time);
 		}
+		
+		public function getRecord():Number
+		{
+			return (_countTime - _timerTween.currentTime);
+		}
 	}
 }

@@ -9,6 +9,8 @@ package puzzle.ingame
 	import customize.Scene;
 	import customize.SceneEvent;
 	import customize.SceneManager;
+	import customize.Sound;
+	import customize.SoundManager;
 	
 	import puzzle.ingame.cell.blocks.BlockData;
 	import puzzle.ingame.cell.blocks.BlockType;
@@ -32,7 +34,6 @@ package puzzle.ingame
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.text.TextField;
-	import starling.textures.Texture;
 	import starling.textures.TextureAtlas;
 	import starling.utils.Color;
 	
@@ -44,15 +45,11 @@ package puzzle.ingame
 		[Embed(source="PopupTitle.png")]
 		private const popupTitleImage:Class;
 		
-		[Embed(source="readyClip.png")]
-		private const readyClip:Class;
-		
-		[Embed(source="readyClip.xml", mimeType="application/octet-stream")]
-		private const readyXML:Class;
-		
 		private var _stageNumber:uint;
 		
-		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/ingameSpriteSheet");
+		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/ingameSpriteSheet");
+		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/sound");
+		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/image");
 		private var _resources:Resources;
 		private var _dbLoader:DBLoader;
 		
@@ -67,6 +64,7 @@ package puzzle.ingame
 		private var _scoreTextField:TextField;
 		
 		private var _score:uint;
+		private var _record:Number;
 		
 		private var _paused:Boolean;
 		private var _timer:Timer;
@@ -90,6 +88,8 @@ package puzzle.ingame
 		
 		private var _blockDatas:Vector.<BlockData>;
 		
+		private var _soundManager:SoundManager;
+		
 		public function InGameScene()
 		{
 			super();
@@ -99,15 +99,24 @@ package puzzle.ingame
 		protected override function onCreate(event:SceneEvent):void
 		{
 			Loading.getInstance().showLoading(this);
+			_soundManager = new SoundManager;
+			_soundManager.isBgmActive = User.getInstance().bgmActive;
+			_soundManager.isEffectActive = User.getInstance().soundEffectActive;
 			
 			_stageNumber = int(this.data);
 			_isClear = false;
 			
-			_resources = new Resources(_spirteDir, null, null);
+			_resources = new Resources(_spirteDir, _soundDir, _imageDir);
 			
 			_resources.addSpriteName("IngameSprite0.png");
 			_resources.addSpriteName("IngameSprite1.png");
 			_resources.addSpriteName("IngameSprite2.png");
+			_resources.addSpriteName("readyClip.png");
+			_resources.addSoundName("MilkOut.mp3");
+			_resources.addSoundName("NeverForget.mp3");
+			_resources.addSoundName("set.mp3");
+			_resources.addSoundName("clear.mp3");
+			_resources.addSoundName("fork.mp3");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
@@ -189,7 +198,33 @@ package puzzle.ingame
 			_resources.destroy();
 			_resources = null;
 			
+			_soundManager.destroy();
+			_soundManager = null;
+			
 			super.onDestroy(event);
+		}
+		
+		protected override function onActivate(event:SceneEvent):void
+		{
+			if(_soundManager)
+			{
+				_soundManager.wakeAll();
+			}
+			super.onActivate(event);
+		}
+		
+		protected override function onDeActivate(event:SceneEvent):void
+		{
+			if(_soundManager)
+			{
+				_soundManager.stopAll();
+			}
+			
+			if(_pauseButton)
+			{
+				_pauseButton.dispatchEvent(new Event(Event.TRIGGERED));
+			}
+			super.onDeActivate(event);
 		}
 		
 		private function onFailedLoading(event:LoadingEvent):void
@@ -205,7 +240,14 @@ package puzzle.ingame
 		{
 			Loading.getInstance().completeLoading();
 			
-			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
+			_soundManager.addSound("MilkOut.mp3", _resources.getSoundFile("MilkOut.mp3"));
+			_soundManager.addSound("set.mp3", _resources.getSoundFile("set.mp3"));
+			_soundManager.addSound("clear.mp3", _resources.getSoundFile("clear.mp3"));
+			_soundManager.addSound("NeverForget.mp3", _resources.getSoundFile("NeverForget.mp3"));
+			_soundManager.addSound("fork.mp3", _resources.getSoundFile("fork.mp3"));
+			_soundManager.play("MilkOut.mp3", Sound.INFINITE);
+			
+//			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
 			
 			_score = 0;
 			
@@ -261,33 +303,33 @@ package puzzle.ingame
 			_blockDatas = new Vector.<BlockData>();
 			_blockDatas.push(new BlockData(0, 0, BlockType.BLUE));
 			_blockDatas.push(new BlockData(11, 11, BlockType.BLUE));
-//			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
-//			_blockDatas.push(new BlockData(1, 1, BlockType.MICKY));
-//			_blockDatas.push(new BlockData(2, 1, BlockType.MICKY));
-//			_blockDatas.push(new BlockData(6, 6, BlockType.MICKY));
-//			_blockDatas.push(new BlockData(2, 2, BlockType.PINKY));
-//			_blockDatas.push(new BlockData(4, 3, BlockType.PINKY));
-//			_blockDatas.push(new BlockData(6, 4, BlockType.MICKY));
-//			_blockDatas.push(new BlockData(2, 5, BlockType.BLUE));
-//			_blockDatas.push(new BlockData(1, 4, BlockType.MICKY));
-//			_blockDatas.push(new BlockData(1, 5, BlockType.MICKY));
-//			_blockDatas.push(new BlockData(1, 2, BlockType.BLUE));
-//			_blockDatas.push(new BlockData(5, 1, BlockType.BLUE));
-//			_blockDatas.push(new BlockData(4, 2, BlockType.PINKY));
-//			_blockDatas.push(new BlockData(3, 6, BlockType.PINKY));
-//			_blockDatas.push(new BlockData(10, 10, BlockType.MONGYI));
-//			_blockDatas.push(new BlockData(10, 3, BlockType.MONGYI));
-//			_blockDatas.push(new BlockData(7, 10, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(10, 1, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(10, 2, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(10, 8, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(8, 5, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(3, 5, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(10, 9, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(9, 3, BlockType.LUCY));
-//			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
+			_blockDatas.push(new BlockData(1, 1, BlockType.MICKY));
+			_blockDatas.push(new BlockData(2, 1, BlockType.MICKY));
+			_blockDatas.push(new BlockData(6, 6, BlockType.MICKY));
+			_blockDatas.push(new BlockData(2, 2, BlockType.PINKY));
+			_blockDatas.push(new BlockData(4, 3, BlockType.PINKY));
+			_blockDatas.push(new BlockData(6, 4, BlockType.MICKY));
+			_blockDatas.push(new BlockData(2, 5, BlockType.BLUE));
+			_blockDatas.push(new BlockData(1, 4, BlockType.MICKY));
+			_blockDatas.push(new BlockData(1, 5, BlockType.MICKY));
+			_blockDatas.push(new BlockData(1, 2, BlockType.BLUE));
+			_blockDatas.push(new BlockData(5, 1, BlockType.BLUE));
+			_blockDatas.push(new BlockData(4, 2, BlockType.PINKY));
+			_blockDatas.push(new BlockData(3, 6, BlockType.PINKY));
+			_blockDatas.push(new BlockData(10, 10, BlockType.MONGYI));
+			_blockDatas.push(new BlockData(10, 3, BlockType.MONGYI));
+			_blockDatas.push(new BlockData(7, 10, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 1, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 2, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 8, BlockType.LUCY));
+			_blockDatas.push(new BlockData(8, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(3, 5, BlockType.LUCY));
+			_blockDatas.push(new BlockData(10, 9, BlockType.LUCY));
+			_blockDatas.push(new BlockData(9, 3, BlockType.LUCY));
+			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
 			
 			_field = new Field(_resources);
 			//			_field.x = 18;
@@ -341,8 +383,7 @@ package puzzle.ingame
 			_playJuggler.add(_timer);
 			_playJuggler.add(_comboTimer);
 			
-			var xnl:XML = new XML(new readyXML());
-			_readyTextures = new TextureAtlas(Texture.fromBitmap(new readyClip() as Bitmap), xnl);
+			_readyTextures = _resources.getSpriteSheet("readyClip.png");
 			_readyMovie = new MovieClip(_readyTextures.getTextures("ready_"), 10);
 			_readyMovie.width = 300;
 			_readyMovie.height = 500;
@@ -353,11 +394,6 @@ package puzzle.ingame
 			readyTime();
 			
 			trace(flash.display.Screen.mainScreen.bounds);
-		}
-		
-		private function onDeActivate(event:SceneEvent):void
-		{
-			_pauseButton.dispatchEvent(new Event(Event.TRIGGERED));
 		}
 		
 		private function readyTime():void
@@ -390,6 +426,12 @@ package puzzle.ingame
 		
 		private function onCompletePang(event:Event):void
 		{
+			_soundManager.play("set.mp3");
+			pang();
+		}
+		
+		private function pang():void
+		{
 			var combo:Boolean;
 			_score += 100;
 			
@@ -413,18 +455,28 @@ package puzzle.ingame
 				trace(_stageNumber);
 				_isClear = true;
 				
-				if(User.getInstance().clearstage < _stageNumber)
-					User.getInstance().clearstage = _stageNumber;
+				_record = _timer.getRecord();
+				_score += int(_record * 100);
 				
 				_playJuggler.remove(_timer);
 				_playJuggler.remove(_comboTimer);
 				
-				_dbLoader = new DBLoader(User.getInstance());
-				_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
-				_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+				if(User.getInstance().clearstage < _stageNumber)
+					User.getInstance().clearstage = _stageNumber;
+				User.getInstance().heart = 1;
 				
-				_dbLoader.setScoreData(_stageNumber, _score);
+				User.getInstance().pullUserData(setScoreData);
 			}
+		}
+		
+		private function setScoreData():void
+		{
+			trace("setScoreData");
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+			
+			_dbLoader.setScoreData(_stageNumber, _score);
 		}
 		
 		private function onCompleteSetScore(event:DBLoaderEvent):void
@@ -464,13 +516,14 @@ package puzzle.ingame
 			{
 				_resultPopup.setTitleMessage("성공!!");
 				_resultPopup.setScore(_score);
-				_resultPopup.setRecord("1111");
+				_resultPopup.setRecord(_record.toFixed(_record < 100 ? 1 : 0));
 			}
 			else
 			{
 				_resultPopup.setTitleMessage("실패");
 				_resultPopup.setScore(0);
 				_resultPopup.setRecord("0");
+				_soundManager.play("NeverForget.mp3", Sound.INFINITE);
 			}
 			
 			_resultPopup.setRanking(jsonObject);
@@ -511,18 +564,22 @@ package puzzle.ingame
 		private function onGetFork(event:Event):void
 		{
 			_items.setEmptyFork();
+			_soundManager.play("fork.mp3");
+			pang();
 		}
 		
 		private function onCheckedFork(event:Event):void
 		{
 			trace("forkCheck");
-			_field.isFork = true;
+			_field.forkChecked();
+//			_field.isFork = true;
 		}
 		
 		private function onEmptyFork(event:Event):void
 		{
 			trace("forkEmpty");
-			_field.isFork = false;
+			_field.forkEmptyed();
+//			_field.isFork = false;
 		}
 		
 		private function onClickedSearch(event:Event):void

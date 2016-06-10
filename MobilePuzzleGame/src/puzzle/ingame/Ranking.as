@@ -148,6 +148,7 @@ package puzzle.ingame
 					_listView.addContent(viewContent);
 				}
 			}
+			trace("userIndex = " + userIndex);
 			viewContent = null;
 		}
 	}

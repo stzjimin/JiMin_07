@@ -14,7 +14,7 @@ package customize
 		
 		private var _checked:Boolean;
 		
-		public function CheckBox(emptyTexture:Texture, checkTexture:Texture)
+		public function CheckBox(emptyTexture:Texture, checkTexture:Texture, text:String = "")
 		{
 			_emptyTexture = emptyTexture;
 			_checkTexture = checkTexture;
@@ -22,7 +22,7 @@ package customize
 			
 			addEventListener(Event.TRIGGERED, onTriggered);
 			
-			super(emptyTexture);
+			super(emptyTexture, text);
 		}
 		
 		private function onTriggered(event:Event):void

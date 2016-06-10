@@ -16,6 +16,10 @@ package puzzle.stageSelect
 	public class SettingPopup extends DisplayObjectContainer
 	{
 		public static const CLICK_CLOSE:String = "clickClose";
+		public static const BGM_SWAP_EMPTY:String = "bgmSwapEmpty";
+		public static const BGM_SWAP_CHECK:String = "bgmSwapCheck";
+		public static const EFFECT_SWAP_EMPTY:String = "effectSwapEmpty";
+		public static const EFFECT_SWAP_CHECK:String = "effectSwapCheck";
 		
 		private var _backGround:Image;
 		
@@ -84,27 +88,36 @@ package puzzle.stageSelect
 			_effect.addEventListener(CheckBox.SWAP_EMPTY, onEmptyEffect);
 			addChild(_effect);
 			
+			if(User.getInstance().bgmActive)
+				_bgm.swapState();
+			if(User.getInstance().soundEffectActive)
+				_effect.swapState();
+			
 			_resources = null;
 		}
 		
 		private function onEmptyEffect(event:Event):void
 		{
 			trace("effectEmpty");
+			dispatchEvent(new Event(SettingPopup.EFFECT_SWAP_EMPTY));
 		}
 		
 		private function onCheckEffect(event:Event):void
 		{
 			trace("effectCheck");
+			dispatchEvent(new Event(SettingPopup.EFFECT_SWAP_CHECK));
 		}
 		
 		private function onEmptyBGM(event:Event):void
 		{
 			trace("BGMEmpty");
+			dispatchEvent(new Event(SettingPopup.BGM_SWAP_EMPTY));
 		}
 		
 		private function onCheckBGM(event:Event):void
 		{
 			trace("BGMCheck");
+			dispatchEvent(new Event(SettingPopup.BGM_SWAP_CHECK));
 		}
 		
 		public function destroy():void

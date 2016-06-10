@@ -1,6 +1,7 @@
 package customize
 {
 	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
 	import starling.display.DisplayObjectContainer;

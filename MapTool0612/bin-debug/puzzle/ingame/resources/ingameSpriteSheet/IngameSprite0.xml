@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="IngameSprite0.png">
+   <SubTexture name="backGround" x="0" y="126" width="640" height="755" />
+   <SubTexture name="bottomPadding" x="0" y="0" width="907" height="35" />
+   <SubTexture name="columLine" x="642" y="126" width="52" height="856" />
+   <SubTexture name="leftPadding" x="732" y="126" width="32" height="652" />
+   <SubTexture name="rightPadding" x="696" y="126" width="34" height="652" />
+   <SubTexture name="rowLine" x="0" y="72" width="856" height="52" />
+   <SubTexture name="topPadding" x="0" y="37" width="905" height="33" />
+</TextureAtlas>

@@ -14,10 +14,13 @@ package puzzle.title
 	import customize.Sound;
 	import customize.SoundManager;
 	
+	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
+	import puzzle.loading.loader.DBLoader;
 	import puzzle.user.User;
+	import puzzle.user.UserEvent;
 	import puzzle.user.UserType;
 	
 	import starling.animation.Juggler;
@@ -36,6 +39,8 @@ package puzzle.title
 		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/sound");
 		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/image");
 		private var _resources:Resources;
+		
+		private var _dbLoader:DBLoader;
 		
 		private var _progress:Progress;
 		private var _progressFrame:ProgressFrame;
@@ -268,34 +273,73 @@ package puzzle.title
 					user.userType = UserType.Facebook;
 					user.id = FacebookUser.getInstance().id;
 					user.name = FacebookUser.getInstance().name;
-					user.setPicture(completeLoadPicture);
 //					user.picture = FacebookUser.getInstance().picture;
 					
 					user.email = FacebookUser.getInstance().email;
-					_facebook.addEventListener(FacebookEvent.LOADED_FRIENDS_LIST, onLoadedFriends);
-					_facebook.loadFriends();
 					break;
 			}
 			
 			var now:Date = new Date();
-			user.playdate = now.toString();
+			user.playdate = now.getTime();
+			trace(user.playdate);
+			trace(new Date(user.playdate).getTime());
+			
+			user.addEventListener(UserEvent.LOAD_COMPLETE, completeLoadPicture);
+			user.loadPicture();
 			
 			function completeLoadPicture():void
 			{
-				_progressFrame.stopProgress();
-				removePopup();
+				user.removeEventListener(UserEvent.LOAD_COMPLETE, completeLoadPicture);
+				
+				switch(userType)
+				{
+					case UserType.Facebook :
+						_facebook.addEventListener(FacebookEvent.LOADED_FRIENDS_LIST, onLoadedFriends);
+						_facebook.loadFriends();
+						break;
+				}
 			}
 		}
 		
 		private function onLoadedFriends(event:FacebookEvent):void
 		{
 			_facebook.removeEventListener(FacebookEvent.LOADED_FRIENDS_LIST, onLoadedFriends);
-			var friends:Dictionary = FacebookUser.getInstance().friends;
+//			var friends:Dictionary = FacebookUser.getInstance().friends;
+//			
+//			for(var key:String in friends)
+//			{
+//				trace(friends[key].name);
+//			}
+			loadUser();
+		}
+		
+		private function loadUser():void
+		{
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+			_dbLoader.setUserData();
+		}
+		
+		private function onCompleteDBLoading(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
 			
-			for(var key:String in friends)
-			{
-				trace(friends[key].name);
-			}
+			User.getInstance().isLoaded = true;
+			_progressFrame.stopProgress();
+			removePopup();
+			
+			trace(User.getInstance().clearstage);
+		}
+		
+		private function onFailedDBLoading(event:DBLoaderEvent):void
+		{
+			_progressFrame.stopProgress();
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
+			
+			trace(event.message);
 		}
 		
 		private function onTouch(event:TouchEvent):void

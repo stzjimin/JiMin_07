@@ -26,12 +26,14 @@ package puzzle.user
 		private static const UserStateDir:File = File.applicationStorageDirectory.resolvePath("UserState");
 		private var _userType:String;
 		
+		private var _isLoaded:Boolean;
+		
 		private var _id:String;
 		private var _name:String;
 		private var _picture:Bitmap;
 		
 		private var _email:String;
-		private var _playdate:String;
+		private var _playdate:Number;
 		private var _clearstage:uint;
 		
 		private var _heart:uint;
@@ -39,8 +41,13 @@ package puzzle.user
 		private var _search:uint;
 		private var _shuffle:uint;
 		
-		private var _bgmActive:Boolean;
+		private var _heartTime:uint;
+		private var _dayChanged:Boolean;
+		
+		private var _bgmActive:Boolean; 
 		private var _soundEffectActive:Boolean;
+
+		private var _heartTimer:HeartTimer;
 		
 		public function User()
 		{
@@ -49,6 +56,11 @@ package puzzle.user
 				_instance = this;
 //				Exiter.getInstance().addExitFunction(saveUserState);
 				NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, onDeActivate);
+				_bgmActive = true;
+				_soundEffectActive = true;
+				_isLoaded = false;
+				_heart = 5;
+				_heartTime = 0;
 			}
 			else
 			{
@@ -56,7 +68,7 @@ package puzzle.user
 			}
 		}
 		
-		public function setPicture(resultFunction:Function):void
+		public function loadPicture():void
 		{
 			switch(_userType)
 			{
@@ -72,7 +84,7 @@ package puzzle.user
 			{
 				_picture = loader.content as Bitmap;
 				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadedUserImage);
-				resultFunction();
+				dispatchEvent(new UserEvent(UserEvent.LOAD_COMPLETE));
 			}
 		}
 		
@@ -99,7 +111,6 @@ package puzzle.user
 			var jsonObject:Object = new Object();
 			jsonObject.bgmActive = _bgmActive;
 			jsonObject.soundEffectActive = _soundEffectActive;
-			trace("bb");
 			
 			var jsonString:String = JSON.stringify(jsonObject);
 			
@@ -111,11 +122,11 @@ package puzzle.user
 		
 		public function pullUserData(resultFunction:Function = null):void
 		{
+			if(!isLoaded)
+				return;
 			var dbLoader:DBLoader = new DBLoader(this);
-			
-			trace("_heart = " + _heart);
-			
-			var setString:String = "clearstage = " + _clearstage + ",fork = "+_fork+",search = "+_search+",shuffle = "+_shuffle+",heart = "+_heart;
+
+			var setString:String = "playdate=" + _playdate + ",clearstage="+_clearstage+",fork="+_fork+",search="+_search+",shuffle="+_shuffle+",heart="+_heart+",hearttime="+_heartTime;
 			
 			dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteUpdate);
 			dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedUpdate);
@@ -143,6 +154,94 @@ package puzzle.user
 				dbLoader.updateUserData(setString);
 			}
 		}
+		
+		public function calculHeartTime(versSecond:Number):void
+		{
+			var heartCount:uint;
+			
+			if(versSecond >= 1500)
+			{
+				if(_heart < 5)
+					_heart = 5;
+			}
+			else
+			{
+				heartCount = uint(versSecond / 300);
+				_heartTime = uint(versSecond % 300);
+				
+				if((_heart + heartCount) > 5)
+					_heart = 5;
+				else
+					_heart += heartCount;
+			}
+			
+			_heartTimer = new HeartTimer(100, 100);
+			_heartTimer.init(300);
+		}
+		
+//		public function pushHeart():void
+//		{
+//			_heart += 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_HEART, UserEvent.PUSH, false, _heart));
+//		}
+//		
+//		public function popHeart():Boolean
+//		{
+//			if(_heart <= 0)
+//				return false;
+//			
+//			_heart -= 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_HEART, UserEvent.POP, false, _heart));
+//			return true;
+//		}
+//		
+//		public function pushFork():void
+//		{
+//			_fork += 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_FORK, UserEvent.PUSH, false, _fork));
+//		}
+//		
+//		public function popFork():Boolean
+//		{
+//			if(_fork <= 0)
+//				return false;
+//			
+//			_fork -= 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_FORK, UserEvent.POP, false, _fork));
+//			return true;
+//		}
+//		
+//		public function pushShuffle():void
+//		{
+//			_shuffle += 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SHUFFLE, UserEvent.PUSH, false, _shuffle));
+//		}
+//		
+//		public function popShuffle():Boolean
+//		{
+//			if(_shuffle <= 0)
+//				return false;
+//			
+//			_shuffle -= 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SHUFFLE, UserEvent.POP, false, _shuffle));
+//			return true;
+//		}
+//		
+//		public function pushSearch():void
+//		{
+//			_search += 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SEARCH, UserEvent.PUSH, false, _search));
+//		}
+//		
+//		public function popSearch():Boolean
+//		{
+//			if(_search <= 0)
+//				return false;
+//			
+//			_search -= 1;
+//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SEARCH, UserEvent.POP, false, _search));
+//			return true;
+//		}
 		
 //		public function loadUserItems():void
 //		{
@@ -238,16 +337,6 @@ package puzzle.user
 			_email = value;
 		}
 
-		public function get playdate():String
-		{
-			return _playdate;
-		}
-
-		public function set playdate(value:String):void
-		{
-			_playdate = value;
-		}
-
 		public function get clearstage():uint
 		{
 			return _clearstage;
@@ -283,19 +372,9 @@ package puzzle.user
 			return _heart;
 		}
 
-		public function set heart(value:uint):void
-		{
-			_heart = value;
-		}
-
 		public function get fork():uint
 		{
 			return _fork;
-		}
-
-		public function set fork(value:uint):void
-		{
-			_fork = value;
 		}
 
 		public function get search():uint
@@ -303,21 +382,84 @@ package puzzle.user
 			return _search;
 		}
 
-		public function set search(value:uint):void
-		{
-			_search = value;
-		}
-
 		public function get shuffle():uint
 		{
 			return _shuffle;
 		}
 
+		public function get isLoaded():Boolean
+		{
+			return _isLoaded;
+		}
+
+		public function set isLoaded(value:Boolean):void
+		{
+			_isLoaded = value;
+		}
+
+		public function get playdate():Number
+		{
+			return _playdate;
+		}
+
+		public function set playdate(value:Number):void
+		{
+			_playdate = value;
+		}
+
+		public function set heart(value:uint):void
+		{
+			_heart = value;
+			dispatchEvent(new UserEvent(UserEvent.CHANGE_HEART));
+		}
+
+		public function set fork(value:uint):void
+		{
+			_fork = value;
+			dispatchEvent(new UserEvent(UserEvent.CHANGE_FORK));
+		}
+
+		public function set search(value:uint):void
+		{
+			_search = value;
+			dispatchEvent(new UserEvent(UserEvent.CHANGE_SEARCH));
+		}
+
 		public function set shuffle(value:uint):void
 		{
 			_shuffle = value;
+			dispatchEvent(new UserEvent(UserEvent.CHANGE_SHUFFLE));
 		}
 
+		public function get heartTime():uint
+		{
+			return _heartTime;
+		}
+
+		public function set heartTime(value:uint):void
+		{
+			_heartTime = value;
+		}
+
+		public function get dayChanged():Boolean
+		{
+			return _dayChanged;
+		}
+
+		public function set dayChanged(value:Boolean):void
+		{
+			_dayChanged = value;
+		}
+
+		public function get heartTimer():HeartTimer
+		{
+			return _heartTimer;
+		}
+
+		public function set heartTimer(value:HeartTimer):void
+		{
+			_heartTimer = value;
+		}
 
 	}
 }

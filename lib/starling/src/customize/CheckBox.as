@@ -4,7 +4,7 @@ package customize
 	import starling.events.Event;
 	import starling.textures.Texture;
 
-	public class CheckBox extends Button
+	public class CheckBox extends CustomButton
 	{
 		public static const SWAP_EMPTY:String = "swapEmpty";
 		public static const SWAP_CHECK:String = "swapCheck";
@@ -14,7 +14,7 @@ package customize
 		
 		private var _checked:Boolean;
 		
-		public function CheckBox(emptyTexture:Texture, checkTexture:Texture, text:String = "")
+		public function CheckBox(emptyTexture:Texture, checkTexture:Texture)
 		{
 			_emptyTexture = emptyTexture;
 			_checkTexture = checkTexture;
@@ -22,7 +22,7 @@ package customize
 			
 			addEventListener(Event.TRIGGERED, onTriggered);
 			
-			super(emptyTexture, text);
+			super(emptyTexture);
 		}
 		
 		private function onTriggered(event:Event):void
@@ -30,12 +30,12 @@ package customize
 			_checked = !_checked;
 			if(_checked)
 			{
-				super.upState = _checkTexture;
+				super.texture = _checkTexture;
 				dispatchEvent(new Event(CheckBox.SWAP_CHECK));
 			}
 			else
 			{
-				super.upState = _emptyTexture;
+				super.texture = _emptyTexture;
 				dispatchEvent(new Event(CheckBox.SWAP_EMPTY));
 			}
 		}
@@ -47,7 +47,8 @@ package customize
 		public function setEmpty():void
 		{
 			_checked = false;
-			super.upState = _emptyTexture;
+			super.texture = _emptyTexture;
+//			dispatchEvent(new Event(CheckBox.SWAP_EMPTY));
 		}
 		
 		/**
@@ -57,14 +58,14 @@ package customize
 		public function setCheck():void
 		{
 			_checked = true;
-			super.upState = _checkTexture;
+			super.texture = _checkTexture;
 		}
 		
-		public function destroy():void
+		public override function destroy():void
 		{
 			removeEventListener(Event.TRIGGERED, onTriggered);
 			
-			dispose();
+			super.destroy();
 		}
 	}
 }

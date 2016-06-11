@@ -25,6 +25,7 @@ package puzzle.ingame
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
 	import puzzle.user.User;
+	import puzzle.user.UserEvent;
 	
 	import starling.animation.Juggler;
 	import starling.core.Starling;
@@ -187,8 +188,8 @@ package puzzle.ingame
 			
 			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
 			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
-			_items.removeEventListener(Items.SEARCH, onClickedSearch);
-			_items.removeEventListener(Items.SHUFFLE, onClickedShuffle);
+			_items.removeEventListener(Items.CLICKED_SEARCH, onClickedSearch);
+			_items.removeEventListener(Items.CLICKED_SHUFFLE, onClickedShuffle);
 			_items.removeFromParent();
 			_items.destroy();
 			_items = null;
@@ -296,8 +297,8 @@ package puzzle.ingame
 			_items.y = 950;
 			_items.addEventListener(Items.FORK_CHECK, onCheckedFork);
 			_items.addEventListener(Items.FORK_EMPTY, onEmptyFork);
-			_items.addEventListener(Items.SEARCH, onClickedSearch);
-			_items.addEventListener(Items.SHUFFLE, onClickedShuffle);
+			_items.addEventListener(Items.CLICKED_SEARCH, onClickedSearch);
+			_items.addEventListener(Items.CLICKED_SHUFFLE, onClickedShuffle);
 			addChild(_items);
 			
 			_blockDatas = new Vector.<BlockData>();
@@ -463,7 +464,7 @@ package puzzle.ingame
 				
 				if(User.getInstance().clearstage < _stageNumber)
 					User.getInstance().clearstage = _stageNumber;
-				User.getInstance().heart = 1;
+//				User.getInstance().heart = 1;
 				
 				User.getInstance().pullUserData(setScoreData);
 			}
@@ -563,6 +564,8 @@ package puzzle.ingame
 		
 		private function onGetFork(event:Event):void
 		{
+//			User.getInstance().popFork();
+			User.getInstance().fork -= 1;
 			_items.setEmptyFork();
 			_soundManager.play("fork.mp3");
 			pang();
@@ -584,12 +587,16 @@ package puzzle.ingame
 		
 		private function onClickedSearch(event:Event):void
 		{
+//			User.getInstance().popSearch();
+			User.getInstance().search -= 1;
 			trace("search");
 			_field.search();
 		}
 		
 		private function onClickedShuffle(event:Event):void
 		{
+//			User.getInstance().popShuffle();
+			User.getInstance().shuffle -= 1;
 			trace("shuffle");
 			_field.shuffle();
 		}
@@ -620,6 +627,7 @@ package puzzle.ingame
 		
 		private function onClickedNext(event:Event):void
 		{
+			User.getInstance().heart -= 1;
 			outThisGame();
 			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game", _stageNumber + 1);

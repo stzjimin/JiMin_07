@@ -35,6 +35,7 @@ package puzzle.loading.loader
 				
 				if(result == 0)
 				{
+					trace(_user.playdate);
 					urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/insertUser.php?id="+_user.id+"&name="+_user.name+"&email="+_user.email+"&playdate="+_user.playdate);
 					dbLoader = new URLLoader();
 					dbLoader.addEventListener(Event.COMPLETE, onCompleteInsertUser);
@@ -75,23 +76,10 @@ package puzzle.loading.loader
 						var jsonObject:Object = JSON.parse(result);
 						var setString:String = "";
 						
-						var serverDate:Date = new Date(jsonObject[0].playdate);
-						var userDate:Date = new Date(_user.playdate);
-						
-						if(serverDate.getTime() < userDate.getTime())
-						{
-							setString = setString.concat("playdate = " + _user.playdate + ",");
-							
-							var vers:Number = userDate.getTime() - serverDate.getTime();
-							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.PLAYDATE_CHANGE, vers.toString()));
-						}
-						else
-							trace("님 혹시 트레이서?");
-						
 						if(!_user.clearstage || _user.clearstage <= int(jsonObject[0].clearstage))
 							_user.clearstage = jsonObject[0].clearstage;
 						else
-							setString = setString.concat("clearstage = " + _user.clearstage.toString() + ",");
+							setString = setString.concat("clearstage=" + _user.clearstage.toString() + ",");
 						
 						if(jsonObject[0].fork != _user.fork)
 							_user.fork = jsonObject[0].fork;
@@ -101,6 +89,52 @@ package puzzle.loading.loader
 							_user.shuffle = jsonObject[0].shuffle;
 						if(jsonObject[0].heart != _user.heart)
 							_user.heart = jsonObject[0].heart;
+						
+						var serverDate:Date = new Date(Number(jsonObject[0].playdate));
+						var userDate:Date = new Date(_user.playdate);
+						
+						trace("serverDate = " + jsonObject[0].playdate);
+						trace("userDate = " + _user.playdate);
+						trace("serverDate = " + serverDate.getTime());
+						trace("userDate = " + userDate.getTime());
+						
+						if(serverDate.getTime() < userDate.getTime())
+						{
+							setString = setString.concat("playdate='" + _user.playdate + "',");
+							
+							var vers:Date = new Date(userDate.getTime() - serverDate.getTime());
+							var standard:Date = new Date(0);
+							
+							var seconds:Number;
+							
+							if((vers.fullYear - standard.fullYear) >= 1)
+							{
+								seconds += 1500;
+								_user.dayChanged = true;
+							}
+							if((vers.month - standard.month) >= 1)
+							{
+								seconds += 1500;
+								_user.dayChanged = true;
+							}
+							if((vers.day - standard.day) >= 1)
+							{
+								seconds += 1500;
+								_user.dayChanged = true;
+							}
+							
+							if(seconds < 1500)
+							{
+								if((vers.minutes - standard.minutes) >= 1)
+									seconds += ((vers.minutes - standard.minutes) * 60);
+								if((vers.minutes - standard.minutes) >= 1)
+									seconds += ((vers.seconds - standard.seconds));
+							}
+							
+							_user.calculHeartTime(seconds + uint(jsonObject[0].heartTime));
+						}
+						else
+							_user.calculHeartTime(0);
 						
 						if(setString == "")
 							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
@@ -124,12 +158,12 @@ package puzzle.loading.loader
 			var urlRequest:URLRequest;
 			var dbLoader:URLLoader;
 			
-			if(setString.charAt(setString.length) == ',')
-				setString = setString.substr(setString.length-1, 1);
+			if(setString.charAt(setString.length-1) == ',')
+				setString = setString.substr(0, setString.length-1);
 			
 			trace("setString = " + setString);
 			
-			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/updateUser.php?set="+setString);
+			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/updateUser.php?id=" + _user.id + "&set="+setString);
 			dbLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCompleteUpdateUser);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
@@ -148,7 +182,6 @@ package puzzle.loading.loader
 				dbLoader.removeEventListener(Event.COMPLETE, onCompleteUpdateUser);
 				dbLoader.removeEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
 				
-				trace("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.FAILED, event.text));
 			}
 		}

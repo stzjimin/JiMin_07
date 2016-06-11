@@ -28,7 +28,6 @@ package
 			// support autoOrients
 //			stage.align = StageAlign.TOP;
 //			stage.scaleMode = StageScaleMode.NO_SCALE;
-			
 			Starling.multitouchEnabled = true;
 			_starlingCore = new Starling(SceneManager, stage, viewPort);
 			_starlingCore.stage.stageWidth  = WIDTH; 

@@ -79,11 +79,13 @@ package puzzle.stageSelect
 		
 		private function onSwapCheck(event:Event):void
 		{
+			trace("check");
 			dispatchEvent(new Event(CheckBox.SWAP_CHECK));
 		}
 		
 		private function onSwapEmpty(event:Event):void
 		{
+			trace("empty");
 			dispatchEvent(new Event(CheckBox.SWAP_EMPTY));
 		}
 	}

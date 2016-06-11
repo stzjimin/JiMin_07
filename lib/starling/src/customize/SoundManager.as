@@ -64,6 +64,10 @@ package customize
 		
 		public function play(name:String, loop:int = 0, isActive:Boolean = false):void
 		{
+			if(name == "White.mp3")
+				trace(name);
+			trace(_isBgmActive);
+			
 			if(!_sounds || !_sounds[name])
 				return;
 			

@@ -7,7 +7,7 @@ package puzzle.loading
 		public static const COMPLETE:String = "dbLoaderComplete";
 		public static const FAILED:String = "dbLoaderFailed";
 		
-		public static const PLAYDATE_CHANGE:String = "playdateChange";
+		public static const PLAYDAY_CHANGE:String = "playdayChange";
 		
 		public static const COLUMN_ID:String = "id";
 		public static const COLUMN_NAME:String = "name";

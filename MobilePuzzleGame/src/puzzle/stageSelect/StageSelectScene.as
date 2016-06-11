@@ -12,11 +12,9 @@ package puzzle.stageSelect
 	import customize.SoundManager;
 	
 	import puzzle.ingame.InGameScene;
-	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
-	import puzzle.loading.loader.DBLoader;
 	import puzzle.user.User;
 	
 	import starling.display.Button;
@@ -35,8 +33,6 @@ package puzzle.stageSelect
 		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/image");
 		private var _resources:Resources;
 		
-		private var _dbLoader:DBLoader;
-		
 		private var _progress:Progress;
 		private var _progressFrame:ProgressFrame;
 		
@@ -45,6 +41,9 @@ package puzzle.stageSelect
 		private var _buttonIndex:uint = 0;
 		private var _nextButton:Button;
 		private var _prevButton:Button;
+		
+//		private var _heartTimer:HeartTimer;
+		private var _userInfo:UserInfo;
 		
 		private var _defaultTextFormat:TextFormat;
 		
@@ -76,7 +75,7 @@ package puzzle.stageSelect
 		
 		protected override function onStart(event:SceneEvent):void
 		{
-			loadUser();
+			setButtonState();
 			if(_soundManager)
 				_soundManager.wakeAll();
 		}
@@ -120,6 +119,8 @@ package puzzle.stageSelect
 			_prevButton.removeFromParent();
 			_prevButton.dispose();
 			_prevButton = null;
+			
+			
 			
 			_popupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
 			_popupFrame.removeFromParent();
@@ -239,20 +240,29 @@ package puzzle.stageSelect
 			_prevButton.addEventListener(Event.TRIGGERED, onClickedPrevButton);
 			addChild(_prevButton);
 			
-			_settingButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
-			_settingButton.width = 80;
-			_settingButton.height = 80;
-			_settingButton.x = 576 - 80;
-			_settingButton.addEventListener(Event.TRIGGERED, onClickedSettingButton);
-			addChild(_settingButton);
+			_userInfo = new UserInfo(_resources);
+			_userInfo.init(576, 100);
+			_userInfo.addEventListener(UserInfo.CLICKED_PROFILL, onClickedProfill);
+			_userInfo.addEventListener(UserInfo.CLICKED_FORK, onClickedFork);
+			_userInfo.addEventListener(UserInfo.CLICKED_SEARCH, onClickedSearch);
+			_userInfo.addEventListener(UserInfo.CLICKED_SHUFFLE, onClickedShuffle);
+			_userInfo.addEventListener(UserInfo.CLICKED_HEART, onClickedHeart);
+			addChild(_userInfo);
+			
+//			_settingButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
+//			_settingButton.width = 80;
+//			_settingButton.height = 80;
+//			_settingButton.x = 576 - 80;
+//			_settingButton.addEventListener(Event.TRIGGERED, onClickedProfill);
+//			addChild(_settingButton);
 			
 			_settingPopup = new SettingPopup(_resources);
-			_settingPopup.init(400, 300);
 			_settingPopup.addEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
 			_settingPopup.addEventListener(SettingPopup.BGM_SWAP_CHECK, onSwapBGM);
 			_settingPopup.addEventListener(SettingPopup.BGM_SWAP_EMPTY, onSwapBGM);
 			_settingPopup.addEventListener(SettingPopup.EFFECT_SWAP_CHECK, onSwapEffect);
 			_settingPopup.addEventListener(SettingPopup.EFFECT_SWAP_EMPTY, onSwapEffect);
+			_settingPopup.init(400, 300);
 			
 			_popupFrame = new PopupFrame(576, 1024);
 			_popupFrame.setContent(_settingPopup);
@@ -268,16 +278,7 @@ package puzzle.stageSelect
 			
 			_soundManager.play("White.mp3", Sound.INFINITE);
 			
-			loadUser();
-		}
-		
-		private function loadUser():void
-		{
-			_dbLoader = new DBLoader(User.getInstance());
-			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-			_dbLoader.setUserData();
-			_progressFrame.startProgress();
+			setButtonState();
 		}
 		
 		private function onFailedResourcLoading(event:LoadingEvent):void
@@ -288,28 +289,9 @@ package puzzle.stageSelect
 			_resources.destroy();
 		}
 		
-		private function onCompleteDBLoading(event:DBLoaderEvent):void
-		{
-			_progressFrame.stopProgress();
-			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-			
-			trace(User.getInstance().clearstage);
-			
-			setButtonState();
-		}
-		
-		private function onFailedDBLoading(event:DBLoaderEvent):void
-		{
-			_progressFrame.stopProgress();
-			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-			
-			trace(event.message);
-		}
-		
 		private function setButtonState():void
 		{
+			_progressFrame.startProgress();
 			for(var i:int = 0; i < 5; i++)
 			{
 				_stageButtons[i].text = ((_buttonIndex*5)+i+1).toString();
@@ -326,6 +308,9 @@ package puzzle.stageSelect
 					_stageButtons[i].touchable = false;
 				}
 			}
+			
+//			trace("last = " + _soundManager.isBgmActive);
+			_progressFrame.stopProgress();
 		}
 		
 		private function onClickedNextButton(event:Event):void
@@ -356,14 +341,44 @@ package puzzle.stageSelect
 			_popupFrame.hide();
 		}
 		
-		private function onClickedSettingButton(event:Event):void
+		private function onClickedProfill(event:Event):void
 		{
 //			_popupFrame.visible = true;
 			_popupFrame.show();
 		}
 		
+		private function onClickedFork(event:Event):void
+		{
+			trace("fork");
+//			User.getInstance().pushFork();
+			User.getInstance().fork += 1;
+		}
+		
+		private function onClickedSearch(event:Event):void
+		{
+			trace("search");
+//			User.getInstance().pushSearch();
+			User.getInstance().search += 1;
+		}
+		
+		private function onClickedShuffle(event:Event):void
+		{
+			trace("shuffle");
+//			User.getInstance().pushShuffle();
+			User.getInstance().shuffle += 1;
+		}
+		
+		private function onClickedHeart(event:Event):void
+		{
+			trace("heart");
+//			User.getInstance().pushHeart();
+			User.getInstance().heart += 1;
+		}
+		
 		private function onClickedStageButton(event:Event):void
 		{
+//			User.getInstance().popHeart();
+			User.getInstance().heart -= 1;
 			var stageNumber:String = Button(event.currentTarget).name;
 			trace(stageNumber);
 			SceneManager.current.addScene(InGameScene, "game");

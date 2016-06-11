@@ -30,6 +30,7 @@ package puzzle.ingame.cell.blocks
 		private var _distroyed:Boolean = false;
 		
 		private var _clicked:Boolean;
+		private var _originScale:Number;
 		
 		public function Block(resources:Resources)
 		{	
@@ -109,6 +110,7 @@ package puzzle.ingame.cell.blocks
 			if(touch.phase == TouchPhase.BEGAN)
 			{
 				this.y -= 10;
+//				_originScale = this.scale;
 				this.scale = 1.2;
 			}
 			else if(touch.phase == TouchPhase.ENDED)

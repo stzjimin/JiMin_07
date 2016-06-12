@@ -54,9 +54,12 @@ package customize
 			_backGround.dispose();
 			_backGround = null;
 			
-			_popCircle.removeFromParent();
-			_popCircle.destroy();
-			_popCircle = null;
+			if(_popCircle)
+			{
+				_popCircle.removeFromParent();
+				_popCircle.destroy();
+				_popCircle = null;
+			}
 			
 			dispose();
 		}

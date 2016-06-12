@@ -40,7 +40,6 @@ package
 		{
 			_starlingCore.removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
 			SceneManager.current.addScene(TitleScene, "title");
-			SceneManager.current.addScene(StageSelectScene, "stageSelect");
 			SceneManager.current.goScene("title");
 			_starlingCore.start();
 		}

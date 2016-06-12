@@ -19,6 +19,7 @@ package puzzle.title
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
+	import puzzle.stageSelect.StageSelectScene;
 	import puzzle.user.User;
 	import puzzle.user.UserEvent;
 	import puzzle.user.UserType;
@@ -349,7 +350,10 @@ package puzzle.title
 				return;
 			
 			if(touch.phase == TouchPhase.ENDED)
+			{
+				SceneManager.current.addScene(StageSelectScene, "stageSelect");
 				SceneManager.current.switchScene("stageSelect");
+			}
 		}
 	}
 }

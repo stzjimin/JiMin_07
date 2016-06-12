@@ -1,5 +1,6 @@
 package puzzle.ingame
 {	
+	import flash.display.Bitmap;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
@@ -23,9 +24,13 @@ package puzzle.ingame
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
+	import starling.textures.Texture;
 
 	public class Field extends DisplayObjectContainer implements IAnimatable
 	{	
+		[Embed(source="alert.png")]
+		private const alertImage:Class;
+		
 		public static const ROW_NUM:uint = 12;
 		public static const COLUMN_NUM:uint = 12;
 		public static const PADDING:uint = 18;
@@ -39,6 +44,9 @@ package puzzle.ingame
 		private var _rowLine2:Image;
 		private var _columnLine:Image;
 		private var _columnLine2:Image;
+		
+		private var _alert:Image;
+		private var _alert2:Image;
 		
 		private var _backGround:Image;
 		
@@ -132,6 +140,15 @@ package puzzle.ingame
 			_columnLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
 			_columnLine2.alignPivot();
 			
+			_alert = new Image(Texture.fromBitmap(new alertImage() as Bitmap));
+			_alert.width = Cell.WIDTH_SIZE / 2;
+			_alert.height = Cell.HEIGHT_SIZE / 2;
+			_alert.alignPivot();
+			_alert2 = new Image(Texture.fromBitmap(new alertImage() as Bitmap));
+			_alert2.width = Cell.WIDTH_SIZE / 2;
+			_alert2.height = Cell.HEIGHT_SIZE / 2;
+			_alert2.alignPivot();
+			
 			_resources = null;
 		}
 		
@@ -145,6 +162,42 @@ package puzzle.ingame
 			var possible:Possible = _possibleChecker.pickPossible();
 			trace(possible.startCell.name);
 			trace(possible.destCell.name);
+			
+			var startAlertPoint:Point = possible.startCell.getBounds(this).topLeft.clone();
+			var destAlertPoint:Point = possible.destCell.getBounds(this).topLeft.clone();
+			
+			_alert.x = startAlertPoint.x;
+			_alert.y = startAlertPoint.y;
+			
+			_alert2.x = destAlertPoint.x;
+			_alert2.y = destAlertPoint.y;
+			
+			addChild(_alert);
+			addChild(_alert2);
+			
+			_juggler.delayCall(removeAlert, 3);
+				
+			function removeAlert():void
+			{
+				var tween1:Tween = new Tween(_alert, 1);
+				tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+				var tween2:Tween = new Tween(_alert2, 1);
+				tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+				
+				tween1.fadeTo(0);
+				tween2.fadeTo(0);
+				
+				_juggler.add(tween1);
+				_juggler.add(tween2);
+				
+				function onCompleteTween(event:Event):void
+				{
+					Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+					Image(Tween(event.currentTarget).target).removeFromParent();
+					Image(Tween(event.currentTarget).target).x = 0;
+					Image(Tween(event.currentTarget).target).y = 0;
+				}
+			}
 		}
 		
 		/**

@@ -10,7 +10,6 @@ actionscript/bin
 
 # Eclipse
 .settings
-.project
 
 # Android
 android/bin

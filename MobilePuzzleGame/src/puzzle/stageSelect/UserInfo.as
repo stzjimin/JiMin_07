@@ -15,6 +15,7 @@ package puzzle.stageSelect
 	import starling.text.TextFormat;
 	import starling.textures.Texture;
 	import starling.utils.Align;
+	import puzzle.user.HeartTimer;
 
 	public class UserInfo extends DisplayObjectContainer
 	{	
@@ -37,6 +38,7 @@ package puzzle.stageSelect
 		private const heartImage:Class;
 		
 		public static const CLICKED_PROFILL:String = "profillClicked";
+		public static const CLICKED_LOGOUT:String = "logOutClicked";
 		public static const CLICKED_FORK:String = "forkClicked";
 		public static const CLICKED_SHUFFLE:String = "shuffleClicked";
 		public static const CLICKED_SEARCH:String = "searchClicked";
@@ -49,6 +51,8 @@ package puzzle.stageSelect
 		private var _fork:CustomButton;
 		private var _search:CustomButton;
 		private var _shuffle:CustomButton;
+		
+		private var _logOutButton:Button;
 		
 		private var _resources:Resources;
 		
@@ -89,6 +93,16 @@ package puzzle.stageSelect
 			_profilImage.x = (width * 0.05);
 			_profilImage.addEventListener(Event.TRIGGERED, onClickedProfill);
 			addChild(_profilImage);
+			
+			_logOutButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap), "LOGOUT");
+			_logOutButton.textFormat.bold = true;
+			_logOutButton.textFormat.size = 20;
+			_logOutButton.width = _profilImage.width;
+			_logOutButton.height = height / 2;
+			_logOutButton.x = _profilImage.x;
+			_logOutButton.y = height + height * 0.01;
+			_logOutButton.addEventListener(Event.TRIGGERED, onClickedLogOutButton);
+			addChild(_logOutButton);
 			
 			_fork = new CustomButton(Texture.fromBitmap(new forkImage() as Bitmap));
 			_fork.init(height * 0.7, height * 0.7);
@@ -176,6 +190,11 @@ package puzzle.stageSelect
 			_profilImage.dispose();
 			_profilImage = null;
 			
+			_logOutButton.addEventListener(Event.TRIGGERED, onClickedLogOutButton);
+			_logOutButton.removeFromParent();
+			_logOutButton.dispose();
+			_logOutButton = null;
+			
 			_fork.removeEventListener(Event.TRIGGERED, onClickedFork);
 			_fork.removeFromParent();
 			_fork.destroy();
@@ -228,6 +247,11 @@ package puzzle.stageSelect
 		private function onClickedProfill(event:Event):void
 		{
 			dispatchEvent(new Event(UserInfo.CLICKED_PROFILL));
+		}
+		
+		private function onClickedLogOutButton(event:Event):void
+		{
+			dispatchEvent(new Event(UserInfo.CLICKED_LOGOUT));
 		}
 		
 		private function onClickedFork(event:Event):void

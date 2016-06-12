@@ -88,12 +88,12 @@ package puzzle.ingame.item
 			_fork.addEventListener(CheckBox.SWAP_EMPTY, onSwapEmpty);
 			addChild(_fork);
 			
-			if(User.getInstance().fork <= 0)
-				_fork.touchable = false;
-			if(User.getInstance().search <= 0)
-				_search.touchable = false;
-			if(User.getInstance().shuffle <= 0)
-				_shuffle.touchable = false;
+//			if(User.getInstance().fork <= 0)
+//				_fork.touchable = false;
+//			if(User.getInstance().search <= 0)
+//				_search.touchable = false;
+//			if(User.getInstance().shuffle <= 0)
+//				_shuffle.touchable = false;
 		}
 		
 		public function destroy():void
@@ -115,8 +115,8 @@ package puzzle.ingame.item
 		public function setEmptyFork():void
 		{
 			_fork.setEmpty();
-			if(User.getInstance().fork <= 0)
-				_fork.touchable = false;
+//			if(User.getInstance().fork <= 0)
+//				_fork.touchable = false;
 		}
 		
 		private function onChangeFork(event:UserEvent):void
@@ -139,6 +139,13 @@ package puzzle.ingame.item
 		
 		private function onSwapCheck(event:Event):void
 		{
+			if(User.getInstance().fork <= 0)
+			{
+				User.getInstance().fork += 1;
+				setEmptyFork();
+				return;
+			}
+			
 			dispatchEvent(new Event(Items.FORK_CHECK));
 		}
 		
@@ -153,13 +160,19 @@ package puzzle.ingame.item
 			if(target == _search)
 			{
 				if(User.getInstance().search <= 0)
-					_search.touchable = false;
+				{
+					User.getInstance().search += 1;
+					return;
+				}
 				dispatchEvent(new Event(Items.CLICKED_SEARCH));
 			}
 			else if(target == _shuffle)
 			{
 				if(User.getInstance().shuffle <= 0)
-					_shuffle.touchable = false;
+				{
+					User.getInstance().shuffle += 1;
+					return;
+				}
 				dispatchEvent(new Event(Items.CLICKED_SHUFFLE));
 			}
 		}

@@ -97,6 +97,8 @@ package puzzle.loading.loader
 						trace("userDate = " + _user.playdate);
 						trace("serverDate = " + serverDate.getTime());
 						trace("userDate = " + userDate.getTime());
+						trace("serverDate = " + serverDate);
+						trace("userDate = " + userDate);
 						
 						if(serverDate.getTime() < userDate.getTime())
 						{
@@ -121,6 +123,10 @@ package puzzle.loading.loader
 							{
 								seconds += 1500;
 								_user.dayChanged = true;
+							}
+							if((vers.hours - standard.hours) >= 1)
+							{
+								seconds += 1500;	
 							}
 							
 							if(seconds < 1500)

@@ -162,41 +162,57 @@ package puzzle.ingame
 			var possible:Possible = _possibleChecker.pickPossible();
 			trace(possible.startCell.name);
 			trace(possible.destCell.name);
+			if(_alert.parent)
+			{
+				_alert.removeFromParent();
+//				_alert.alpha = 1.0;
+			}
+				
+			if(_alert2.parent)
+			{
+				_alert2.removeFromParent();
+//				_alert2.alpha = 1.0;
+			}
 			
-			var startAlertPoint:Point = possible.startCell.getBounds(this).topLeft.clone();
-			var destAlertPoint:Point = possible.destCell.getBounds(this).topLeft.clone();
+			possible.startCell.block.addChild(_alert);
+			possible.destCell.block.addChild(_alert2);
 			
-			_alert.x = startAlertPoint.x;
-			_alert.y = startAlertPoint.y;
+//			var startAlertPoint:Point = possible.startCell.getBounds(this).topLeft.clone();
+//			var destAlertPoint:Point = possible.destCell.getBounds(this).topLeft.clone();
+//			
+//			_alert.x = startAlertPoint.x;
+//			_alert.y = startAlertPoint.y;	
+//			_alert2.x = destAlertPoint.x;
+//			_alert2.y = destAlertPoint.y;
+//			
+//			addChild(_alert);
+//			addChild(_alert2);
 			
-			_alert2.x = destAlertPoint.x;
-			_alert2.y = destAlertPoint.y;
-			
-			addChild(_alert);
-			addChild(_alert2);
-			
-			_juggler.delayCall(removeAlert, 3);
+//			_juggler.delayCall(removeAlert, 3);
 				
 			function removeAlert():void
 			{
-				var tween1:Tween = new Tween(_alert, 1);
-				tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
-				var tween2:Tween = new Tween(_alert2, 1);
-				tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
-				
-				tween1.fadeTo(0);
-				tween2.fadeTo(0);
-				
-				_juggler.add(tween1);
-				_juggler.add(tween2);
-				
-				function onCompleteTween(event:Event):void
-				{
-					Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
-					Image(Tween(event.currentTarget).target).removeFromParent();
-					Image(Tween(event.currentTarget).target).x = 0;
-					Image(Tween(event.currentTarget).target).y = 0;
-				}
+				_alert.removeFromParent();
+				_alert2.removeFromParent();
+//				var tween1:Tween = new Tween(_alert, 1);
+//				tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+//				var tween2:Tween = new Tween(_alert2, 1);
+//				tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+//				
+//				tween1.fadeTo(0);
+//				tween2.fadeTo(0);
+//				
+//				_juggler.add(tween1);
+//				_juggler.add(tween2);
+//				
+//				function onCompleteTween(event:Event):void
+//				{
+//					Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+//					Image(Tween(event.currentTarget).target).removeFromParent();
+//					Image(Tween(event.currentTarget).target).x = 0;
+//					Image(Tween(event.currentTarget).target).y = 0;
+//					Image(Tween(event.currentTarget).target).alpha = 1.0;
+//				}
 			}
 		}
 		

@@ -1,7 +1,5 @@
-package
+package puzzle.user
 {
-	import puzzle.user.User;
-	import puzzle.user.UserEvent;
 	
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;

@@ -163,7 +163,9 @@ package puzzle.ingame.cell.blocks
 			_blockBottomPadding.dispose();
 			
 			removeEventListener(TouchEvent.TOUCH, onTouch);
-			removeFromParent(true);
+			removeFromParent();
+			
+			removeChildren(0, this.numChildren);
 			
 			dispose();
 		}

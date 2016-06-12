@@ -159,6 +159,8 @@ package puzzle.user
 		{
 			var heartCount:uint;
 			
+			trace("versSecond = " + versSecond);
+			
 			if(versSecond >= 1500)
 			{
 				if(_heart < 5)
@@ -174,6 +176,8 @@ package puzzle.user
 				else
 					_heart += heartCount;
 			}
+			
+			trace("_heartTime = " + _heartTime);
 			
 			_heartTimer = new HeartTimer(100, 100);
 			_heartTimer.init(300);

@@ -543,6 +543,7 @@ package puzzle.ingame
 		
 		private function outThisGame():void
 		{
+			User.getInstance().pullUserData();
 			SceneManager.current.outScene(_stageNumber);
 		}
 		

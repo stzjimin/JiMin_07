@@ -29,7 +29,10 @@ package
 			Starling.juggler.add(this);
 			_pushTime = pushTime;
 			_remainTime = User.getInstance().heartTime;
+			trace(_remainTime);
 			this.text = (_remainTime / 60).toString() + " : " + (_remainTime % 60).toString();
+			trace((_remainTime / 60).toString());
+			trace(this.text);
 			_juggler.repeatCall(count, 1.0);
 			
 			User.getInstance().addEventListener(UserEvent.CHANGE_HEART, onChangeHeart);
@@ -58,13 +61,13 @@ package
 		
 		private function count():void
 		{
-			_remainTime -= 1;
 			this.text = int(_remainTime / 60).toString() + " : " + int(_remainTime % 60).toString();
 			if(_remainTime <= 0)
 			{
 				_remainTime = _pushTime;
 				pushHeart();
 			}
+			_remainTime -= 1;
 			User.getInstance().heartTime = _remainTime;
 		}
 		

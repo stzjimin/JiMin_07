@@ -105,7 +105,7 @@ package puzzle.loading.loader
 							var vers:Date = new Date(userDate.getTime() - serverDate.getTime());
 							var standard:Date = new Date(0);
 							
-							var seconds:Number;
+							var seconds:Number = 0;
 							
 							if((vers.fullYear - standard.fullYear) >= 1)
 							{
@@ -131,10 +131,13 @@ package puzzle.loading.loader
 									seconds += ((vers.seconds - standard.seconds));
 							}
 							
-							_user.calculHeartTime(seconds + uint(jsonObject[0].heartTime));
+							
+							trace("seconds = " + seconds);
+							trace("int(jsonObject[0].heartTime) = " + int(jsonObject[0].heartTime));
+							_user.calculHeartTime(seconds + int(jsonObject[0].heartTime));
 						}
 						else
-							_user.calculHeartTime(0);
+							_user.calculHeartTime(299);
 						
 						if(setString == "")
 							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));

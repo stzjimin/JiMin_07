@@ -11,12 +11,14 @@ package puzzle.stageSelect
 	import customize.Sound;
 	import customize.SoundManager;
 	
+	import puzzle.attend.Attend;
 	import puzzle.ingame.InGameScene;
 	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
+	import puzzle.shop.Shop;
 	import puzzle.title.TitleScene;
 	import puzzle.user.User;
 	
@@ -51,12 +53,18 @@ package puzzle.stageSelect
 		
 		private var _defaultTextFormat:TextFormat;
 		
+		private var _attendPopup:Attend;
+		private var _attendPopupFrame:PopupFrame;
+		
 //		private var _settingButton:Button;
 		private var _settingPopup:SettingPopup;
 		private var _popupFrame:PopupFrame;
 		
 		private var _stagePopup:StagePopup;
 		private var _stagePopupFrame:PopupFrame;
+		
+		private var _shopPopup:Shop;
+		private var _shopPopupFrame:PopupFrame;
 		
 		private var _soundManager:SoundManager;
 		
@@ -102,7 +110,6 @@ package puzzle.stageSelect
 		
 		protected override function onDestroy(event:SceneEvent):void
 		{
-			_backGround.removeEventListener(TouchEvent.TOUCH, onTouch);
 			_backGround.removeFromParent();
 			_backGround.dispose();
 			_backGround = null;
@@ -162,6 +169,27 @@ package puzzle.stageSelect
 			_progressFrame.destroy();
 			_progressFrame = null;
 			
+			_attendPopup.removeEventListener(Event.TRIGGERED, onClickedAttenPopup);
+			_attendPopup.removeFromParent();
+			_attendPopup.destroy();
+			_attendPopup = null;
+			
+			_attendPopupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			_attendPopupFrame.removeFromParent();
+			_attendPopupFrame.destroy();
+			_attendPopupFrame = null;
+			
+			_shopPopup.removeEventListener(Shop.CLICKED_BUY, onClickedShopBuy);
+			_shopPopup.removeEventListener(Shop.CLICKED_CLOSE, onClickedShopClose);
+			_shopPopup.removeFromParent();
+			_shopPopup.destroy();
+			_shopPopup = null;
+			
+			_shopPopupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			_shopPopupFrame.removeFromParent();
+			_shopPopupFrame.destroy();
+			_shopPopupFrame = null;
+			
 			_userInfo.removeEventListener(UserInfo.CLICKED_PROFILL, onClickedProfill);
 			_userInfo.removeEventListener(UserInfo.CLICKED_FORK, onClickedFork);
 			_userInfo.removeEventListener(UserInfo.CLICKED_SEARCH, onClickedSearch);
@@ -210,7 +238,6 @@ package puzzle.stageSelect
 			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageSelectBackground2"));
 			_backGround.width = 576;
 			_backGround.height = 1024;
-			_backGround.addEventListener(TouchEvent.TOUCH, onTouch);
 			addChild(_backGround);
 			
 			_defaultTextFormat = new TextFormat();
@@ -285,6 +312,25 @@ package puzzle.stageSelect
 //			_settingButton.addEventListener(Event.TRIGGERED, onClickedProfill);
 //			addChild(_settingButton);
 			
+			_shopPopup = new Shop(_resources);
+			_shopPopup.init(400, 600);
+			_shopPopup.addEventListener(Shop.CLICKED_BUY, onClickedShopBuy);
+			_shopPopup.addEventListener(Shop.CLICKED_CLOSE, onClickedShopClose);
+			
+			_shopPopupFrame = new PopupFrame(576, 1024);
+			_shopPopupFrame.setContent(_shopPopup);
+			_shopPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_shopPopupFrame)
+			
+			_attendPopup = new Attend(_resources);
+			_attendPopup.addEventListener(Event.TRIGGERED, onClickedAttenPopup);
+			_attendPopup.init(400, 300);
+			
+			_attendPopupFrame = new PopupFrame(576, 1024);
+			_attendPopupFrame.setContent(_attendPopup);
+			_attendPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_attendPopupFrame);
+			
 			_settingPopup = new SettingPopup(_resources);
 			_settingPopup.addEventListener(SettingPopup.CLICK_CLOSE, onClickedSettingClose);
 			_settingPopup.addEventListener(SettingPopup.BGM_SWAP_CHECK, onSwapBGM);
@@ -350,6 +396,17 @@ package puzzle.stageSelect
 			
 //			trace("last = " + _soundManager.isBgmActive);
 			_progressFrame.stopProgress();
+			_attendPopupFrame.show();
+			if(User.getInstance().dayChanged)
+				attend();
+			User.getInstance().pullUserData();
+		}
+		
+		private function attend():void
+		{
+			_attendPopup.attend();
+			User.getInstance().dayChanged = false;
+			User.getInstance().attendCount += 1;
 		}
 		
 		private function onClickedNextButton(event:Event):void
@@ -379,9 +436,19 @@ package puzzle.stageSelect
 //			_popupFrame.visible = false;
 			if(event.currentTarget == _stagePopupFrame)
 				_stagePopupFrame.hide();
-			else
+			else if(event.currentTarget == _popupFrame)
 				_popupFrame.hide();
+			else if(event.currentTarget == _attendPopupFrame)
+				_attendPopupFrame.hide();
+			else if(event.currentTarget == _shopPopup)
+				_shopPopupFrame.hide();
 		}
+		
+		private function onClickedAttenPopup(event:Event):void
+		{
+			_attendPopupFrame.hide();
+		}
+
 		
 		private function onClickedProfill(event:Event):void
 		{
@@ -391,7 +458,12 @@ package puzzle.stageSelect
 		
 		private function onClickedLogOut(event:Event):void
 		{
-			FBExtension.getInstance().logout();
+			User.getInstance().pullUserData(completePullUserData);
+		}
+		
+		private function completePullUserData():void
+		{
+			User.getInstance().logout();
 			SceneManager.current.addScene(TitleScene, "title");
 			SceneManager.current.switchScene("title");
 		}
@@ -399,29 +471,33 @@ package puzzle.stageSelect
 		private function onClickedFork(event:Event):void
 		{
 			trace("fork");
-//			User.getInstance().pushFork();
-			User.getInstance().fork += 1;
+//			User.getInstance().fork += 1;
+			_shopPopup.setItem(event.data as String);
+			_shopPopupFrame.show();
 		}
 		
 		private function onClickedSearch(event:Event):void
 		{
 			trace("search");
-//			User.getInstance().pushSearch();
-			User.getInstance().search += 1;
+//			User.getInstance().search += 1;
+			_shopPopup.setItem(event.data as String);
+			_shopPopupFrame.show();
 		}
 		
 		private function onClickedShuffle(event:Event):void
 		{
 			trace("shuffle");
-//			User.getInstance().pushShuffle();
-			User.getInstance().shuffle += 1;
+//			User.getInstance().shuffle += 1;
+			_shopPopup.setItem(event.data as String);
+			_shopPopupFrame.show();
 		}
 		
 		private function onClickedHeart(event:Event):void
 		{
 			trace("heart");
-//			User.getInstance().pushHeart();
-			User.getInstance().heart += 1;
+//			User.getInstance().heart += 1;
+			_shopPopup.setItem(event.data as String);
+			_shopPopupFrame.show();
 		}
 		
 		private function onClickedStageButton(event:Event):void
@@ -472,6 +548,17 @@ package puzzle.stageSelect
 			SceneManager.current.goScene("game", _clickedStageNumber);
 		}
 		
+		private function onClickedShopBuy(event:Event):void
+		{
+			_shopPopupFrame.hide();
+			User.getInstance().pullUserData();
+		}
+		
+		private function onClickedShopClose(event:Event):void
+		{
+			_shopPopupFrame.hide();
+		}
+		
 		private function onSwapBGM(event:Event):void
 		{
 			if(event.type == SettingPopup.BGM_SWAP_CHECK)
@@ -498,16 +585,6 @@ package puzzle.stageSelect
 				_soundManager.isEffectActive = false;
 				User.getInstance().soundEffectActive = false;
 			}
-		}
-		
-		private function onTouch(event:TouchEvent):void
-		{
-			var touch:Touch = event.getTouch(_backGround);
-			if(touch == null)
-				return;
-			
-			if(touch.phase == TouchPhase.ENDED)
-				trace(touch.getLocation(this));
 		}
 	}
 }

@@ -4,7 +4,9 @@ package puzzle.stageSelect
 	
 	import customize.CustomButton;
 	
+	import puzzle.ingame.item.ItemType;
 	import puzzle.loading.Resources;
+	import puzzle.user.HeartTimer;
 	import puzzle.user.User;
 	import puzzle.user.UserEvent;
 	
@@ -15,7 +17,6 @@ package puzzle.stageSelect
 	import starling.text.TextFormat;
 	import starling.textures.Texture;
 	import starling.utils.Align;
-	import puzzle.user.HeartTimer;
 
 	public class UserInfo extends DisplayObjectContainer
 	{	
@@ -106,6 +107,7 @@ package puzzle.stageSelect
 			
 			_fork = new CustomButton(Texture.fromBitmap(new forkImage() as Bitmap));
 			_fork.init(height * 0.7, height * 0.7);
+			_fork.name = ItemType.FORK;
 			_fork.addPopCircle(Texture.fromBitmap(new circleImage() as Bitmap), _fork.width, 0, _fork.width * 0.4, _fork.height * 0.4, Align.RIGHT, Align.TOP);
 			_fork.height = height * 0.7;
 			_fork.width = _fork.height;
@@ -119,6 +121,7 @@ package puzzle.stageSelect
 			
 			_search = new CustomButton(Texture.fromBitmap(new forkImage() as Bitmap));
 			_search.init(height * 0.7, height * 0.7);
+			_search.name = ItemType.SEARCH;
 			_search.addPopCircle(Texture.fromBitmap(new circleImage() as Bitmap), _search.width, 0, _search.width * 0.4, _search.height * 0.4, Align.RIGHT, Align.TOP);
 			_search.height = height * 0.7;
 			_search.width = _search.height;
@@ -132,6 +135,7 @@ package puzzle.stageSelect
 			
 			_shuffle = new CustomButton(Texture.fromBitmap(new forkImage() as Bitmap));
 			_shuffle.init(height * 0.7, height * 0.7);
+			_shuffle.name = ItemType.SHUFFLE;
 			_shuffle.addPopCircle(Texture.fromBitmap(new circleImage() as Bitmap), _shuffle.width, 0, _shuffle.width * 0.4, _shuffle.height * 0.4, Align.RIGHT, Align.TOP);
 			_shuffle.height = height * 0.7;
 			_shuffle.width = _shuffle.height;
@@ -148,6 +152,7 @@ package puzzle.stageSelect
 			heartTextFormat.size = 20;
 			
 			_heart = new Button(Texture.fromBitmap(new heartImage() as Bitmap), User.getInstance().heart.toString());
+			_heart.name = ItemType.HEART;
 			_heart.textFormat = heartTextFormat;
 			_heart.height = height * 0.7;
 			_heart.width = _heart.height;
@@ -256,22 +261,22 @@ package puzzle.stageSelect
 		
 		private function onClickedFork(event:Event):void
 		{
-			dispatchEvent(new Event(UserInfo.CLICKED_FORK));
+			dispatchEvent(new Event(UserInfo.CLICKED_FORK, false, _fork.name));
 		}
 		
 		private function onClickedSearch(evemt:Event):void
 		{
-			dispatchEvent(new Event(UserInfo.CLICKED_SEARCH));
+			dispatchEvent(new Event(UserInfo.CLICKED_SEARCH, false, _search.name));
 		}
 		
 		private function onClickedShuffle(event:Event):void
 		{
-			dispatchEvent(new Event(UserInfo.CLICKED_SHUFFLE));
+			dispatchEvent(new Event(UserInfo.CLICKED_SHUFFLE, false, _shuffle.name));
 		}
 		
 		private function onClickedHeart(event:Event):void
 		{
-			dispatchEvent(new Event(UserInfo.CLICKED_HEART));
+			dispatchEvent(new Event(UserInfo.CLICKED_HEART, false, _heart.name));
 		}
 	}
 }

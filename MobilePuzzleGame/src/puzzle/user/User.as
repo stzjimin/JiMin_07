@@ -9,9 +9,9 @@ package puzzle.user
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.net.URLRequest;
+	import flash.utils.Dictionary;
 	
-	import customize.Exiter;
-	
+	import puzzle.ingame.item.ItemType;
 	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.loader.DBLoader;
 	
@@ -20,6 +20,8 @@ package puzzle.user
 	public class User extends EventDispatcher
 	{
 		public static const PULL_COMPLETE:String = "pullUserData";
+		private static const HEART_TIME:int = 300;
+		private static const MAX_HEART_NUM:int = 5;
 		
 		private static var _instance:User;
 		
@@ -46,26 +48,42 @@ package puzzle.user
 		
 		private var _bgmActive:Boolean; 
 		private var _soundEffectActive:Boolean;
+		
+		private var _attendCount:uint;
 
 		private var _heartTimer:HeartTimer;
+		private var _notification:NotificationExtension;
 		
 		public function User()
 		{
 			if (!_instance)
 			{
 				_instance = this;
-//				Exiter.getInstance().addExitFunction(saveUserState);
-				NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, onDeActivate);
+				NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, onClose);
+				NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, onActivate);
+				NativeApplication.nativeApplication.addEventListener(Event.EXITING, onClose);
 				_bgmActive = true;
 				_soundEffectActive = true;
 				_isLoaded = false;
 				_heart = 5;
 				_heartTime = 0;
+				_notification = new NotificationExtension();
 			}
 			else
 			{
 				throw new IllegalOperationError("User가 이미 만들어져있습니다. User는 싱글톤 클래스에요!!");
 			}
+		}
+		
+		public function destroy():void
+		{
+			NativeApplication.nativeApplication.removeEventListener(Event.DEACTIVATE, onClose);
+			NativeApplication.nativeApplication.removeEventListener(Event.ACTIVATE, onActivate);
+			NativeApplication.nativeApplication.removeEventListener(Event.EXITING, onClose);
+			_heartTimer.destroy();
+			_heartTimer = null;
+			
+			_instance = null;
 		}
 		
 		public function loadPicture():void
@@ -126,7 +144,7 @@ package puzzle.user
 				return;
 			var dbLoader:DBLoader = new DBLoader(this);
 
-			var setString:String = "playdate=" + _playdate + ",clearstage="+_clearstage+",fork="+_fork+",search="+_search+",shuffle="+_shuffle+",heart="+_heart+",hearttime="+_heartTime;
+			var setString:String = "clearstage="+_clearstage+",fork="+_fork+",search="+_search+",shuffle="+_shuffle+",heart="+_heart+",hearttime="+_heartTime+",attend="+_attendCount;
 			
 			dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteUpdate);
 			dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedUpdate);
@@ -161,18 +179,18 @@ package puzzle.user
 			
 			trace("versSecond = " + versSecond);
 			
-			if(versSecond >= 1500)
+			if(versSecond >= (HEART_TIME * MAX_HEART_NUM))
 			{
-				if(_heart < 5)
-					_heart = 5;
+				if(_heart < MAX_HEART_NUM)
+					_heart = MAX_HEART_NUM;
 			}
 			else
 			{
-				heartCount = uint(versSecond / 300);
-				_heartTime = uint(versSecond % 300);
+				heartCount = uint(versSecond / HEART_TIME);
+				_heartTime = uint(versSecond % HEART_TIME);
 				
-				if((_heart + heartCount) > 5)
-					_heart = 5;
+				if((_heart + heartCount) > MAX_HEART_NUM)
+					_heart = MAX_HEART_NUM;
 				else
 					_heart += heartCount;
 			}
@@ -180,110 +198,94 @@ package puzzle.user
 			trace("_heartTime = " + _heartTime);
 			
 			_heartTimer = new HeartTimer(100, 100);
-			_heartTimer.init(300);
+			_heartTimer.init(HEART_TIME);
 		}
 		
-//		public function pushHeart():void
+		public function setNoti(title:String, message:String, second:int):void
+		{	
+			_notification.setNotification(title, message, second);
+		}
+		
+		public function removeNoti():void
+		{
+			_notification.removeNotification();
+		}
+		
+		public function logout():void
+		{
+			switch(_userType)
+			{
+				case UserType.Facebook :
+					FBExtension.getInstance().logout();
+					break;
+			}
+			this.destroy();
+		}
+		
+		public function getFriends():Dictionary
+		{
+			var result:Dictionary = null;
+			switch(_userType)
+			{
+				case UserType.Facebook :
+					result = FacebookUser.getInstance().friends;
+					break;
+			}
+			return result;
+		}
+		
+		public function addItem(itemType:String, value:int):void
+		{
+			switch(itemType)
+			{
+				case ItemType.FORK :
+					fork += value;
+					break;
+				case ItemType.SEARCH :
+					search += value;
+					break;
+				case ItemType.SHUFFLE :
+					shuffle += value;
+					break;
+				case ItemType.HEART :
+					heart += value;
+					break;
+			}
+		}
+		
+//		private function onExit(event:Event):void
 //		{
-//			_heart += 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_HEART, UserEvent.PUSH, false, _heart));
-//		}
-//		
-//		public function popHeart():Boolean
-//		{
-//			if(_heart <= 0)
-//				return false;
+//			saveUserState();
+//			pullUserData();
 //			
-//			_heart -= 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_HEART, UserEvent.POP, false, _heart));
-//			return true;
+//			var second:int = (1500 - (_heart * 300) - (_heartTime));
+//			if(second > 0)
+//				setNoti("사천성", "하트가 꽉 찼어요!!", second);
 //		}
 //		
-//		public function pushFork():void
+//		private function onDeActivate(event:Event):void
 //		{
-//			_fork += 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_FORK, UserEvent.PUSH, false, _fork));
-//		}
-//		
-//		public function popFork():Boolean
-//		{
-//			if(_fork <= 0)
-//				return false;
+//			saveUserState();
+//			pullUserData();
 //			
-//			_fork -= 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_FORK, UserEvent.POP, false, _fork));
-//			return true;
-//		}
-//		
-//		public function pushShuffle():void
-//		{
-//			_shuffle += 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SHUFFLE, UserEvent.PUSH, false, _shuffle));
-//		}
-//		
-//		public function popShuffle():Boolean
-//		{
-//			if(_shuffle <= 0)
-//				return false;
-//			
-//			_shuffle -= 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SHUFFLE, UserEvent.POP, false, _shuffle));
-//			return true;
-//		}
-//		
-//		public function pushSearch():void
-//		{
-//			_search += 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SEARCH, UserEvent.PUSH, false, _search));
-//		}
-//		
-//		public function popSearch():Boolean
-//		{
-//			if(_search <= 0)
-//				return false;
-//			
-//			_search -= 1;
-//			dispatchEvent(new UserEvent(UserEvent.CHANGE_SEARCH, UserEvent.POP, false, _search));
-//			return true;
+//			var second:int = (1500 - (_heart * 300) - (_heartTime));
+//			if(second > 0)
+//				setNoti("사천성", "하트가 꽉 찼어요!!", second);
 //		}
 		
-//		public function loadUserItems():void
-//		{
-//			if(!UserStateDir.resolvePath("userItemChange.txt").exists)
-//				return;
-//			
-//			var jsonString:String;
-//			
-//			var fileStream:FileStream = new FileStream();
-//			fileStream.open(UserStateDir.resolvePath("userItemChange.txt"), FileMode.READ);
-//			jsonString = fileStream.readUTF();
-//			fileStream.close();
-//			
-//			UserStateDir.resolvePath("userItemChange.txt").deleteDirectory(true);
-//			
-//			var jsonObject:Object = JSON.parse(jsonString);
-//		}
-//		
-//		public function saveUserItems():void
-//		{
-//			var jsonObject:Object = new Object();
-//			jsonObject.fork = _fork;
-//			jsonObject.search = _search;
-//			jsonObject.shuffle = _shuffle;
-//			jsonObject.heart = _heart;
-//			
-//			var jsonString:String = JSON.stringify(jsonObject);
-//			
-//			var fileStream:FileStream = new FileStream();
-//			fileStream.open(UserStateDir.resolvePath("userItemChange.txt"), FileMode.WRITE);
-//			fileStream.writeUTF(jsonString);
-//			fileStream.close();
-//		}
-		
-		private function onDeActivate(event:Event):void
+		private function onClose(event:Event):void
 		{
 			saveUserState();
 			pullUserData();
+			
+			var second:int = ((HEART_TIME * (MAX_HEART_NUM-1)) - (_heart * HEART_TIME) + (_heartTime));
+			if(second > 0)
+				setNoti("사천성", "하트가 꽉 찼어요!!", second);
+		}
+		
+		private function onActivate(event:Event):void
+		{
+			removeNoti();
 		}
 		
 		public static function getInstance():User
@@ -464,6 +466,17 @@ package puzzle.user
 		{
 			_heartTimer = value;
 		}
+
+		public function get attendCount():uint
+		{
+			return _attendCount;
+		}
+
+		public function set attendCount(value:uint):void
+		{
+			_attendCount = value;
+		}
+
 
 	}
 }

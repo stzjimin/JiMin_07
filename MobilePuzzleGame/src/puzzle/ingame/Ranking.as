@@ -1,6 +1,7 @@
 package puzzle.ingame
 {
 	import flash.display.Bitmap;
+	import flash.utils.Dictionary;
 	
 	import customize.ListView;
 	import customize.ListViewContent;
@@ -107,10 +108,12 @@ package puzzle.ingame
 			var name:TextField;
 			var score:TextField;
 			
+			var friends:Dictionary = User.getInstance().getFriends();
+			
 			var userIndex:int;
 			for(var i:int = 0; i < jsonObject.length; i++)
 			{
-				if(jsonObject[i].id == User.getInstance().id || FacebookUser.getInstance().friends[jsonObject[i].id] != null)
+				if(jsonObject[i].id == User.getInstance().id || friends[jsonObject[i].id] != null)
 				{
 					viewContent = new ListViewContent();
 					viewContent.init(Texture.fromBitmap(new titleImage() as Bitmap));
@@ -124,8 +127,8 @@ package puzzle.ingame
 					}
 					else
 					{
-						profileImage = new Image(Texture.fromBitmap(FacebookUser.getInstance().friends[jsonObject[i].id].picture));
-						name = new TextField(viewContent.width * 0.2, viewContent.height * 0.9, FacebookUser.getInstance().friends[jsonObject[i].id].name, textFormat);
+						profileImage = new Image(Texture.fromBitmap(friends[jsonObject[i].id].picture));
+						name = new TextField(viewContent.width * 0.2, viewContent.height * 0.9, friends[jsonObject[i].id].name, textFormat);
 						score = new TextField(viewContent.width * 0.3, viewContent.height * 0.9, jsonObject[i].score + "점", textFormat);
 					}
 					profileImage.width = viewContent.width * 0.3;

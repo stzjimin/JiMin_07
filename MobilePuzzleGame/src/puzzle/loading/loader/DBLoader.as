@@ -36,7 +36,7 @@ package puzzle.loading.loader
 				if(result == 0)
 				{
 					trace(_user.playdate);
-					urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/insertUser.php?id="+_user.id+"&name="+_user.name+"&email="+_user.email+"&playdate="+_user.playdate);
+					urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/insertUser.php?id="+_user.id+"&name="+_user.name+"&email="+_user.email);
 					dbLoader = new URLLoader();
 					dbLoader.addEventListener(Event.COMPLETE, onCompleteInsertUser);
 					dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildInsertUser);
@@ -89,61 +89,29 @@ package puzzle.loading.loader
 							_user.shuffle = jsonObject[0].shuffle;
 						if(jsonObject[0].heart != _user.heart)
 							_user.heart = jsonObject[0].heart;
+						if(jsonObject[0].attend != _user.attendCount)
+							_user.attendCount = jsonObject[0].attend;
 						
-						var serverDate:Date = new Date(Number(jsonObject[0].playdate));
-						var userDate:Date = new Date(_user.playdate);
+						trace("jsonObject[0].updateday = " + jsonObject[0].updateday);
+						trace("jsonObject[0].updatehour = " + jsonObject[0].updatehour);
+						trace("jsonObject[0].updateminute = " + jsonObject[0].updateminute);
+						trace("jsonObject[0].updatesecond = " + jsonObject[0].updatesecond);
 						
-						trace("serverDate = " + jsonObject[0].playdate);
-						trace("userDate = " + _user.playdate);
-						trace("serverDate = " + serverDate.getTime());
-						trace("userDate = " + userDate.getTime());
-						trace("serverDate = " + serverDate);
-						trace("userDate = " + userDate);
-						
-						if(serverDate.getTime() < userDate.getTime())
+						var seconds:Number = 0;
+						if(Number(jsonObject[0].updateday) >= 1)
 						{
-							setString = setString.concat("playdate='" + _user.playdate + "',");
-							
-							var vers:Date = new Date(userDate.getTime() - serverDate.getTime());
-							var standard:Date = new Date(0);
-							
-							var seconds:Number = 0;
-							
-							if((vers.fullYear - standard.fullYear) >= 1)
-							{
-								seconds += 1500;
-								_user.dayChanged = true;
-							}
-							if((vers.month - standard.month) >= 1)
-							{
-								seconds += 1500;
-								_user.dayChanged = true;
-							}
-							if((vers.day - standard.day) >= 1)
-							{
-								seconds += 1500;
-								_user.dayChanged = true;
-							}
-							if((vers.hours - standard.hours) >= 1)
-							{
-								seconds += 1500;	
-							}
-							
-							if(seconds < 1500)
-							{
-								if((vers.minutes - standard.minutes) >= 1)
-									seconds += ((vers.minutes - standard.minutes) * 60);
-								if((vers.minutes - standard.minutes) >= 1)
-									seconds += ((vers.seconds - standard.seconds));
-							}
-							
-							
-							trace("seconds = " + seconds);
-							trace("int(jsonObject[0].heartTime) = " + int(jsonObject[0].heartTime));
-							_user.calculHeartTime(seconds + int(jsonObject[0].heartTime));
+							User.getInstance().dayChanged = true;
+							seconds += 1500;
 						}
-						else
-							_user.calculHeartTime(299);
+						if(Number(jsonObject[0].updatehour) >= 1)
+							seconds += 1500;
+						if(seconds < 1500)
+						{
+							seconds += (Number(jsonObject[0].updateminute) * 60);
+							seconds += Number(jsonObject[0].updatesecond);
+						}
+//						User.getInstance().dayChanged = true;
+						_user.calculHeartTime(seconds + int(jsonObject[0].heartTime));
 						
 						if(setString == "")
 							dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE));
@@ -213,7 +181,8 @@ package puzzle.loading.loader
 				
 				var result:String = dbLoader.data as String;
 				
-				dispatchEvent(new DBLoaderEvent(DBLoaderEvent.COMPLETE, result));
+				var dbEvent:DBLoaderEvent = new DBLoaderEvent(DBLoaderEvent.COMPLETE, result);
+				dispatchEvent(dbEvent);
 			}
 			
 			function onFaildSelectScore(event:IOErrorEvent):void

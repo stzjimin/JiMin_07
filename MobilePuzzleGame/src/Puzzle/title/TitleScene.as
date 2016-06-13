@@ -265,6 +265,7 @@ package puzzle.title
 		{
 			var user:User = User.getInstance();
 			User.getInstance().loadUserState();
+			User.getInstance().removeNoti(); 
 			
 			_progressFrame.startProgress();
 			

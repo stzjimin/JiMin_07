@@ -53,6 +53,7 @@ package puzzle.ingame.item
 			
 			_search = new CustomButton(_resources.getSubTexture("IngameSprite2.png", "search"));
 			_search.init(width / 4, height);
+			_search.name = ItemType.SEARCH;
 			_search.addPopCircle(Texture.fromBitmap(new circleImage() as Bitmap), _search.width, 0, _search.width * 0.4, _search.height * 0.4, Align.RIGHT, Align.TOP);
 			_search.width = width / 4;
 			_search.height = height;
@@ -65,6 +66,7 @@ package puzzle.ingame.item
 			
 			_shuffle = new CustomButton(_resources.getSubTexture("IngameSprite2.png", "shuffle"));
 			_shuffle.init(width / 4, height);
+			_shuffle.name = ItemType.SHUFFLE;
 			_shuffle.addPopCircle(Texture.fromBitmap(new circleImage() as Bitmap), _shuffle.width, 0, _shuffle.width * 0.4, _shuffle.height * 0.4, Align.RIGHT, Align.TOP);
 			_shuffle.width = width / 4;
 			_shuffle.height = height;
@@ -77,6 +79,7 @@ package puzzle.ingame.item
 			
 			_fork = new CheckBox(_resources.getSubTexture("IngameSprite2.png", "fork"), Texture.fromBitmap(new forkSelectImage() as Bitmap));
 			_fork.init(width / 4, height);
+			_fork.name = ItemType.FORK;
 			_fork.addPopCircle(Texture.fromBitmap(new circleImage() as Bitmap), _fork.width, 0, _fork.width * 0.4, _fork.height * 0.4, Align.RIGHT, Align.TOP);
 			_fork.width = width / 4;
 			_fork.height = height;
@@ -139,14 +142,13 @@ package puzzle.ingame.item
 		
 		private function onSwapCheck(event:Event):void
 		{
-			if(User.getInstance().fork <= 0)
-			{
-				User.getInstance().fork += 1;
-				setEmptyFork();
-				return;
-			}
-			
-			dispatchEvent(new Event(Items.FORK_CHECK));
+//			if(User.getInstance().fork <= 0)
+//			{
+//				User.getInstance().fork += 1;
+//				setEmptyFork();
+//				return;
+//			}
+			dispatchEvent(new Event(Items.FORK_CHECK, false, _fork.name));
 		}
 		
 		private function onSwapEmpty(event:Event):void
@@ -159,21 +161,21 @@ package puzzle.ingame.item
 			var target:CustomButton = event.currentTarget as CustomButton;
 			if(target == _search)
 			{
-				if(User.getInstance().search <= 0)
-				{
-					User.getInstance().search += 1;
-					return;
-				}
-				dispatchEvent(new Event(Items.CLICKED_SEARCH));
+//				if(User.getInstance().search <= 0)
+//				{
+//					User.getInstance().search += 1;
+//					return;
+//				}
+				dispatchEvent(new Event(Items.CLICKED_SEARCH, false, _search.name));
 			}
 			else if(target == _shuffle)
 			{
-				if(User.getInstance().shuffle <= 0)
-				{
-					User.getInstance().shuffle += 1;
-					return;
-				}
-				dispatchEvent(new Event(Items.CLICKED_SHUFFLE));
+//				if(User.getInstance().shuffle <= 0)
+//				{
+//					User.getInstance().shuffle += 1;
+//					return;
+//				}
+				dispatchEvent(new Event(Items.CLICKED_SHUFFLE, false, _shuffle.name));
 			}
 		}
 	}

@@ -24,6 +24,8 @@ package puzzle.ingame
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
+	import puzzle.shop.Shop;
+	import puzzle.stageSelect.StagePopup;
 	import puzzle.user.User;
 	import puzzle.user.UserEvent;
 	
@@ -84,12 +86,20 @@ package puzzle.ingame
 		private var _resultPopup:ResultPopup;
 		private var _resultPopupFrame:PopupFrame;
 		
+		private var _stagePopup:StagePopup;
+		private var _stagePopupFrame:PopupFrame;
+		
 		private var _readyTextures:TextureAtlas;
 		private var _readyMovie:MovieClip;
+		
+		private var _shopPopup:Shop;
+		private var _shopPopupFrame:PopupFrame;
 		
 		private var _blockDatas:Vector.<BlockData>;
 		
 		private var _soundManager:SoundManager;
+		
+		private var _clickedStageNumber:uint;
 		
 		public function InGameScene()
 		{
@@ -182,9 +192,23 @@ package puzzle.ingame
 			_resultPopup.removeEventListener(ResultPopup.CLICKED_BACK, onClickedMenu);
 			_resultPopup.removeEventListener(ResultPopup.CLICKED_NEXT, onClickedNext);
 			_resultPopup.removeEventListener(ResultPopup.CLICKED_RESTART, onClickedRestart);
+			_resultPopup.removeFromParent();
+			_resultPopup.destroy();
+			_resultPopup = null;
+			
 			_resultPopupFrame.removeFromParent();
 			_resultPopupFrame.destroy();
 			_resultPopupFrame = null;
+			
+			_stagePopupFrame.removeFromParent();
+			_stagePopupFrame.destroy();
+			_stagePopupFrame = null;
+			
+			_stagePopup.removeEventListener(StagePopup.CLOSE_CLICK, onClickedCloseButton);
+			_stagePopup.removeEventListener(StagePopup.START_CLICK, onClickedStartButton);
+			_stagePopup.removeFromParent();
+			_stagePopup.destroy();
+			_stagePopup = null;
 			
 			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
 			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
@@ -368,6 +392,26 @@ package puzzle.ingame
 			_resultPopupFrame = new PopupFrame(576, 1024);
 			_resultPopupFrame.setContent(_resultPopup);
 			addChild(_resultPopupFrame);
+			
+			_stagePopup = new StagePopup(_resources);
+			_stagePopup.addEventListener(StagePopup.CLOSE_CLICK, onClickedCloseButton);
+			_stagePopup.addEventListener(StagePopup.START_CLICK, onClickedStartButton);
+			_stagePopup.init(400, 500);
+			
+			_stagePopupFrame = new PopupFrame(576, 1024);
+			_stagePopupFrame.setContent(_stagePopup);
+//			_stagePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_stagePopupFrame);
+			
+			_shopPopup = new Shop(_resources);
+			_shopPopup.init(400, 600);
+			_shopPopup.addEventListener(Shop.CLICKED_BUY, onClickedShopBuy);
+			_shopPopup.addEventListener(Shop.CLICKED_CLOSE, onClickedShopClose);
+			
+			_shopPopupFrame = new PopupFrame(576, 1024);
+			_shopPopupFrame.setContent(_shopPopup);
+			_shopPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_shopPopupFrame)
 			
 			var blockData:BlockData;
 			while(_blockDatas.length != 0)
@@ -575,6 +619,14 @@ package puzzle.ingame
 		private function onCheckedFork(event:Event):void
 		{
 			trace("forkCheck");
+			if(User.getInstance().fork <= 0)
+			{
+				_items.setEmptyFork();
+				_paused = true;
+				_shopPopup.setItem(event.data as String);
+				_shopPopupFrame.show();
+				return;
+			}
 			_field.forkChecked();
 //			_field.isFork = true;
 		}
@@ -589,16 +641,30 @@ package puzzle.ingame
 		private function onClickedSearch(event:Event):void
 		{
 //			User.getInstance().popSearch();
-			User.getInstance().search -= 1;
 			trace("search");
+			if(User.getInstance().search <= 0)
+			{
+				_paused = true;
+				_shopPopup.setItem(event.data as String);
+				_shopPopupFrame.show();
+				return;
+			}
+			User.getInstance().search -= 1;
 			_field.search();
 		}
 		
 		private function onClickedShuffle(event:Event):void
 		{
 //			User.getInstance().popShuffle();
-			User.getInstance().shuffle -= 1;
 			trace("shuffle");
+			if(User.getInstance().search <= 0)
+			{
+				_paused = true;
+				_shopPopup.setItem(event.data as String);
+				_shopPopupFrame.show();
+				return;
+			}
+			User.getInstance().shuffle -= 1;
 			_field.shuffle();
 		}
 		
@@ -607,6 +673,7 @@ package puzzle.ingame
 			_paused = false;
 			_pausePopupFrame.hide();
 			_resultPopupFrame.hide();
+			_shopPopupFrame.hide();
 		}
 		
 		private function onClickedContinue(event:Event):void
@@ -621,17 +688,87 @@ package puzzle.ingame
 		
 		private function onClickedRestart(event:Event):void
 		{
-			outThisGame();
-			SceneManager.current.addScene(InGameScene, "game");
-			SceneManager.current.goScene("game", _stageNumber);
+//			outThisGame();
+//			SceneManager.current.addScene(InGameScene, "game");
+//			SceneManager.current.goScene("game", _stageNumber);
+			
+			_resultPopupFrame.hide();
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			
+			_dbLoader.selectScoreData(_stageNumber); 
+ 			_clickedStageNumber = _stageNumber;
 		}
 		
 		private function onClickedNext(event:Event):void
 		{
-			User.getInstance().heart -= 1;
+//			User.getInstance().heart -= 1;
+//			outThisGame();
+//			SceneManager.current.addScene(InGameScene, "game");
+//			SceneManager.current.goScene("game", _stageNumber + 1);
+			
+			_resultPopupFrame.hide();
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			
+			_dbLoader.selectScoreData(_stageNumber+1);
+			_clickedStageNumber = _stageNumber+1;
+		}
+		
+		private function onCompleteLoadingStageScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			_dbLoader.destroy();
+			
+			var result:String = event.message;
+			var jsonObject:Object = JSON.parse(result);
+			
+			_stagePopup.setTitleMessage(_clickedStageNumber.toString());
+			_stagePopup.setLanking(jsonObject);
+			_stagePopupFrame.show();
+		}
+		
+		private function onFailedLoadingStageScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			_dbLoader.destroy();
+			
+			trace(event.message);
+		}
+		
+		private function onClickedCloseButton(event:Event):void
+		{
+			_stagePopupFrame.hide();
 			outThisGame();
+		}
+		
+		private function onClickedStartButton(event:Event):void
+		{
+			_stagePopupFrame.hide();
+			outThisGame();	
+			if(User.getInstance().heart <= 0)
+				return;
+			User.getInstance().heart -= 1;
+//			outThisGame();
 			SceneManager.current.addScene(InGameScene, "game");
-			SceneManager.current.goScene("game", _stageNumber + 1);
+			SceneManager.current.goScene("game", _clickedStageNumber);
+		}
+		
+		private function onClickedShopBuy(event:Event):void
+		{
+			keepPlay();
+			User.getInstance().pullUserData();
+		}
+		
+		private function onClickedShopClose(event:Event):void
+		{
+			keepPlay();
 		}
 		
 		private function onClickedCover(event:Event):void

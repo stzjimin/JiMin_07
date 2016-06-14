@@ -36,6 +36,7 @@ package customize
 			
 			_throwProps = new ThrowProps(width, height, padding);
 			_throwProps.type = ThrowProps.TYPE_DOWN;
+			
 			_contentContainer = new Sprite();
 			_contents = new Vector.<ListViewContent>();
 			_isFill = true;
@@ -111,6 +112,55 @@ package customize
 		{
 			for(var i:int = _contents.length-1; i >= 0; i--)
 				deleteContent(_contents[i]);
+		}
+		
+		public function getContent(index:int):ListViewContent
+		{
+			if(index < 0 || _contents.length <= index)
+				return null;
+			
+			return _contents[index];
+		}
+		
+		public function setViewPositionX(x:Number):void
+		{
+			if(_contentContainer == null)
+				return;
+			
+			_contentContainer.x = x;
+		}
+		
+		public function setViewPositionY(y:Number):void
+		{
+			if(_contentContainer == null)
+				return;
+			
+			_contentContainer.y = y;
+		}
+		
+		public function moveViewToList(viewContent:ListViewContent):void
+		{
+			if(!_contents || !viewContent)
+				return;
+			
+			if(_contents.indexOf(viewContent) < 0)
+				return;
+			
+			if(_type == ListView.TYPE_SHIFT)
+				_contentContainer.x -= (viewContent.getBounds(_contentContainer).left - _padding);
+			else if(_type == ListView.TYPE_DOWN)
+				_contentContainer.y -= (viewContent.getBounds(_contentContainer).top - _padding);
+			
+			trace(_contentContainer.getBounds(this));
+		}
+		
+		public function initViewPosition():void
+		{
+			if(!_contents)
+				return;
+			
+			_contentContainer.x = 0;
+			_contentContainer.y = 0;
 		}
 		
 		private function setListView():void

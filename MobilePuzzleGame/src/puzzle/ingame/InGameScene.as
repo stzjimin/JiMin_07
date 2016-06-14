@@ -14,8 +14,8 @@ package puzzle.ingame
 	
 	import puzzle.ingame.cell.blocks.BlockData;
 	import puzzle.ingame.cell.blocks.BlockType;
-	import puzzle.ingame.item.Items;
-	import puzzle.ingame.item.fork.Forker;
+	import puzzle.item.Items;
+	import puzzle.item.fork.Forker;
 	import puzzle.ingame.timer.ComboTimer;
 	import puzzle.ingame.timer.Timer;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
@@ -42,17 +42,11 @@ package puzzle.ingame
 	
 	public class InGameScene extends Scene
 	{	
-		[Embed(source="PopupBackGround.png")]
-		private const popupBackGroundImage:Class;
-		
-		[Embed(source="PopupTitle.png")]
-		private const popupTitleImage:Class;
-		
 		private var _stageNumber:uint;
 		
-		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/ingameSpriteSheet");
-		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/sound");
-		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/image");
+//		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/ingameSpriteSheet");
+//		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/sound");
+//		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/image");
 		private var _resources:Resources;
 		private var _dbLoader:DBLoader;
 		
@@ -117,17 +111,24 @@ package puzzle.ingame
 			_stageNumber = int(this.data);
 			_isClear = false;
 			
-			_resources = new Resources(_spirteDir, _soundDir, _imageDir);
+			_resources = new Resources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
 			
-			_resources.addSpriteName("IngameSprite0.png");
-			_resources.addSpriteName("IngameSprite1.png");
-			_resources.addSpriteName("IngameSprite2.png");
+			_resources.addSpriteName("IngameSpriteSheet.png");
+			_resources.addSpriteName("UserInfoSpriteSheet.png");
+			_resources.addSpriteName("PausePopupSpriteSheet.png");
+			_resources.addSpriteName("ResultSpriteSheet.png");
+			_resources.addSpriteName("StagePopupSpriteSheet.png");
+			_resources.addSpriteName("FieldSpriteSheet.png");
+			_resources.addSpriteName("ShopSpriteSheet.png");
+			_resources.addSpriteName("RankingSpriteSheet.png");
 			_resources.addSpriteName("readyClip.png");
 			_resources.addSoundName("MilkOut.mp3");
 			_resources.addSoundName("NeverForget.mp3");
 			_resources.addSoundName("set.mp3");
 			_resources.addSoundName("clear.mp3");
 			_resources.addSoundName("fork.mp3");
+			_resources.addSoundName("searchSound.mp3");
+			_resources.addSoundName("shuffleSound2.mp3");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
@@ -270,13 +271,13 @@ package puzzle.ingame
 			_soundManager.addSound("clear.mp3", _resources.getSoundFile("clear.mp3"));
 			_soundManager.addSound("NeverForget.mp3", _resources.getSoundFile("NeverForget.mp3"));
 			_soundManager.addSound("fork.mp3", _resources.getSoundFile("fork.mp3"));
+			_soundManager.addSound("searchSound.mp3", _resources.getSoundFile("searchSound.mp3"));
+			_soundManager.addSound("shuffleSound2.mp3", _resources.getSoundFile("shuffleSound2.mp3"));
 			_soundManager.play("MilkOut.mp3", Sound.INFINITE);
-			
-//			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
-			
+
 			_score = 0;
 			
-			_backGround = new Image(_resources.getSubTexture("IngameSprite2.png", "IngameBackGround"));
+			_backGround = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "IngameBackGround"));
 			_backGround.width = 576;
 			_backGround.height = 1024;
 			addChild(_backGround);
@@ -311,7 +312,7 @@ package puzzle.ingame
 			_timer.startCount(60);
 			addChild(_timer);
 			
-			_comboTimer = new ComboTimer();
+			_comboTimer = new ComboTimer(_resources);
 			_comboTimer.init(520, 65, 100, 30, 3);
 			addChild(_comboTimer);
 			
@@ -365,7 +366,7 @@ package puzzle.ingame
 			_field.addEventListener(Field.PANG, onCompletePang);
 			addChild(_field);
 			
-			_pauseButton = new Button(_resources.getSubTexture("IngameSprite2.png", "popUpButton"));
+			_pauseButton = new Button(_resources.getSubTexture("IngameSpriteSheet.png", "popUpButton"));
 			_pauseButton.x = 536;
 			_pauseButton.width = 40;
 			_pauseButton.height = 40;
@@ -591,25 +592,8 @@ package puzzle.ingame
 			SceneManager.current.outScene(_stageNumber);
 		}
 		
-//		private function onCompleteDBLoading(event:DBLoaderEvent):void
-//		{
-//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-//			_dbLoader.destroy();
-//		}
-//		
-//		private function onFailedDBLoading(event:DBLoaderEvent):void
-//		{
-//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-//			_dbLoader.destroy();
-//			
-//			trace(event.message);
-//		}
-		
 		private function onGetFork(event:Event):void
 		{
-//			User.getInstance().popFork();
 			User.getInstance().fork -= 1;
 			_items.setEmptyFork();
 			_soundManager.play("fork.mp3");
@@ -628,19 +612,16 @@ package puzzle.ingame
 				return;
 			}
 			_field.forkChecked();
-//			_field.isFork = true;
 		}
 		
 		private function onEmptyFork(event:Event):void
 		{
 			trace("forkEmpty");
 			_field.forkEmptyed();
-//			_field.isFork = false;
 		}
 		
 		private function onClickedSearch(event:Event):void
 		{
-//			User.getInstance().popSearch();
 			trace("search");
 			if(User.getInstance().search <= 0)
 			{
@@ -650,12 +631,13 @@ package puzzle.ingame
 				return;
 			}
 			User.getInstance().search -= 1;
+			_soundManager.play("searchSound.mp3");
 			_field.search();
+			
 		}
 		
 		private function onClickedShuffle(event:Event):void
 		{
-//			User.getInstance().popShuffle();
 			trace("shuffle");
 			if(User.getInstance().search <= 0)
 			{
@@ -665,6 +647,7 @@ package puzzle.ingame
 				return;
 			}
 			User.getInstance().shuffle -= 1;
+			_soundManager.play("shuffleSound2.mp3");
 			_field.shuffle();
 		}
 		
@@ -687,11 +670,7 @@ package puzzle.ingame
 		}
 		
 		private function onClickedRestart(event:Event):void
-		{
-//			outThisGame();
-//			SceneManager.current.addScene(InGameScene, "game");
-//			SceneManager.current.goScene("game", _stageNumber);
-			
+		{	
 			_resultPopupFrame.hide();
 			
 			_dbLoader = new DBLoader(User.getInstance());
@@ -704,11 +683,6 @@ package puzzle.ingame
 		
 		private function onClickedNext(event:Event):void
 		{
-//			User.getInstance().heart -= 1;
-//			outThisGame();
-//			SceneManager.current.addScene(InGameScene, "game");
-//			SceneManager.current.goScene("game", _stageNumber + 1);
-			
 			_resultPopupFrame.hide();
 			
 			_dbLoader = new DBLoader(User.getInstance());
@@ -755,7 +729,6 @@ package puzzle.ingame
 			if(User.getInstance().heart <= 0)
 				return;
 			User.getInstance().heart -= 1;
-//			outThisGame();
 			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game", _clickedStageNumber);
 		}

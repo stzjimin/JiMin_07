@@ -36,9 +36,9 @@ package puzzle.title
 	
 	public class TitleScene extends Scene
 	{	
-		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/titleSpriteSheet");
-		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/sound");
-		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/image");
+//		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/titleSpriteSheet");
+//		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/sound");
+//		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/image");
 		private var _resources:Resources;
 		
 		private var _dbLoader:DBLoader;
@@ -68,7 +68,7 @@ package puzzle.title
 		protected override function onCreate(event:SceneEvent):void
 		{
 			_soundManager = new SoundManager;
-			_resources = new Resources(_spriteDir, _soundDir, _imageDir);
+			_resources = new Resources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
 			
 			_resources.addSpriteName("TitleSpriteSheet.png");
 			_resources.addImageName("loadingImage.png");

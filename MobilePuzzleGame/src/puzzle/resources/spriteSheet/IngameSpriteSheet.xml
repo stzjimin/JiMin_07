@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="IngameSpriteSheet.png">
+   <SubTexture name="IngameBackGround" x="0" y="0" width="576" height="1022" />
+   <SubTexture name="popUpButton" x="578" y="126" width="46" height="37" />
+   <SubTexture name="fillBar" x="578" y="42" width="270" height="40" />
+   <SubTexture name="timerBack2" x="578" y="84" width="255" height="40" />
+   <SubTexture name="timerFrame" x="578" y="0" width="392" height="40" />
+   <SubTexture name="timerFront2" x="578" y="165" width="15" height="40" />
+</TextureAtlas>

@@ -2,7 +2,7 @@ package puzzle.shop
 {
 	import flash.display.Bitmap;
 	
-	import puzzle.ingame.item.ItemType;
+	import puzzle.item.ItemType;
 	import puzzle.loading.Resources;
 	import puzzle.user.User;
 	
@@ -16,15 +16,6 @@ package puzzle.shop
 
 	public class Shop extends DisplayObjectContainer
 	{
-		[Embed(source="fork.png")]
-		private const itemImgae:Class;
-		
-		[Embed(source="PopupBackGround.png")]
-		private const backGroundImage:Class;
-		
-		[Embed(source="popupTitle.png")]
-		private const titleImage:Class;
-		
 		public static const CLICKED_BUY:String = "buyClicked";
 		public static const CLICKED_CLOSE:String = "closeClicked";
 		
@@ -49,12 +40,12 @@ package puzzle.shop
 		
 		public function init(width:Number, height:Number):void
 		{
-			_backGround = new Image(Texture.fromBitmap(new backGroundImage() as Bitmap));
+			_backGround = new Image(_resources.getSubTexture("ShopSpriteSheet.png", "PopupBackGround"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
 			
-			_title = new Image(Texture.fromBitmap(new titleImage() as Bitmap));
+			_title = new Image(_resources.getSubTexture("ShopSpriteSheet.png", "popupTitle"));
 			_title.width = width * 0.9;
 			_title.height = height * 0.1;
 			_title.alignPivot(Align.CENTER, Align.TOP);
@@ -70,7 +61,7 @@ package puzzle.shop
 			_titleMessage.y = height * 0.05;
 			addChild(_titleMessage);
 			
-			_item = new Image(Texture.fromBitmap(new itemImgae() as Bitmap));
+			_item = new Image(_resources.getSubTexture("ShopSpriteSheet.png", "PopupBackGround"));
 			_item.width = width * 0.6;
 			_item.height = height * 0.5;
 			_item.alignPivot(Align.CENTER, Align.TOP);
@@ -78,7 +69,7 @@ package puzzle.shop
 			_item.y = _title.y + _title.height + (height * 0.05);
 			addChild(_item);
 			
-			_buyButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "구매");
+			_buyButton = new Button(_resources.getSubTexture("ShopSpriteSheet.png", "popupTitle"), "구매");
 			_buyButton.width = width * 0.4;
 			_buyButton.height = height * 0.2;
 			_buyButton.alignPivot(Align.LEFT, Align.TOP);
@@ -87,7 +78,7 @@ package puzzle.shop
 			_buyButton.addEventListener(Event.TRIGGERED, onClickedBuyButton);
 			addChild(_buyButton);
 			
-			_closeButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "닫기");
+			_closeButton = new Button(_resources.getSubTexture("ShopSpriteSheet.png", "popupTitle"), "닫기");
 			_closeButton.width = width * 0.4;
 			_closeButton.height = height * 0.2;
 			_closeButton.alignPivot(Align.LEFT, Align.TOP);
@@ -135,16 +126,16 @@ package puzzle.shop
 			switch(_itemType)
 			{
 				case ItemType.FORK :
-					_item.texture = Texture.fromBitmap(new itemImgae() as Bitmap);
+					_item.texture = _resources.getSubTexture("UserInfoSpriteSheet.png", "fork");
 					break;
 				case ItemType.SEARCH :
-					_item.texture = Texture.fromBitmap(new itemImgae() as Bitmap);
+					_item.texture = _resources.getSubTexture("UserInfoSpriteSheet.png", "search");
 					break;
 				case ItemType.SHUFFLE :
-					_item.texture = Texture.fromBitmap(new itemImgae() as Bitmap);
+					_item.texture = _resources.getSubTexture("UserInfoSpriteSheet.png", "shuffle");
 					break;
 				case ItemType.HEART :
-					_item.texture = Texture.fromBitmap(new itemImgae() as Bitmap);
+					_item.texture = _resources.getSubTexture("UserInfoSpriteSheet.png", "heartImage");
 					break;
 			}
 		}

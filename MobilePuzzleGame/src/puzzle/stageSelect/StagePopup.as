@@ -15,13 +15,7 @@ package puzzle.stageSelect
 	import starling.utils.Align;
 
 	public class StagePopup extends DisplayObjectContainer
-	{
-		[Embed(source="PopupBackGround.png")]
-		private const backGroundImage:Class;
-		
-		[Embed(source="popupTitle.png")]
-		private const titleImage:Class;
-		
+	{	
 		public static const START_CLICK:String = "clickedStart";
 		public static const CLOSE_CLICK:String = "clickedClose";
 		
@@ -49,12 +43,12 @@ package puzzle.stageSelect
 			textFormat.bold = true;
 			textFormat.size = 20;
 			
-			_backGround = new Image(Texture.fromBitmap(new backGroundImage() as Bitmap));
+			_backGround = new Image(_resources.getSubTexture("StagePopupSpriteSheet.png", "PopupBackGround"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
 			
-			_title = new Image(Texture.fromBitmap(new titleImage() as Bitmap));
+			_title = new Image(_resources.getSubTexture("StagePopupSpriteSheet.png", "popupTitle"));
 			_title.width = width * 0.9;
 			_title.height = height * 0.1;
 			_title.alignPivot(Align.CENTER, Align.TOP);
@@ -76,7 +70,7 @@ package puzzle.stageSelect
 			_ranking.y = _title.y + _title.height + (height * 0.05);
 			addChild(_ranking);
 			
-			_startButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "START");
+			_startButton = new Button(_resources.getSubTexture("StagePopupSpriteSheet.png", "popupTitle"), "START");
 			_startButton.textFormat = textFormat;
 			_startButton.width = width * 0.4;
 			_startButton.height = height * 0.2;
@@ -86,7 +80,7 @@ package puzzle.stageSelect
 			_startButton.addEventListener(Event.TRIGGERED, onClickedStartButton);
 			addChild(_startButton);
 			
-			_closeButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "CLOSE");
+			_closeButton = new Button(_resources.getSubTexture("StagePopupSpriteSheet.png", "popupTitle"), "CLOSE");
 			_closeButton.textFormat = textFormat;
 			_closeButton.width = width * 0.4;
 			_closeButton.height = height * 0.2;

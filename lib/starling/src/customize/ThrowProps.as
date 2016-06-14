@@ -10,6 +10,7 @@ package customize
 	import starling.display.Canvas;
 	import starling.display.DisplayObjectContainer;
 	import starling.events.EnterFrameEvent;
+	import starling.events.Event;
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
@@ -18,6 +19,12 @@ package customize
 	{
 		public static const TYPE_SHIFT:String = "throwShift";
 		public static const TYPE_DOWN:String = "throwDown";
+		
+		public static const LEFT_POSITION:String = "obejctLeftPosition";
+		public static const RIGHT_POSITION:String = "objectRightPosition";
+		public static const TOP_POSITION:String = "objectTopPosition";
+		public static const BOTTOM_POSITION:String = "objectBottomPosition";
+		public static const NORMAL_POSITION:String = "objectNormalPosition";
 		
 		private var _type:String;
 		
@@ -89,6 +96,11 @@ package customize
 			
 			_object.mask = _mask;
 			addChild(_object);
+		}
+		
+		public function setObjectPosition(x:Number, y:Number):void
+		{
+			
 		}
 		
 		private function onEnterFrame(event:EnterFrameEvent):void
@@ -164,6 +176,7 @@ package customize
 					{
 						targetPoint = new Point(_bound.left, _object.y);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y, ease:Back.easeOut});
+						dispatchEvent(new Event(ThrowProps.LEFT_POSITION, true));
 					}
 					else if(objectBound.right + distanceX < _bound.right)
 					{
@@ -171,11 +184,13 @@ package customize
 						
 						targetPoint = new Point(_object.x + vers - _padding, _object.y);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y, ease:Back.easeOut});
+						dispatchEvent(new Event(ThrowProps.RIGHT_POSITION, true));
 					}
 					else
 					{
 						targetPoint = new Point(_object.x + distanceX, _object.y);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y});
+						dispatchEvent(new Event(ThrowProps.NORMAL_POSITION, true));
 					}
 				}
 				else if(_type == ThrowProps.TYPE_DOWN)
@@ -184,6 +199,7 @@ package customize
 					{
 						targetPoint = new Point(_object.x,_bound.top);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y, ease:Back.easeOut});
+						dispatchEvent(new Event(ThrowProps.TOP_POSITION, true));
 					}
 					else if(objectBound.bottom + distanceY < _bound.bottom)
 					{
@@ -191,11 +207,13 @@ package customize
 						
 						targetPoint = new Point(_object.x, _object.y + vers - _padding);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y, ease:Back.easeOut});
+						dispatchEvent(new Event(ThrowProps.BOTTOM_POSITION, true));
 					}
 					else
 					{
 						targetPoint = new Point(_object.x, _object.y + distanceY);
 						TweenMax.to(_object, 0.5, {x:targetPoint.x, y:targetPoint.y});
+						dispatchEvent(new Event(ThrowProps.NORMAL_POSITION, true));
 					}
 				}
 			}

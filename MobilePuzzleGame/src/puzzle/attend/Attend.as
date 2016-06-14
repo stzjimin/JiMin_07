@@ -2,7 +2,7 @@ package puzzle.attend
 {
 	import flash.display.Bitmap;
 	
-	import puzzle.ingame.item.ItemType;
+	import puzzle.item.ItemType;
 	import puzzle.loading.Resources;
 	import puzzle.user.User;
 	
@@ -17,16 +17,7 @@ package puzzle.attend
 	import starling.utils.Align;
 
 	public class Attend extends DisplayObjectContainer
-	{	
-		[Embed(source="fork.png")]
-		private const itemImgae:Class;
-		
-		[Embed(source="PopupBackGround.png")]
-		private const backGroundImage:Class;
-		
-		[Embed(source="popupTitle.png")]
-		private const titleImage:Class;
-		
+	{
 		private var _backGround:Image;
 		private var _title:Image;
 		private var _titleMessage:TextField;
@@ -49,12 +40,12 @@ package puzzle.attend
 		
 		public function init(width:Number, height:Number):void
 		{
-			_backGround = new Image(Texture.fromBitmap(new backGroundImage() as Bitmap));
+			_backGround = new Image(_resources.getSubTexture("AttendSpriteSheet.png", "PopupBackGround"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
 			
-			_title = new Image(Texture.fromBitmap(new titleImage() as Bitmap));
+			_title = new Image(_resources.getSubTexture("AttendSpriteSheet.png", "popupTitle"));
 			_title.width = width * 0.9;
 			_title.height = height * 0.1;
 			_title.alignPivot(Align.CENTER, Align.TOP);
@@ -102,25 +93,25 @@ package puzzle.attend
 					switch(day.getPresent(0))
 					{
 						case ItemType.FORK :
-							day.addItemImage(Texture.fromBitmap(new itemImgae() as Bitmap));
+							day.addItemImage(_resources.getSubTexture("UserInfoSpriteSheet.png", "fork"));
 							break;
 						case ItemType.SEARCH :
-							day.addItemImage(Texture.fromBitmap(new itemImgae() as Bitmap));
+							day.addItemImage(_resources.getSubTexture("UserInfoSpriteSheet.png", "search"));
 							break;
 						case ItemType.SHUFFLE :
-							day.addItemImage(Texture.fromBitmap(new itemImgae() as Bitmap));
+							day.addItemImage(_resources.getSubTexture("UserInfoSpriteSheet.png", "shuffle"));
 							break;
 					}
 //					day.addItemImage(
 				}
 				else
 				{
-					day.addItemImage(Texture.fromBitmap(new itemImgae() as Bitmap));
+					day.addItemImage(_resources.getSubTexture("AttendSpriteSheet.png", "giftBox"));
 				}
 				
 				if((i+1) <= User.getInstance().attendCount)
 				{
-					day.addMark();
+					day.addMark(_resources.getSubTexture("UserInfoSpriteSheet.png", "mark"));
 				}
 				
 				_days.push(day);
@@ -158,7 +149,7 @@ package puzzle.attend
 		public function attend():void
 		{
 			var attendDayIndex:int = User.getInstance().attendCount % 4;
-			_days[attendDayIndex].showMarking();
+			_days[attendDayIndex].showMarking(_resources.getSubTexture("UserInfoSpriteSheet.png", "mark"));
 			
 			for(var i:int = 0; i < _days[attendDayIndex].getPresentLength(); i++)
 				User.getInstance().addItem(_days[attendDayIndex].getPresent(i), 1);

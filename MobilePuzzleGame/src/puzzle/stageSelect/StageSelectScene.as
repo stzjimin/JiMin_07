@@ -26,16 +26,14 @@ package puzzle.stageSelect
 	import starling.display.Image;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
-	import starling.events.Touch;
-	import starling.events.TouchEvent;
-	import starling.events.TouchPhase;
 	import starling.text.TextFormat;
+	import puzzle.user.UserInfo;
 
 	public class StageSelectScene extends Scene
 	{	
-		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/stageSelectSpriteSheet");
-		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/sound");
-		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/image");
+//		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/stageSelectSpriteSheet");
+//		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/sound");
+//		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/image");
 		private var _resources:Resources;
 		private var _dbLoader:DBLoader;
 		
@@ -80,9 +78,15 @@ package puzzle.stageSelect
 			Loading.getInstance().showLoading(this);
 			_soundManager = new SoundManager;
 			
-			_resources = new Resources(_spriteDir, _soundDir, _imageDir);
+			_resources = new Resources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
 			
-			_resources.addSpriteName("stageSelectSceneSprite0.png");
+			_resources.addSpriteName("StageSelectSceneSpriteSheet.png");
+			_resources.addSpriteName("UserInfoSpriteSheet.png");
+			_resources.addSpriteName("SettingPopupSpriteSheet.png");
+			_resources.addSpriteName("RankingSpriteSheet.png");
+			_resources.addSpriteName("ShopSpriteSheet.png");
+			_resources.addSpriteName("StagePopupSpriteSheet.png");
+			_resources.addSpriteName("AttendSpriteSheet.png");
 			_resources.addSoundName("White.mp3");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteResourceLoading);
@@ -235,7 +239,7 @@ package puzzle.stageSelect
 			
 			_soundManager.addSound("White.mp3", _resources.getSoundFile("White.mp3"));
 			
-			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageSelectBackground2"));
+			_backGround = new Image(_resources.getSubTexture("StageSelectSceneSpriteSheet.png", "stageSelectBackground2"));
 			_backGround.width = 576;
 			_backGround.height = 1024;
 			addChild(_backGround);
@@ -247,7 +251,7 @@ package puzzle.stageSelect
 			_stageButtons = new Vector.<Button>();
 			for(var i:int = 0; i < 5; i++)
 			{
-				_stageButtons[i] = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "stageBlockButton"));
+				_stageButtons[i] = new Button(_resources.getSubTexture("StageSelectSceneSpriteSheet.png", "stageBlockButton"));
 				_stageButtons[i].width = 80;
 				_stageButtons[i].height = 80;
 				_stageButtons[i].alignPivot();
@@ -273,7 +277,7 @@ package puzzle.stageSelect
 			_stageButtons[4].x = 414;
 			_stageButtons[4].y = 224;
 			
-			_nextButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
+			_nextButton = new Button(_resources.getSubTexture("StageSelectSceneSpriteSheet.png", "upArrow"));
 			_nextButton.width = 80;
 			_nextButton.height = 80;
 			_nextButton.alignPivot();
@@ -284,7 +288,7 @@ package puzzle.stageSelect
 			_nextButton.addEventListener(Event.TRIGGERED, onClickedNextButton);
 			addChild(_nextButton);
 			
-			_prevButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
+			_prevButton = new Button(_resources.getSubTexture("StageSelectSceneSpriteSheet.png", "downArrow"));
 			_prevButton.width = 80;
 			_prevButton.height = 80;
 			_prevButton.alignPivot();
@@ -384,21 +388,23 @@ package puzzle.stageSelect
 				
 				if(int(_stageButtons[i].name) <= (User.getInstance().clearstage+1))
 				{
-					_stageButtons[i].upState = _resources.getSubTexture("stageSelectSceneSprite0.png", "stageButtonImage");
+					_stageButtons[i].upState = _resources.getSubTexture("StageSelectSceneSpriteSheet.png", "stageButtonImage");
 					_stageButtons[i].touchable = true;
 				}
 				else
 				{
-					_stageButtons[i].upState = _resources.getSubTexture("stageSelectSceneSprite0.png", "stageBlockButton");
+					_stageButtons[i].upState = _resources.getSubTexture("StageSelectSceneSpriteSheet.png", "stageBlockButton");
 					_stageButtons[i].touchable = false;
 				}
 			}
 			
 //			trace("last = " + _soundManager.isBgmActive);
 			_progressFrame.stopProgress();
-			_attendPopupFrame.show();
 			if(User.getInstance().dayChanged)
+			{
+				_attendPopupFrame.show();
 				attend();
+			}
 			User.getInstance().pullUserData();
 		}
 		

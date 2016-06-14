@@ -1,7 +1,5 @@
 package puzzle.attend
 {
-	import flash.display.Bitmap;
-	
 	import starling.animation.Tween;
 	import starling.core.Starling;
 	import starling.display.DisplayObjectContainer;
@@ -11,9 +9,6 @@ package puzzle.attend
 
 	public class Day extends DisplayObjectContainer
 	{	
-		[Embed(source="mark.png")]
-		private const markImage:Class;
-		
 		private var _quad:Quad
 		private var _backGround:Image;
 		private var _mark:Image;
@@ -37,9 +32,12 @@ package puzzle.attend
 			_quad.dispose();
 			_quad = null;
 			
-			_backGround.removeFromParent();
-			_backGround.dispose();
-			_backGround = null;
+			if(_backGround)
+			{
+				_backGround.removeFromParent();
+				_backGround.dispose();
+				_backGround = null;
+			}
 			
 			if(_mark)
 			{
@@ -68,9 +66,9 @@ package puzzle.attend
 			addChild(_backGround);
 		}
 		
-		public function addMark(alpha:Number = 1.0, scale:Number = 1.0):void
+		public function addMark(texture:Texture, alpha:Number = 1.0, scale:Number = 1.0):void
 		{
-			_mark = new Image(Texture.fromBitmap(new markImage() as Bitmap));
+			_mark = new Image(texture);
 			_mark.width = _quad.width;
 			_mark.height = _quad.height;
 			_mark.alignPivot();
@@ -81,9 +79,9 @@ package puzzle.attend
 			addChild(_mark);
 		}
 		
-		public function showMarking():void
+		public function showMarking(texture:Texture):void
 		{
-			addMark(0.5, 3.0);
+			addMark(texture, 0.5, 3.0);
 			
 			var tween:Tween = new Tween(_mark, 2.0);
 			tween.fadeTo(1.0);

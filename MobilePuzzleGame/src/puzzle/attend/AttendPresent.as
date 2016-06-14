@@ -1,6 +1,6 @@
 package puzzle.attend
 {
-	import puzzle.ingame.item.ItemType;
+	import puzzle.item.ItemType;
 
 	public class AttendPresent
 	{	

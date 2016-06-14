@@ -9,9 +9,9 @@ package puzzle.ingame
 	import puzzle.ingame.cell.NeigborType;
 	import puzzle.ingame.cell.blocks.Block;
 	import puzzle.ingame.cell.blocks.BlockData;
-	import puzzle.ingame.item.fork.ForkEvent;
-	import puzzle.ingame.item.fork.Forker;
-	import puzzle.ingame.item.shuffle.Shuffler;
+	import puzzle.item.fork.ForkEvent;
+	import puzzle.item.fork.Forker;
+	import puzzle.item.shuffle.Shuffler;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	import puzzle.ingame.util.possibleCheck.Possible;
 	import puzzle.ingame.util.possibleCheck.PossibleChecker;
@@ -28,9 +28,6 @@ package puzzle.ingame
 
 	public class Field extends DisplayObjectContainer implements IAnimatable
 	{	
-		[Embed(source="alert.png")]
-		private const alertImage:Class;
-		
 		public static const ROW_NUM:uint = 12;
 		public static const COLUMN_NUM:uint = 12;
 		public static const PADDING:uint = 18;
@@ -82,11 +79,11 @@ package puzzle.ingame
 			_forker.addEventListener(Forker.GET_FORK, onSucceedFork);
 			
 			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.WIDTH_SIZE), (Field.COLUMN_NUM * Cell.HEIGHT_SIZE), 
-				_resources.getSubTexture("IngameSprite0.png", "topPadding"), _resources.getSubTexture("IngameSprite0.png", "bottomPadding"),
-				_resources.getSubTexture("IngameSprite0.png", "leftPadding"), _resources.getSubTexture("IngameSprite0.png", "rightPadding"));
+				_resources.getSubTexture("FieldSpriteSheet.png", "topPadding"), _resources.getSubTexture("FieldSpriteSheet.png", "bottomPadding"),
+				_resources.getSubTexture("FieldSpriteSheet.png", "leftPadding"), _resources.getSubTexture("FieldSpriteSheet.png", "rightPadding"));
 			addChild(_padding);
 			
-			_backGround = new Image(_resources.getSubTexture("IngameSprite0.png", "backGround"));
+			_backGround = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "backGround"));
 			_backGround.x = Field.PADDING;
 			_backGround.y = Field.PADDING;
 			_backGround.width = (Field.ROW_NUM * Cell.WIDTH_SIZE);
@@ -131,20 +128,20 @@ package puzzle.ingame
 					columnNum++;
 			}
 			
-			_rowLine = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
+			_rowLine = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "rowLine"));
 			_rowLine.alignPivot();
-			_rowLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
+			_rowLine2 = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "rowLine"));
 			_rowLine2.alignPivot();
-			_columnLine = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columnLine = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "columLine"));
 			_columnLine.alignPivot();
-			_columnLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columnLine2 = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "columLine"));
 			_columnLine2.alignPivot();
 			
-			_alert = new Image(Texture.fromBitmap(new alertImage() as Bitmap));
+			_alert = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "alert"));
 			_alert.width = Cell.WIDTH_SIZE / 2;
 			_alert.height = Cell.HEIGHT_SIZE / 2;
 			_alert.alignPivot();
-			_alert2 = new Image(Texture.fromBitmap(new alertImage() as Bitmap));
+			_alert2 = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "alert"));
 			_alert2.width = Cell.WIDTH_SIZE / 2;
 			_alert2.height = Cell.HEIGHT_SIZE / 2;
 			_alert2.alignPivot();
@@ -160,8 +157,8 @@ package puzzle.ingame
 		public function search():void
 		{
 			var possible:Possible = _possibleChecker.pickPossible();
-			trace(possible.startCell.name);
-			trace(possible.destCell.name);
+//			trace(possible.startCell.name);
+//			trace(possible.destCell.name);
 			if(_alert.parent)
 			{
 				_alert.removeFromParent();
@@ -230,7 +227,7 @@ package puzzle.ingame
 			trace(_possibleChecker.blockCount);
 			trace(_possibleChecker.possibleCount);
 			
-			trace("경과시간 = " + (currentTime - prevTime));
+//			trace("경과시간 = " + (currentTime - prevTime));
 			
 			if(_possibleChecker.blockCount > 0 && _possibleChecker.possibleCount == 0)
 				shuffle();

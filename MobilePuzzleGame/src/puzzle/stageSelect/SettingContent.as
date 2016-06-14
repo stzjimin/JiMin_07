@@ -26,7 +26,7 @@ package puzzle.stageSelect
 		
 		public function init(width:Number, height:Number, contentName:String):void
 		{	
-			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingPopupFrame"));
+			_backGround = new Image(_resources.getSubTexture("SettingPopupSpriteSheet.png", "settingPopupFrame"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
@@ -41,7 +41,7 @@ package puzzle.stageSelect
 			_text.format.size = height * 0.3;
 			addChild(_text);
 			
-			_checkBox = new CheckBox(_resources.getSubTexture("stageSelectSceneSprite0.png", "CheckBoxOFF"), _resources.getSubTexture("stageSelectSceneSprite0.png", "CheckBoxON"));
+			_checkBox = new CheckBox(_resources.getSubTexture("SettingPopupSpriteSheet.png", "CheckBoxOFF"), _resources.getSubTexture("SettingPopupSpriteSheet.png", "CheckBoxON"));
 			_checkBox.width = width * 0.2;
 			_checkBox.height = _checkBox.width;
 			_checkBox.alignPivot();
@@ -79,13 +79,13 @@ package puzzle.stageSelect
 		
 		private function onSwapCheck(event:Event):void
 		{
-			trace("check");
+//			trace("check");
 			dispatchEvent(new Event(CheckBox.SWAP_CHECK));
 		}
 		
 		private function onSwapEmpty(event:Event):void
 		{
-			trace("empty");
+//			trace("empty");
 			dispatchEvent(new Event(CheckBox.SWAP_EMPTY));
 		}
 	}

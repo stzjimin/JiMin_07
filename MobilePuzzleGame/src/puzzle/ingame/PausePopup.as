@@ -36,12 +36,12 @@ package puzzle.ingame
 		
 		public function init(width:Number, height:Number):void
 		{
-			_backGround = new Image(_resources.getSubTexture("IngameSprite1.png", "settingPopup"));
+			_backGround = new Image(_resources.getSubTexture("PausePopupSpriteSheet.png", "settingPopup"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
 			
-			_continueButton = new Button(_resources.getSubTexture("IngameSprite1.png", "continue"));
+			_continueButton = new Button(_resources.getSubTexture("PausePopupSpriteSheet.png", "continue"));
 			_continueButton.width = width * 0.8;
 			_continueButton.height = height * 0.2;
 			_continueButton.alignPivot();
@@ -50,7 +50,7 @@ package puzzle.ingame
 			_continueButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_continueButton);
 			
-			_menuButton = new Button(_resources.getSubTexture("IngameSprite1.png", "menu"));
+			_menuButton = new Button(_resources.getSubTexture("PausePopupSpriteSheet.png", "menu"));
 			_menuButton.width = width * 0.8;
 			_menuButton.height = height * 0.2;
 			_menuButton.alignPivot();
@@ -59,7 +59,7 @@ package puzzle.ingame
 			_menuButton.addEventListener(Event.TRIGGERED, onTriggered);
 			addChild(_menuButton);
 			
-			_restartButton = new Button(_resources.getSubTexture("IngameSprite1.png", "restart"));
+			_restartButton = new Button(_resources.getSubTexture("PausePopupSpriteSheet.png", "restart"));
 			_restartButton.width = width * 0.8;
 			_restartButton.height = height * 0.2;
 			_restartButton.alignPivot();

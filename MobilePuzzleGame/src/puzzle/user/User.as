@@ -11,7 +11,7 @@ package puzzle.user
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	
-	import puzzle.ingame.item.ItemType;
+	import puzzle.item.ItemType;
 	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.loader.DBLoader;
 	

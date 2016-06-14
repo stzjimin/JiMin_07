@@ -5,12 +5,14 @@ package puzzle.ingame
 	
 	import customize.ListView;
 	import customize.ListViewContent;
+	import customize.ThrowProps;
 	
 	import puzzle.loading.Resources;
 	import puzzle.user.User;
 	
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
+	import starling.events.Event;
 	import starling.text.TextField;
 	import starling.text.TextFormat;
 	import starling.textures.Texture;
@@ -18,12 +20,6 @@ package puzzle.ingame
 
 	public class Ranking extends DisplayObjectContainer
 	{
-		[Embed(source="PopupBackGround.png")]
-		private const backgroundImage:Class;
-		
-		[Embed(source="popupTitle.png")]
-		private const titleImage:Class;
-		
 		private var _resources:Resources;
 		
 		private var _backGround:Image;
@@ -33,6 +29,8 @@ package puzzle.ingame
 		private var _defaultTextFormat:TextFormat;
 		
 		private var _listView:ListView;
+		private var _leftArrow:Image;
+		private var _rightArrow:Image;
 		
 		public function Ranking(resources:Resources)
 		{
@@ -47,12 +45,12 @@ package puzzle.ingame
 			_defaultTextFormat.bold = true;
 			_defaultTextFormat.size = 20;
 			
-			_backGround = new Image(Texture.fromBitmap(new backgroundImage() as Bitmap));
+			_backGround = new Image(_resources.getSubTexture("RankingSpriteSheet.png", "PopupBackGround"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
 			
-			_title = new Image(Texture.fromBitmap(new titleImage() as Bitmap));
+			_title = new Image(_resources.getSubTexture("RankingSpriteSheet.png", "popupTitle"));
 			_title.width = width * 0.9;
 			_title.height = height * 0.15;
 			_title.alignPivot();
@@ -69,7 +67,10 @@ package puzzle.ingame
 			addChild(_titleMessage);
 			
 			_listView = new ListView();
-			_listView.init(Texture.fromBitmap(new backgroundImage() as Bitmap), (width * 0.9), (height * 0.7), (width * 0.05));
+			_listView.init(_resources.getSubTexture("RankingSpriteSheet.png", "PopupBackGround"), (width * 0.9), (height * 0.7), (width * 0.05));
+			_listView.addEventListener(ThrowProps.LEFT_POSITION, onMoved);
+			_listView.addEventListener(ThrowProps.RIGHT_POSITION, onMoved);
+			_listView.addEventListener(ThrowProps.NORMAL_POSITION, onMoved);
 			_listView.isFill = false;
 			_listView.type = ListView.TYPE_SHIFT;
 			_listView.contentWidth = width * 0.8;
@@ -77,6 +78,22 @@ package puzzle.ingame
 			_listView.x = width / 2;
 			_listView.y = _title.y + (_title.height/2) + 10;
 			addChild(_listView);
+			
+			_leftArrow = new Image(_resources.getSubTexture("RankingSpriteSheet.png", "leftArrow"));
+			_leftArrow.width = width * 0.1;
+			_leftArrow.height = height * 0.15;
+			_leftArrow.alignPivot();
+			_leftArrow.x = _listView.getBounds(this).left;
+			_leftArrow.y = _listView.y + (_listView.height / 2);
+			addChild(_leftArrow);
+			
+			_rightArrow = new Image(_resources.getSubTexture("RankingSpriteSheet.png", "rightArrow"));
+			_rightArrow.width = width * 0.1;
+			_rightArrow.height = height * 0.15;
+			_rightArrow.alignPivot();
+			_rightArrow.x = _listView.getBounds(this).right;
+			_rightArrow.y = _listView.y + (_listView.height / 2);
+			addChild(_rightArrow);
 		}
 		
 		public function destroy():void
@@ -89,8 +106,23 @@ package puzzle.ingame
 			_title.dispose();
 			_title = null;
 			
+			_titleMessage.removeFromParent();
+			_titleMessage.dispose();
+			_titleMessage = null;
+			
+			_listView.removeEventListener(ThrowProps.LEFT_POSITION, onMoved);
+			_listView.removeEventListener(ThrowProps.RIGHT_POSITION, onMoved);
+			_listView.removeEventListener(ThrowProps.NORMAL_POSITION, onMoved);
 			_listView.destroy();
 			_listView = null;
+			
+			_leftArrow.removeFromParent();
+			_leftArrow.dispose();
+			_leftArrow = null;
+			
+			_rightArrow.removeFromParent();
+			_rightArrow.dispose();
+			_rightArrow = null;
 			
 			dispose();
 		}
@@ -98,6 +130,7 @@ package puzzle.ingame
 		public function setRanking(jsonObject:Object):void
 		{
 			_listView.deleteAllContent();
+			_listView.initViewPosition();
 			
 			var textFormat:TextFormat = new TextFormat();
 			textFormat.bold = true;
@@ -116,7 +149,7 @@ package puzzle.ingame
 				if(jsonObject[i].id == User.getInstance().id || friends[jsonObject[i].id] != null)
 				{
 					viewContent = new ListViewContent();
-					viewContent.init(Texture.fromBitmap(new titleImage() as Bitmap));
+					viewContent.init(_resources.getSubTexture("RankingSpriteSheet.png", "popupTitle"));
 					viewContent.name = (jsonObject[i].id + " = " + jsonObject[i].score);
 					if(jsonObject[i].id == User.getInstance().id)
 					{
@@ -152,7 +185,37 @@ package puzzle.ingame
 				}
 			}
 			trace("userIndex = " + userIndex);
+			var userRank:ListViewContent = _listView.getContent(userIndex);
+//			_listView.setViewPositionX(-userRank.getBounds(_listView).left);
+			_listView.moveViewToList(userRank);
+			if(userIndex == 0)
+			{
+				_leftArrow.visible = false;
+			}
+			else if(userIndex == jsonObject.length-1)
+			{
+				_rightArrow.visible = false;
+			}
 			viewContent = null;
+		}
+		
+		private function onMoved(event:Event):void
+		{
+			switch(event.type)
+			{
+				case ThrowProps.LEFT_POSITION :
+					_leftArrow.visible = false;
+					_rightArrow.visible = true;
+					break;
+				case ThrowProps.RIGHT_POSITION :
+					_leftArrow.visible = true;
+					_rightArrow.visible = false;
+					break;
+				case ThrowProps.NORMAL_POSITION :
+					_leftArrow.visible = true;
+					_rightArrow.visible = true;
+					break;
+			}
 		}
 	}
 }

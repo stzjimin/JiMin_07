@@ -42,12 +42,12 @@ package puzzle.stageSelect
 		
 		public function init(width:Number, height:Number):void
 		{
-			_backGround = new Image(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingPopup"));
+			_backGround = new Image(_resources.getSubTexture("SettingPopupSpriteSheet.png", "settingPopup"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
 			
-			_closeButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingPopupCloseButton2"));
+			_closeButton = new Button(_resources.getSubTexture("SettingPopupSpriteSheet.png", "settingPopupCloseButton2"));
 			_closeButton.width = width * 0.15;
 			_closeButton.height = height * 0.2;
 			_closeButton.alignPivot(Align.RIGHT, Align.TOP);

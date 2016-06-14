@@ -7,8 +7,8 @@ package
 	
 	import puzzle.ingame.InGameScene;
 	
-	import starling.core.Starling;
-	import starling.events.Event;
+	import starlingOrigin.core.Starling;
+	import starlingOrigin.events.Event;
 
 	public class NewWindow extends NativeWindow
 	{
@@ -32,17 +32,21 @@ package
 		
 		public function startStarling():void
 		{
-			Starling.multitouchEnabled = true;
+//			Starling.multitouchEnabled = true;
 			_starling = new Starling(SceneManager, stage);
-			_starling.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+			_starling.addEventListener(starlingOrigin.events.Event.ROOT_CREATED, onRootCreated);
 			_starling.showStats = true;
 //			SceneManager.current.switchScene("game");
+//			_starling.start();
+			
+//			SceneManager.current.addScene(InGameScene, "game");
+//			SceneManager.current.goScene("game");
 //			_starling.start();
 		}
 		
 		private function onRootCreated(event:Event):void
 		{
-			_starling.removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
+			_starling.removeEventListener(starlingOrigin.events.Event.ROOT_CREATED, onRootCreated);
 			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game");
 			_starling.start();

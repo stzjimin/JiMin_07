@@ -1,7 +1,7 @@
 package
 {	
-	import starling.display.Image;
-	import starling.textures.Texture;
+	import starlingOrigin.display.Image;
+	import starlingOrigin.textures.Texture;
 
 	public class MapToolBlock extends Image
 	{

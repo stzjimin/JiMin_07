@@ -38,7 +38,6 @@ package puzzle.ingame.cell
 			_color.x = 0;
 			_color.y = 0;
 			_color.visible = false;
-			_color.alpha = 0.5;
 			addChild(_color);
 		}
 		

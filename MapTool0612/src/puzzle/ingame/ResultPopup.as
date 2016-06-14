@@ -14,13 +14,7 @@ package puzzle.ingame
 	import starling.utils.Align;
 
 	public class ResultPopup extends DisplayObjectContainer
-	{
-		[Embed(source="PopupBackGround.png")]
-		private const backgroundImage:Class;
-		
-		[Embed(source="popupTitle.png")]
-		private const titleImage:Class;
-		
+	{	
 		public static const CLICKED_BACK:String = "clickBack";
 		public static const CLICKED_NEXT:String = "clickNext";
 		public static const CLICKED_RESTART:String = "clickRestar";
@@ -40,7 +34,7 @@ package puzzle.ingame
 		
 		private var _defaultTextFormat:TextFormat;
 		
-//		private var _ranking:Ranking;
+		private var _ranking:Ranking;
 		
 		public function ResultPopup(resources:Resources)
 		{
@@ -54,12 +48,12 @@ package puzzle.ingame
 			_defaultTextFormat.bold = true;
 			_defaultTextFormat.size = 20;
 			
-			_backGround = new Image(Texture.fromBitmap(new backgroundImage() as Bitmap));
+			_backGround = new Image(_resources.getSubTexture("ResultSpriteSheet.png", "PopupBackGround"));
 			_backGround.width = width;
 			_backGround.height = height;
 			addChild(_backGround);
 			
-			_title = new Image(Texture.fromBitmap(new titleImage() as Bitmap));
+			_title = new Image(_resources.getSubTexture("ResultSpriteSheet.png", "popupTitle"));
 			_title.width = width * 0.9;
 			_title.height = height * 0.1;
 			_title.alignPivot();
@@ -91,7 +85,7 @@ package puzzle.ingame
 			_record.y = _score.y + (_score.height / 2) + (_record.height / 2) + (height * 0.03);
 			addChild(_record);
 			
-			_restartButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "RESTART");
+			_restartButton = new Button(_resources.getSubTexture("ResultSpriteSheet.png", "popupTitle"), "RESTART");
 			_restartButton.textFormat = _defaultTextFormat;
 			_restartButton.width = width * 0.25;
 			_restartButton.height = height * 0.15;
@@ -101,7 +95,7 @@ package puzzle.ingame
 			_restartButton.addEventListener(Event.TRIGGERED, onClickedButton);
 			addChild(_restartButton);
 			
-			_nextStageButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "NEXT");
+			_nextStageButton = new Button(_resources.getSubTexture("ResultSpriteSheet.png", "popupTitle"), "NEXT");
 			_nextStageButton.textFormat = _defaultTextFormat;
 			_nextStageButton.width = width * 0.25;
 			_nextStageButton.height = height * 0.15;
@@ -111,7 +105,7 @@ package puzzle.ingame
 			_nextStageButton.addEventListener(Event.TRIGGERED, onClickedButton);
 			addChild(_nextStageButton);
 			
-			_backButton = new Button(Texture.fromBitmap(new titleImage() as Bitmap), "MAIN");
+			_backButton = new Button(_resources.getSubTexture("ResultSpriteSheet.png", "popupTitle"), "MAIN");
 			_backButton.textFormat = _defaultTextFormat;
 			_backButton.width = width * 0.25;
 			_backButton.height = height * 0.15;
@@ -121,12 +115,12 @@ package puzzle.ingame
 			_backButton.addEventListener(Event.TRIGGERED, onClickedButton);
 			addChild(_backButton);
 			
-//			_ranking = new Ranking(_resources);
-//			_ranking.init(width * 0.9, height * 0.4);
-//			_ranking.alignPivot();
-//			_ranking.x = width / 2;
-//			_ranking.y = _nextStageButton.y + (_nextStageButton.height / 2) + (_ranking.height / 2) + (height * 0.03);
-//			addChild(_ranking);
+			_ranking = new Ranking(_resources);
+			_ranking.init(width * 0.9, height * 0.4);
+			_ranking.alignPivot();
+			_ranking.x = width / 2;
+			_ranking.y = _nextStageButton.y + (_nextStageButton.height / 2) + (_ranking.height / 2) + (height * 0.03);
+			addChild(_ranking);
 		}
 		
 		public function destroy():void
@@ -166,9 +160,9 @@ package puzzle.ingame
 			_backButton.dispose();
 			_backButton = null;
 			
-//			_ranking.removeFromParent();
-//			_ranking.destroy();
-//			_ranking = null;
+			_ranking.removeFromParent();
+			_ranking.destroy();
+			_ranking = null;
 		}
 		
 		public function setScore(value:uint):void
@@ -189,7 +183,7 @@ package puzzle.ingame
 		
 		public function setRanking(jsonObject:Object):void
 		{
-//			_ranking.setRanking(jsonObject);
+			_ranking.setRanking(jsonObject);
 		}
 		
 		public function setTitleMessage(value:String):void

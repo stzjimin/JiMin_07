@@ -1,8 +1,8 @@
 package puzzle.ingame
 {
 	import flash.desktop.NativeApplication;
-	import flash.display.Bitmap;
-	import flash.filesystem.File;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 	
 	import customize.PopupFrame;
 	import customize.Progress;
@@ -12,20 +12,21 @@ package puzzle.ingame
 	import customize.Sound;
 	import customize.SoundManager;
 	
+	import puzzle.StagePopup;
 	import puzzle.ingame.cell.blocks.BlockData;
 	import puzzle.ingame.cell.blocks.BlockType;
-	import puzzle.ingame.item.Items;
-	import puzzle.ingame.item.fork.Forker;
 	import puzzle.ingame.timer.ComboTimer;
 	import puzzle.ingame.timer.Timer;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
+	import puzzle.item.Items;
+	import puzzle.item.fork.Forker;
 	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
+	import puzzle.shop.Shop;
 	import puzzle.user.User;
-	import puzzle.user.UserEvent;
 	
 	import starling.animation.Juggler;
 	import starling.core.Starling;
@@ -40,19 +41,10 @@ package puzzle.ingame
 	
 	public class InGameScene extends Scene
 	{	
-		[Embed(source="PopupBackGround.png")]
-		private const popupBackGroundImage:Class;
-		
-		[Embed(source="PopupTitle.png")]
-		private const popupTitleImage:Class;
-		
 		private var _stageNumber:uint;
 		
-		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/ingameSpriteSheet");
-		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/sound");
-		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/image");
 		private var _resources:Resources;
-//		private var _dbLoader:DBLoader;
+		private var _dbLoader:DBLoader;
 		
 		private var _progress:Progress;
 		
@@ -84,12 +76,20 @@ package puzzle.ingame
 		private var _resultPopup:ResultPopup;
 		private var _resultPopupFrame:PopupFrame;
 		
+		private var _stagePopup:StagePopup;
+		private var _stagePopupFrame:PopupFrame;
+		
 		private var _readyTextures:TextureAtlas;
 		private var _readyMovie:MovieClip;
+		
+		private var _shopPopup:Shop;
+		private var _shopPopupFrame:PopupFrame;
 		
 		private var _blockDatas:Vector.<BlockData>;
 		
 		private var _soundManager:SoundManager;
+		
+		private var _clickedStageNumber:uint;
 		
 		public function InGameScene()
 		{
@@ -101,25 +101,30 @@ package puzzle.ingame
 		{
 			Loading.getInstance().showLoading(this);
 			_soundManager = new SoundManager;
-			_soundManager.isBgmActive = true;
-			_soundManager.isEffectActive = true;
-//			_soundManager.isBgmActive = User.getInstance().bgmActive;
-//			_soundManager.isEffectActive = User.getInstance().soundEffectActive;
+			_soundManager.isBgmActive = User.getInstance().bgmActive;
+			_soundManager.isEffectActive = User.getInstance().soundEffectActive;
 			
 			_stageNumber = int(this.data);
 			_isClear = false;
 			
-			_resources = new Resources(_spirteDir, _soundDir, _imageDir);
+			_resources = new Resources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
 			
-			_resources.addSpriteName("IngameSprite0.png");
-			_resources.addSpriteName("IngameSprite1.png");
-			_resources.addSpriteName("IngameSprite2.png");
+			_resources.addSpriteName("IngameSpriteSheet.png");
+			_resources.addSpriteName("UserInfoSpriteSheet.png");
+			_resources.addSpriteName("PausePopupSpriteSheet.png");
+			_resources.addSpriteName("ResultSpriteSheet.png");
+			_resources.addSpriteName("StagePopupSpriteSheet.png");
+			_resources.addSpriteName("FieldSpriteSheet.png");
+			_resources.addSpriteName("ShopSpriteSheet.png");
+			_resources.addSpriteName("RankingSpriteSheet.png");
 			_resources.addSpriteName("readyClip.png");
 			_resources.addSoundName("MilkOut.mp3");
 			_resources.addSoundName("NeverForget.mp3");
 			_resources.addSoundName("set.mp3");
 			_resources.addSoundName("clear.mp3");
 			_resources.addSoundName("fork.mp3");
+			_resources.addSoundName("searchSound.mp3");
+			_resources.addSoundName("shuffleSound2.mp3");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
@@ -129,6 +134,8 @@ package puzzle.ingame
 		protected override function onStart(event:SceneEvent):void
 		{
 			//음악 on
+			if(_soundManager)
+				_soundManager.wakeAll();
 		}
 		
 		protected override function onUpdate(event:EnterFrameEvent):void
@@ -140,6 +147,9 @@ package puzzle.ingame
 		protected override function onEnded(event:SceneEvent):void
 		{
 			//음악 off
+			if(_soundManager)
+				_soundManager.stopAll();
+			NativeApplication.nativeApplication.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
 		
 		protected override function onDestroy(event:SceneEvent):void
@@ -184,9 +194,23 @@ package puzzle.ingame
 			_resultPopup.removeEventListener(ResultPopup.CLICKED_BACK, onClickedMenu);
 			_resultPopup.removeEventListener(ResultPopup.CLICKED_NEXT, onClickedNext);
 			_resultPopup.removeEventListener(ResultPopup.CLICKED_RESTART, onClickedRestart);
+			_resultPopup.removeFromParent();
+			_resultPopup.destroy();
+			_resultPopup = null;
+			
 			_resultPopupFrame.removeFromParent();
 			_resultPopupFrame.destroy();
 			_resultPopupFrame = null;
+			
+			_stagePopupFrame.removeFromParent();
+			_stagePopupFrame.destroy();
+			_stagePopupFrame = null;
+			
+			_stagePopup.removeEventListener(StagePopup.CLOSE_CLICK, onClickedCloseButton);
+			_stagePopup.removeEventListener(StagePopup.START_CLICK, onClickedStartButton);
+			_stagePopup.removeFromParent();
+			_stagePopup.destroy();
+			_stagePopup = null;
 			
 			_items.removeEventListener(Items.FORK_CHECK, onCheckedFork);
 			_items.removeEventListener(Items.FORK_EMPTY, onEmptyFork);
@@ -201,6 +225,7 @@ package puzzle.ingame
 			_resources.destroy();
 			_resources = null;
 			
+			_soundManager.stopAll();
 			_soundManager.destroy();
 			_soundManager = null;
 			
@@ -248,13 +273,13 @@ package puzzle.ingame
 			_soundManager.addSound("clear.mp3", _resources.getSoundFile("clear.mp3"));
 			_soundManager.addSound("NeverForget.mp3", _resources.getSoundFile("NeverForget.mp3"));
 			_soundManager.addSound("fork.mp3", _resources.getSoundFile("fork.mp3"));
+			_soundManager.addSound("searchSound.mp3", _resources.getSoundFile("searchSound.mp3"));
+			_soundManager.addSound("shuffleSound2.mp3", _resources.getSoundFile("shuffleSound2.mp3"));
 			_soundManager.play("MilkOut.mp3", Sound.INFINITE);
-			
-//			addEventListener(SceneEvent.DEACTIVATE, onDeActivate);
-			
+
 			_score = 0;
 			
-			_backGround = new Image(_resources.getSubTexture("IngameSprite2.png", "IngameBackGround"));
+			_backGround = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "IngameBackGround"));
 			_backGround.width = 576;
 			_backGround.height = 1024;
 			addChild(_backGround);
@@ -289,7 +314,7 @@ package puzzle.ingame
 			_timer.startCount(60);
 			addChild(_timer);
 			
-			_comboTimer = new ComboTimer();
+			_comboTimer = new ComboTimer(_resources);
 			_comboTimer.init(520, 65, 100, 30, 3);
 			addChild(_comboTimer);
 			
@@ -343,7 +368,7 @@ package puzzle.ingame
 			_field.addEventListener(Field.PANG, onCompletePang);
 			addChild(_field);
 			
-			_pauseButton = new Button(_resources.getSubTexture("IngameSprite2.png", "popUpButton"));
+			_pauseButton = new Button(_resources.getSubTexture("IngameSpriteSheet.png", "popUpButton"));
 			_pauseButton.x = 536;
 			_pauseButton.width = 40;
 			_pauseButton.height = 40;
@@ -371,6 +396,26 @@ package puzzle.ingame
 			_resultPopupFrame.setContent(_resultPopup);
 			addChild(_resultPopupFrame);
 			
+			_stagePopup = new StagePopup(_resources);
+			_stagePopup.addEventListener(StagePopup.CLOSE_CLICK, onClickedCloseButton);
+			_stagePopup.addEventListener(StagePopup.START_CLICK, onClickedStartButton);
+			_stagePopup.init(400, 500);
+			
+			_stagePopupFrame = new PopupFrame(576, 1024);
+			_stagePopupFrame.setContent(_stagePopup);
+//			_stagePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_stagePopupFrame);
+			
+			_shopPopup = new Shop(_resources);
+			_shopPopup.init(400, 600);
+			_shopPopup.addEventListener(Shop.CLICKED_BUY, onClickedShopBuy);
+			_shopPopup.addEventListener(Shop.CLICKED_CLOSE, onClickedShopClose);
+			
+			_shopPopupFrame = new PopupFrame(576, 1024);
+			_shopPopupFrame.setContent(_shopPopup);
+			_shopPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_shopPopupFrame)
+			
 			var blockData:BlockData;
 			while(_blockDatas.length != 0)
 			{
@@ -396,7 +441,34 @@ package puzzle.ingame
 			
 			readyTime();
 			
-			trace(flash.display.Screen.mainScreen.bounds);
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			
+//			trace(flash.display.Screen.mainScreen.bounds);
+		}
+		
+		private function onKeyDown(event:KeyboardEvent):void
+		{
+			if(event.keyCode == Keyboard.BACK)
+			{
+				event.preventDefault();
+				if(_stagePopupFrame.visible)
+					return;
+				if(_resultPopupFrame.visible)
+					return;
+				
+				if(!_paused)
+				{
+					if(_shopPopupFrame.visible)
+						keepPlay();
+					else
+					{
+						_paused = true;
+						_pausePopupFrame.show();
+					}
+				}
+				else
+					keepPlay();
+			}
 		}
 		
 		private function readyTime():void
@@ -453,9 +525,9 @@ package puzzle.ingame
 			
 			if(event.blockCount == 0 && event.possibleCount == 0)
 			{
-//				trace("클리어");
-//				trace(User.getInstance().clearstage);
-//				trace(_stageNumber);
+				trace("클리어");
+				trace(User.getInstance().clearstage);
+				trace(_stageNumber);
 				_isClear = true;
 				
 				_record = _timer.getRecord();
@@ -464,64 +536,57 @@ package puzzle.ingame
 				_playJuggler.remove(_timer);
 				_playJuggler.remove(_comboTimer);
 				
-				setResultPopup();
-				
-//				if(User.getInstance().clearstage < _stageNumber)
-//					User.getInstance().clearstage = _stageNumber;
+				if(User.getInstance().clearstage < _stageNumber)
+					User.getInstance().clearstage = _stageNumber;
 //				User.getInstance().heart = 1;
 				
-//				User.getInstance().pullUserData(setScoreData);
+				User.getInstance().pullUserData(setScoreData);
 			}
 		}
 		
-//		private function setScoreData():void
-//		{
-//			trace("setScoreData");
-//			_dbLoader = new DBLoader(User.getInstance());
-//			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
-//			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
-//			
-//			_dbLoader.setScoreData(_stageNumber, _score);
-//		}
-//		
-//		private function onCompleteSetScore(event:DBLoaderEvent):void
-//		{
-//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
-//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
-//			_dbLoader.destroy();
-//			
-//			_dbLoader = new DBLoader(User.getInstance());
-//			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
-//			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
-//			
-//			_dbLoader.selectScoreData(_stageNumber);
-//		}
-//		
-//		private function onFailedSetScore(event:DBLoaderEvent):void
-//		{
-//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
-//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
-//			_dbLoader.destroy();
-//			
-//			trace(event.message);
-//		}
-		
-//		private function onCompleteLoadingScore(event:DBLoaderEvent):void
-//		{
-////			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
-////			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
-////			_dbLoader.destroy();
-////			
-////			var result:String = event.message;
-////			var jsonObject:Object = JSON.parse(result);
-////			
-////			trace("jsonLength = " + jsonObject.length);
-//			
-////			_resultPopup.setRanking(jsonObject);
-//		}
-		
-		private function setResultPopup():void
+		private function setScoreData():void
 		{
+			trace("setScoreData");
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+			
+			_dbLoader.setScoreData(_stageNumber, _score);
+		}
+		
+		private function onCompleteSetScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+			_dbLoader.destroy();
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+			
+			_dbLoader.selectScoreData(_stageNumber);
+		}
+		
+		private function onFailedSetScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteSetScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedSetScore);
+			_dbLoader.destroy();
+			
+			trace(event.message);
+		}
+		
+		private function onCompleteLoadingScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+			_dbLoader.destroy();
+			
+			var result:String = event.message;
+			var jsonObject:Object = JSON.parse(result);
+			
+			trace("jsonLength = " + jsonObject.length);
+			
 			if(_isClear)
 			{
 				_resultPopup.setTitleMessage("성공!!");
@@ -536,43 +601,29 @@ package puzzle.ingame
 				_soundManager.play("NeverForget.mp3", Sound.INFINITE);
 			}
 			
+			_resultPopup.setRanking(jsonObject);
+			
 			_resultPopupFrame.show();
 		}
 		
-//		private function onFailedLoadingScore(event:DBLoaderEvent):void
-//		{
-//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
-//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
-//			_dbLoader.destroy();
-//			
-//			trace(event.message);
-//		}
+		private function onFailedLoadingScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+			_dbLoader.destroy();
+			
+			trace(event.message);
+		}
 		
 		private function outThisGame():void
 		{
+			User.getInstance().pullUserData();
 			SceneManager.current.outScene(_stageNumber);
 		}
 		
-//		private function onCompleteDBLoading(event:DBLoaderEvent):void
-//		{
-//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-//			_dbLoader.destroy();
-//		}
-//		
-//		private function onFailedDBLoading(event:DBLoaderEvent):void
-//		{
-//			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteDBLoading);
-//			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedDBLoading);
-//			_dbLoader.destroy();
-//			
-//			trace(event.message);
-//		}
-		
 		private function onGetFork(event:Event):void
 		{
-//			User.getInstance().popFork();
-//			User.getInstance().fork -= 1;
+			User.getInstance().fork -= 1;
 			_items.setEmptyFork();
 			_soundManager.play("fork.mp3");
 			pang();
@@ -581,30 +632,51 @@ package puzzle.ingame
 		private function onCheckedFork(event:Event):void
 		{
 			trace("forkCheck");
+			if(User.getInstance().fork <= 0)
+			{
+				_items.setEmptyFork();
+				_paused = true;
+				_shopPopup.setItem(event.data as String);
+				_shopPopupFrame.show();
+				return;
+			}
 			_field.forkChecked();
-//			_field.isFork = true;
 		}
 		
 		private function onEmptyFork(event:Event):void
 		{
 			trace("forkEmpty");
 			_field.forkEmptyed();
-//			_field.isFork = false;
 		}
 		
 		private function onClickedSearch(event:Event):void
 		{
-//			User.getInstance().popSearch();
-//			User.getInstance().search -= 1;
 			trace("search");
+			if(User.getInstance().search <= 0)
+			{
+				_paused = true;
+				_shopPopup.setItem(event.data as String);
+				_shopPopupFrame.show();
+				return;
+			}
+			User.getInstance().search -= 1;
+			_soundManager.play("searchSound.mp3");
 			_field.search();
+			
 		}
 		
 		private function onClickedShuffle(event:Event):void
 		{
-//			User.getInstance().popShuffle();
-//			User.getInstance().shuffle -= 1;
 			trace("shuffle");
+			if(User.getInstance().shuffle <= 0)
+			{
+				_paused = true;
+				_shopPopup.setItem(event.data as String);
+				_shopPopupFrame.show();
+				return;
+			}
+			User.getInstance().shuffle -= 1;
+			_soundManager.play("shuffleSound2.mp3");
 			_field.shuffle();
 		}
 		
@@ -613,6 +685,7 @@ package puzzle.ingame
 			_paused = false;
 			_pausePopupFrame.hide();
 			_resultPopupFrame.hide();
+			_shopPopupFrame.hide();
 		}
 		
 		private function onClickedContinue(event:Event):void
@@ -626,18 +699,78 @@ package puzzle.ingame
 		}
 		
 		private function onClickedRestart(event:Event):void
-		{
-			outThisGame();
-			SceneManager.current.addScene(InGameScene, "game");
-			SceneManager.current.goScene("game", _stageNumber);
+		{	
+			_resultPopupFrame.hide();
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			
+			_dbLoader.selectScoreData(_stageNumber); 
+ 			_clickedStageNumber = _stageNumber;
 		}
 		
 		private function onClickedNext(event:Event):void
 		{
-//			User.getInstance().heart -= 1;
+			_resultPopupFrame.hide();
+			
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			
+			_dbLoader.selectScoreData(_stageNumber+1);
+			_clickedStageNumber = _stageNumber+1;
+		}
+		
+		private function onCompleteLoadingStageScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			_dbLoader.destroy();
+			
+			var result:String = event.message;
+			var jsonObject:Object = JSON.parse(result);
+			
+			_stagePopup.setTitleMessage(_clickedStageNumber.toString());
+			_stagePopup.setLanking(jsonObject);
+			_stagePopupFrame.show();
+		}
+		
+		private function onFailedLoadingStageScore(event:DBLoaderEvent):void
+		{
+			_dbLoader.removeEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingStageScore);
+			_dbLoader.removeEventListener(DBLoaderEvent.FAILED, onFailedLoadingStageScore);
+			_dbLoader.destroy();
+			
+			trace(event.message);
+		}
+		
+		private function onClickedCloseButton(event:Event):void
+		{
+			_stagePopupFrame.hide();
 			outThisGame();
+		}
+		
+		private function onClickedStartButton(event:Event):void
+		{
+			_stagePopupFrame.hide();
+			outThisGame();	
+			if(User.getInstance().heart <= 0)
+				return;
+			User.getInstance().heart -= 1;
 			SceneManager.current.addScene(InGameScene, "game");
-			SceneManager.current.goScene("game", _stageNumber + 1);
+			SceneManager.current.goScene("game", _clickedStageNumber);
+		}
+		
+		private function onClickedShopBuy(event:Event):void
+		{
+			keepPlay();
+			User.getInstance().pullUserData();
+		}
+		
+		private function onClickedShopClose(event:Event):void
+		{
+			keepPlay();
 		}
 		
 		private function onClickedCover(event:Event):void
@@ -651,11 +784,11 @@ package puzzle.ingame
 			_paused = false;
 			_field.touchable = false;
 			
-//			_dbLoader = new DBLoader(User.getInstance());
-//			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
-//			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
-//			
-//			_dbLoader.selectScoreData(_stageNumber);
+			_dbLoader = new DBLoader(User.getInstance());
+			_dbLoader.addEventListener(DBLoaderEvent.COMPLETE, onCompleteLoadingScore);
+			_dbLoader.addEventListener(DBLoaderEvent.FAILED, onFailedLoadingScore);
+			
+			_dbLoader.selectScoreData(_stageNumber);
 		}
 		
 		private function onClickedSettingButton(event:Event):void

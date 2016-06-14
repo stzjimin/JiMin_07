@@ -2,6 +2,7 @@
 <actionScriptProperties analytics="false" mainApplicationPath="MapTool.as" projectUUID="23b9ad22-276b-44dd-9353-dcde4b225a65" version="11">
   <compiler additionalCompilerArguments="-locale en_US" advancedTelemetry="false" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" useFlashSDK="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
+      <compilerSourcePathEntry kind="1" linkType="1" path="C:/Users/user/Desktop/starling-2.0/starling/src"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="C:/Users/user/Documents/JiMin_07/lib/starling/src"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="0">
@@ -32,7 +33,7 @@
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_agent.swc" useDefaultLinkType="false"/>
         </excludedEntries>
       </libraryPathEntry>
-      <libraryPathEntry kind="1" linkType="1" path="C:/Users/지민/Documents/JiMin_07/MobilePuzzleGame/lib/GreenSock-AS3"/>
+      <libraryPathEntry kind="1" linkType="1" path="C:/Users/user/Documents/JiMin_07/MobilePuzzleGame/lib/GreenSock-AS3"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

@@ -49,31 +49,31 @@ package puzzle.ingame.cell.blocks
 			var type:String = blockData.type;
 			if(type == BlockType.PINKY)
 			{
-				_blockTexture = _resources.getSubTexture("IngameSprite1.png", "pinky");
+				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "pinky");
 				_type = BlockType.PINKY;
 				this.name = "pink";
 			}
 			else if(type == BlockType.BLUE)
 			{
-				_blockTexture = _resources.getSubTexture("IngameSprite1.png", "blue");
+				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue");
 				_type = BlockType.BLUE;
 				this.name = "blue";
 			}
 			else if(type == BlockType.MICKY)
 			{
-				_blockTexture = _resources.getSubTexture("IngameSprite1.png", "micky");
+				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky");
 				_type = BlockType.MICKY;
 				this.name = "micky";
 			}
 			else if(type == BlockType.LUCY)
 			{
-				_blockTexture = _resources.getSubTexture("IngameSprite1.png", "lucy");
+				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy");
 				_type = BlockType.LUCY;
 				this.name = "lucy";
 			}
 			else if(type == BlockType.MONGYI)
 			{
-				_blockTexture = _resources.getSubTexture("IngameSprite1.png", "mongyi");
+				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi");
 				_type = BlockType.MONGYI;
 				this.name = "mongyi";
 			}
@@ -85,13 +85,13 @@ package puzzle.ingame.cell.blocks
 			_blockImage.height = Cell.HEIGHT_SIZE;
 			addChild(_blockImage);
 			
-			_blockRightPadding = new Image(_resources.getSubTexture("IngameSprite1.png", "blockRightPadding"));
+			_blockRightPadding = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "blockRightPadding"));
 			_blockRightPadding.x = Cell.WIDTH_SIZE - Block.PADDING_SIZE;
 			_blockRightPadding.width = Block.PADDING_SIZE;
 			_blockRightPadding.height = Cell.HEIGHT_SIZE;
 			addChild(_blockRightPadding);
 			
-			_blockBottomPadding = new Image(_resources.getSubTexture("IngameSprite1.png", "blockBottomPadding"));
+			_blockBottomPadding = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "blockBottomPadding"));
 			_blockBottomPadding.y = Cell.HEIGHT_SIZE - Block.PADDING_SIZE;
 			_blockBottomPadding.width = Cell.WIDTH_SIZE;
 			_blockBottomPadding.height = Block.PADDING_SIZE;
@@ -163,7 +163,9 @@ package puzzle.ingame.cell.blocks
 			_blockBottomPadding.dispose();
 			
 			removeEventListener(TouchEvent.TOUCH, onTouch);
-			removeFromParent(true);
+			removeFromParent();
+			
+			removeChildren(0, this.numChildren);
 			
 			dispose();
 		}

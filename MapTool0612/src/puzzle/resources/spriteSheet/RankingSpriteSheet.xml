@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="RankingSpriteSheet.png">
+   <SubTexture name="leftArrow" x="492" y="49" width="64" height="64" />
+   <SubTexture name="PopupBackGround" x="0" y="0" width="490" height="421" />
+   <SubTexture name="popupTitle" x="492" y="0" width="450" height="47" />
+   <SubTexture name="rightArrow" x="492" y="115" width="64" height="64" />
+</TextureAtlas>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="StageSelectSceneSpriteSheet.png">
+   <SubTexture name="downArrow" x="675" y="0" width="64" height="64" />
+   <SubTexture name="stageBlockButton" x="578" y="0" width="95" height="95" />
+   <SubTexture name="stageButtonImage" x="578" y="97" width="95" height="95" />
+   <SubTexture name="stageSelectBackground2" x="0" y="0" width="576" height="1024" />
+   <SubTexture name="upArrow" x="675" y="66" width="64" height="64" />
+</TextureAtlas>

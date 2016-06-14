@@ -1,6 +1,6 @@
 package puzzle.ingame.timer
 {
-	import flash.display.Bitmap;
+	import puzzle.loading.Resources;
 	
 	import starling.animation.IAnimatable;
 	import starling.animation.Juggler;
@@ -8,14 +8,10 @@ package puzzle.ingame.timer
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import starling.textures.Texture;
 	import starling.utils.Align;
 
 	public class ComboTimer extends Sprite implements IAnimatable
 	{
-		[Embed(source="fillBar.png")]
-		private const fillBarImage:Class;
-		
 		private var _comboTime:Number;
 		private var _comboJuggler:Juggler;
 		
@@ -25,9 +21,14 @@ package puzzle.ingame.timer
 		
 		private var _comboCount:uint;
 		
-		public function ComboTimer()
+		private var _resources:Resources;
+		
+		public function ComboTimer(resources:Resources)
 		{
+			_resources = resources;
 			_comboJuggler = new Juggler();
+			
+			super();
 		}
 		
 		public function init(x:Number, y:Number, width:Number, height:Number, comboTime:Number):void
@@ -37,7 +38,7 @@ package puzzle.ingame.timer
 			this.x = x;
 			this.y = y;
 			
-			_comboBar = new Image(Texture.fromBitmap(new fillBarImage() as Bitmap));
+			_comboBar = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "fillBar"));
 			_comboBar.width = width;
 			_comboBar.height = height;
 			_comboBar.alignPivot(Align.RIGHT, Align.TOP);
@@ -59,6 +60,8 @@ package puzzle.ingame.timer
 			_comboBar.removeFromParent();
 			_comboBar.dispose();
 			
+			_resources = null;
+			
 			dispose();
 		}
 		
@@ -72,7 +75,7 @@ package puzzle.ingame.timer
 			var combo:Boolean = false;
 			if(_comboTween == null)
 			{
-				trace("콤보시작");
+//				trace("콤보시작");
 				_comboCount = 0;
 				_comboTween = new Tween(_comboBar, _comboTime);
 				_comboTween.scaleXTo(0);
@@ -101,7 +104,7 @@ package puzzle.ingame.timer
 		
 		private function onCompleteTween(event:Event):void
 		{
-			trace("콤보끝");
+//			trace("콤보끝");
 			_comboTween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
 			_comboTween = null;
 			_comboCount = 0;

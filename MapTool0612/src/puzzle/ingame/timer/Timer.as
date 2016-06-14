@@ -1,7 +1,5 @@
 package puzzle.ingame.timer
 {	
-	import com.greensock.TweenLite;
-	
 	import puzzle.loading.Resources;
 	
 	import starling.animation.IAnimatable;
@@ -13,9 +11,6 @@ package puzzle.ingame.timer
 
 	public class Timer extends Sprite implements IAnimatable
 	{	
-		[Embed(source="fillBar.png")]
-		private const fillbarImage:Class;
-		
 		public static const TIME_START:String = "timeStart";
 		public static const TIME_OVER:String = "timeOver";
 		
@@ -48,22 +43,17 @@ package puzzle.ingame.timer
 			this.x = x;
 			this.y = y;
 			
-			_bar = new Image(_resources.getSubTexture("IngameSprite2.png", "timerFrame"));
+			_bar = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "timerFrame"));
 			_bar.width = width;
 			_bar.height = height;
 			addChild(_bar);
 			
-//			_fillBar = new Image(Texture.fromBitmap(new fillbarImage() as Bitmap));
-//			_fillBar.width = width;
-//			_fillBar.height = height;
-//			addChild(_fillBar);
-			
-			_fillFront = new Image(_resources.getSubTexture("IngameSprite2.png", "timerFront2"));
+			_fillFront = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "timerFront2"));
 			_fillFront.width = width/20;
 			_fillFront.height = height;
 			addChild(_fillFront);
 			
-			_fillBack = new Image(_resources.getSubTexture("IngameSprite2.png", "timerBack2"));
+			_fillBack = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "timerBack2"));
 			_fillBack.x = _fillFront.width;
 			_fillBack.width = width - _fillFront.width;
 			_fillBack.height = height;
@@ -98,11 +88,11 @@ package puzzle.ingame.timer
 		
 		public function addTime(addTime:Number):void
 		{
-			trace("_countTime : " + _countTime);
-			trace("_timerTween.currentTime : " + _timerTween.currentTime);
-			trace("추가 시간 : " + addTime);
+//			trace("_countTime : " + _countTime);
+//			trace("_timerTween.currentTime : " + _timerTween.currentTime);
+//			trace("추가 시간 : " + addTime);
 			var newTime:Number = (_countTime - _timerTween.currentTime + addTime);
-			trace("시간 : " + newTime);
+//			trace("시간 : " + newTime);
 			var fillBackNewScaleX:Number = _fillBack.scaleX + (_fillBackOriginScaleX * (addTime / _originTime));
 			
 			if(newTime > _originTime)

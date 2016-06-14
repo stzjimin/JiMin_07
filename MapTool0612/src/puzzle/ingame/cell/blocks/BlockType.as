@@ -7,6 +7,7 @@ package puzzle.ingame.cell.blocks
 		public static const PINKY:String = "pinky";
 		public static const MICKY:String = "micky";
 		public static const BLUE:String = "blue";
+		public static const WALL:String = "wall";
 		
 		public function BlockType()
 		{

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="SettingPopupSpriteSheet.png">
+   <SubTexture name="CheckBoxOFF" x="0" y="447" width="27" height="24" />
+   <SubTexture name="CheckBoxON" x="78" y="373" width="27" height="24" />
+   <SubTexture name="settingPopup" x="0" y="0" width="490" height="327" />
+   <SubTexture name="settingPopupCloseButton2" x="0" y="373" width="76" height="72" />
+   <SubTexture name="settingPopupFrame" x="0" y="329" width="195" height="42" />
+</TextureAtlas>

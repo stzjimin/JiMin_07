@@ -19,6 +19,10 @@ package puzzle.loading
 	
 	public class Resources extends EventDispatcher
 	{	
+		public static const SpriteDir:File = File.applicationDirectory.resolvePath("puzzle/resources/spriteSheet");
+		public static const SoundDir:File = File.applicationDirectory.resolvePath("puzzle/resources/sound");
+		public static const ImageDir:File = File.applicationDirectory.resolvePath("puzzle/resources/image");
+		
 		private var _spriteSheetDic:Dictionary;
 		private var _soundDic:Dictionary;
 		private var _imageDic:Dictionary;

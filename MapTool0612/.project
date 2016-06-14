@@ -22,9 +22,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>[source path] src</name>
+			<name>[source path] lib-starling-src</name>
 			<type>2</type>
 			<location>C:/Users/user/Documents/JiMin_07/lib/starling/src</location>
+		</link>
+		<link>
+			<name>[source path] starling-2.0-starling-src</name>
+			<type>2</type>
+			<location>C:/Users/user/Desktop/starling-2.0/starling/src</location>
 		</link>
 	</linkedResources>
 </projectDescription>

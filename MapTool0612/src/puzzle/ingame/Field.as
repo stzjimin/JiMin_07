@@ -1,5 +1,6 @@
 package puzzle.ingame
 {	
+	import flash.display.Bitmap;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
@@ -8,9 +9,9 @@ package puzzle.ingame
 	import puzzle.ingame.cell.NeigborType;
 	import puzzle.ingame.cell.blocks.Block;
 	import puzzle.ingame.cell.blocks.BlockData;
-	import puzzle.ingame.item.fork.ForkEvent;
-	import puzzle.ingame.item.fork.Forker;
-	import puzzle.ingame.item.shuffle.Shuffler;
+	import puzzle.item.fork.ForkEvent;
+	import puzzle.item.fork.Forker;
+	import puzzle.item.shuffle.Shuffler;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	import puzzle.ingame.util.possibleCheck.Possible;
 	import puzzle.ingame.util.possibleCheck.PossibleChecker;
@@ -23,6 +24,7 @@ package puzzle.ingame
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
+	import starling.textures.Texture;
 
 	public class Field extends DisplayObjectContainer implements IAnimatable
 	{	
@@ -39,6 +41,9 @@ package puzzle.ingame
 		private var _rowLine2:Image;
 		private var _columnLine:Image;
 		private var _columnLine2:Image;
+		
+		private var _alert:Image;
+		private var _alert2:Image;
 		
 		private var _backGround:Image;
 		
@@ -74,11 +79,11 @@ package puzzle.ingame
 			_forker.addEventListener(Forker.GET_FORK, onSucceedFork);
 			
 			_padding = new FramePadding(Field.PADDING, (Field.ROW_NUM * Cell.WIDTH_SIZE), (Field.COLUMN_NUM * Cell.HEIGHT_SIZE), 
-				_resources.getSubTexture("IngameSprite0.png", "topPadding"), _resources.getSubTexture("IngameSprite0.png", "bottomPadding"),
-				_resources.getSubTexture("IngameSprite0.png", "leftPadding"), _resources.getSubTexture("IngameSprite0.png", "rightPadding"));
+				_resources.getSubTexture("FieldSpriteSheet.png", "topPadding"), _resources.getSubTexture("FieldSpriteSheet.png", "bottomPadding"),
+				_resources.getSubTexture("FieldSpriteSheet.png", "leftPadding"), _resources.getSubTexture("FieldSpriteSheet.png", "rightPadding"));
 			addChild(_padding);
 			
-			_backGround = new Image(_resources.getSubTexture("IngameSprite0.png", "backGround"));
+			_backGround = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "backGround"));
 			_backGround.x = Field.PADDING;
 			_backGround.y = Field.PADDING;
 			_backGround.width = (Field.ROW_NUM * Cell.WIDTH_SIZE);
@@ -123,14 +128,23 @@ package puzzle.ingame
 					columnNum++;
 			}
 			
-			_rowLine = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
+			_rowLine = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "rowLine"));
 			_rowLine.alignPivot();
-			_rowLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "rowLine"));
+			_rowLine2 = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "rowLine"));
 			_rowLine2.alignPivot();
-			_columnLine = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columnLine = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "columLine"));
 			_columnLine.alignPivot();
-			_columnLine2 = new Image(_resources.getSubTexture("IngameSprite0.png", "columLine"));
+			_columnLine2 = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "columLine"));
 			_columnLine2.alignPivot();
+			
+			_alert = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "alert"));
+			_alert.width = Cell.WIDTH_SIZE / 2;
+			_alert.height = Cell.HEIGHT_SIZE / 2;
+			_alert.alignPivot();
+			_alert2 = new Image(_resources.getSubTexture("FieldSpriteSheet.png", "alert"));
+			_alert2.width = Cell.WIDTH_SIZE / 2;
+			_alert2.height = Cell.HEIGHT_SIZE / 2;
+			_alert2.alignPivot();
 			
 			_resources = null;
 		}
@@ -143,8 +157,60 @@ package puzzle.ingame
 		public function search():void
 		{
 			var possible:Possible = _possibleChecker.pickPossible();
-			trace(possible.startCell.name);
-			trace(possible.destCell.name);
+//			trace(possible.startCell.name);
+//			trace(possible.destCell.name);
+			if(_alert.parent)
+			{
+				_alert.removeFromParent();
+//				_alert.alpha = 1.0;
+			}
+				
+			if(_alert2.parent)
+			{
+				_alert2.removeFromParent();
+//				_alert2.alpha = 1.0;
+			}
+			
+			possible.startCell.block.addChild(_alert);
+			possible.destCell.block.addChild(_alert2);
+			
+//			var startAlertPoint:Point = possible.startCell.getBounds(this).topLeft.clone();
+//			var destAlertPoint:Point = possible.destCell.getBounds(this).topLeft.clone();
+//			
+//			_alert.x = startAlertPoint.x;
+//			_alert.y = startAlertPoint.y;	
+//			_alert2.x = destAlertPoint.x;
+//			_alert2.y = destAlertPoint.y;
+//			
+//			addChild(_alert);
+//			addChild(_alert2);
+			
+//			_juggler.delayCall(removeAlert, 3);
+				
+			function removeAlert():void
+			{
+				_alert.removeFromParent();
+				_alert2.removeFromParent();
+//				var tween1:Tween = new Tween(_alert, 1);
+//				tween1.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+//				var tween2:Tween = new Tween(_alert2, 1);
+//				tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+//				
+//				tween1.fadeTo(0);
+//				tween2.fadeTo(0);
+//				
+//				_juggler.add(tween1);
+//				_juggler.add(tween2);
+//				
+//				function onCompleteTween(event:Event):void
+//				{
+//					Tween(event.currentTarget).removeEventListener(Event.REMOVE_FROM_JUGGLER, onCompleteTween);
+//					Image(Tween(event.currentTarget).target).removeFromParent();
+//					Image(Tween(event.currentTarget).target).x = 0;
+//					Image(Tween(event.currentTarget).target).y = 0;
+//					Image(Tween(event.currentTarget).target).alpha = 1.0;
+//				}
+			}
 		}
 		
 		/**
@@ -161,7 +227,7 @@ package puzzle.ingame
 			trace(_possibleChecker.blockCount);
 			trace(_possibleChecker.possibleCount);
 			
-			trace("경과시간 = " + (currentTime - prevTime));
+//			trace("경과시간 = " + (currentTime - prevTime));
 			
 			if(_possibleChecker.blockCount > 0 && _possibleChecker.possibleCount == 0)
 				shuffle();

@@ -2,12 +2,12 @@ package
 {
 	import puzzle.ingame.cell.Cell;
 	
-	import starling.display.Image;
-	import starling.events.Event;
-	import starling.events.Touch;
-	import starling.events.TouchEvent;
-	import starling.events.TouchPhase;
-	import starling.textures.Texture;
+	import starlingOrigin.display.Image;
+	import starlingOrigin.events.Event;
+	import starlingOrigin.events.Touch;
+	import starlingOrigin.events.TouchEvent;
+	import starlingOrigin.events.TouchPhase;
+	import starlingOrigin.textures.Texture;
 
 	public class MapToolCell extends Cell
 	{	
@@ -16,6 +16,8 @@ package
 		private var _versPivotX:Number;
 		private var _versPivotY:Number;
 		private var _originScale:Number;
+		
+		private var _originTexture:Texture;
 		
 		private var _clicked:Boolean;
 		
@@ -26,6 +28,8 @@ package
 			super.height = height;
 			
 			_clicked = false;
+			
+			_originTexture = backGroundTexture;
 			
 			_backGround = new Image(backGroundTexture);
 			_backGround.width = width;
@@ -64,6 +68,16 @@ package
 				
 				dispatchEvent(new Event(Event.TRIGGERED));
 			}
+		}
+		
+		public function setBackGroundTexture(texture:Texture):void
+		{
+			_backGround.texture = texture;
+		}
+		
+		public function setOriginTexture():void
+		{
+			_backGround.texture = _originTexture;
 		}
 		
 		public function get clicked():Boolean

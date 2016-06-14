@@ -35,11 +35,7 @@
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
-  <applications>
-    <application path="PuzzleGameTest.as">
-      <airExcludes/>
-    </application>
-  </applications>
+  <applications/>
   <modules/>
   <workers/>
   <buildCSSFiles/>

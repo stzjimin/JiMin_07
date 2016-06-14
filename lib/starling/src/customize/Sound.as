@@ -60,7 +60,7 @@ package customize
 			if(_isInfinite)
 			{
 				trace("loop");
-				play(0, 0, _channel.soundTransform);
+				this.play(0, 0, _channel.soundTransform);
 				_isPlay = true;
 			}
 		}

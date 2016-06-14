@@ -19,6 +19,7 @@ package puzzle.user
 	{	
 		public static const CLICKED_PROFILL:String = "profillClicked";
 		public static const CLICKED_LOGOUT:String = "logOutClicked";
+		public static const CLICKED_ATTEND:String = "attendClicked";
 		public static const CLICKED_FORK:String = "forkClicked";
 		public static const CLICKED_SHUFFLE:String = "shuffleClicked";
 		public static const CLICKED_SEARCH:String = "searchClicked";
@@ -33,6 +34,7 @@ package puzzle.user
 		private var _shuffle:CustomButton;
 		
 		private var _logOutButton:Button;
+		private var _attendBoardButton:Button;
 		
 		private var _resources:Resources;
 		
@@ -97,6 +99,16 @@ package puzzle.user
 			_fork.setPopCircleTextFormat(textFormat);
 			_fork.addEventListener(Event.TRIGGERED, onClickedFork);
 			addChild(_fork);
+			
+			_attendBoardButton = new Button(_resources.getSubTexture("UserInfoSpriteSheet.png", "PopupBackGround"), "출석");
+			_attendBoardButton.textFormat.bold = true;
+			_attendBoardButton.textFormat.size = 20;
+			_attendBoardButton.width = _fork.width;
+			_attendBoardButton.height = height / 2;
+			_attendBoardButton.x = _fork.x;
+			_attendBoardButton.y = _logOutButton.y;
+			_attendBoardButton.addEventListener(Event.TRIGGERED, onClickedAttendButton);
+			addChild(_attendBoardButton);
 			
 			_search = new CustomButton(_resources.getSubTexture("UserInfoSpriteSheet.png", "search"));
 			_search.init(height * 0.7, height * 0.7);
@@ -236,6 +248,11 @@ package puzzle.user
 		private function onClickedLogOutButton(event:Event):void
 		{
 			dispatchEvent(new Event(UserInfo.CLICKED_LOGOUT));
+		}
+		
+		private function onClickedAttendButton(event:Event):void
+		{
+			dispatchEvent(new Event(UserInfo.CLICKED_ATTEND));
 		}
 		
 		private function onClickedFork(event:Event):void

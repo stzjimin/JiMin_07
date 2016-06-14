@@ -2,8 +2,11 @@ package puzzle.title
 {
 	import com.greensock.TweenMax;
 	
-	import flash.filesystem.File;
-	import flash.utils.Dictionary;
+	import flash.desktop.NativeApplication;
+	import flash.events.IEventDispatcher;
+	import flash.events.KeyboardEvent;
+	import flash.media.SoundMixer;
+	import flash.ui.Keyboard;
 	
 	import customize.PopupFrame;
 	import customize.Progress;
@@ -36,9 +39,6 @@ package puzzle.title
 	
 	public class TitleScene extends Scene
 	{	
-//		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/titleSpriteSheet");
-//		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/sound");
-//		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/title/resources/image");
 		private var _resources:Resources;
 		
 		private var _dbLoader:DBLoader;
@@ -58,6 +58,10 @@ package puzzle.title
 		private var _ari:Image;
 		
 		private var _soundManager:SoundManager;
+		private var _isDestroy:Boolean;
+		private var _wakeCount:int = 0;
+		
+		private var _dialogExtension:DialogExtension;
 		
 		public function TitleScene()
 		{
@@ -67,6 +71,12 @@ package puzzle.title
 		
 		protected override function onCreate(event:SceneEvent):void
 		{
+			SoundMixer.stopAll();
+			var eventDispatcher:IEventDispatcher;
+			_dialogExtension = new DialogExtension(eventDispatcher);
+			
+			trace("title create");
+			this.name = "title";
 			_soundManager = new SoundManager;
 			_resources = new Resources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
 			
@@ -95,8 +105,8 @@ package puzzle.title
 		}
 		
 		protected override function onDestroy(event:SceneEvent):void
-		{	
-			TweenMax.killAll();
+		{
+			NativeApplication.nativeApplication.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			
 			_backGround.removeEventListener(TouchEvent.TOUCH, onTouch);
 			_backGround.removeFromParent();
@@ -119,16 +129,25 @@ package puzzle.title
 			_popupFrame.destroy();
 			_popupFrame = null;
 			
+			_soundManager.stopAll();
 			_soundManager.destroy();
 			_soundManager = null;
+			
+			_resources.destroy();
+			_resources = null;
+			
+			_isDestroy = true;
 			
 			super.onDestroy(event);
 		}
 		
 		protected override function onActivate(event:SceneEvent):void
 		{
+			trace("title activate");
 			if(_soundManager)
 			{
+				_wakeCount++;
+				trace("_wakeCount = " + _wakeCount);
 				_soundManager.wakeAll();
 			}
 			super.onActivate(event);
@@ -136,8 +155,10 @@ package puzzle.title
 		
 		protected override function onDeActivate(event:SceneEvent):void
 		{
+			trace("title deactivate");
 			if(_soundManager)
 			{
+				trace("aa");
 				_soundManager.stopAll();
 			}
 			super.onDeActivate(event);
@@ -289,6 +310,8 @@ package puzzle.title
 			user.addEventListener(UserEvent.LOAD_COMPLETE, completeLoadPicture);
 			user.loadPicture();
 			
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			
 			function completeLoadPicture():void
 			{
 				user.removeEventListener(UserEvent.LOAD_COMPLETE, completeLoadPicture);
@@ -300,6 +323,15 @@ package puzzle.title
 						_facebook.loadFriends();
 						break;
 				}
+			}
+		}
+		
+		private function onKeyDown(event:KeyboardEvent):void
+		{
+			if(event.keyCode == Keyboard.BACK)
+			{
+				event.preventDefault();
+				_dialogExtension.showAlertDialog("종료하시겠습니까?");
 			}
 		}
 		

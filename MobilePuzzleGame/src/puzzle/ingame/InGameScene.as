@@ -1,8 +1,8 @@
 package puzzle.ingame
 {
 	import flash.desktop.NativeApplication;
-	import flash.display.Bitmap;
-	import flash.filesystem.File;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 	
 	import customize.PopupFrame;
 	import customize.Progress;
@@ -14,11 +14,11 @@ package puzzle.ingame
 	
 	import puzzle.ingame.cell.blocks.BlockData;
 	import puzzle.ingame.cell.blocks.BlockType;
-	import puzzle.item.Items;
-	import puzzle.item.fork.Forker;
 	import puzzle.ingame.timer.ComboTimer;
 	import puzzle.ingame.timer.Timer;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
+	import puzzle.item.Items;
+	import puzzle.item.fork.Forker;
 	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.Loading;
 	import puzzle.loading.LoadingEvent;
@@ -27,7 +27,6 @@ package puzzle.ingame
 	import puzzle.shop.Shop;
 	import puzzle.stageSelect.StagePopup;
 	import puzzle.user.User;
-	import puzzle.user.UserEvent;
 	
 	import starling.animation.Juggler;
 	import starling.core.Starling;
@@ -44,9 +43,6 @@ package puzzle.ingame
 	{	
 		private var _stageNumber:uint;
 		
-//		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/ingameSpriteSheet");
-//		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/sound");
-//		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/ingame/resources/image");
 		private var _resources:Resources;
 		private var _dbLoader:DBLoader;
 		
@@ -138,6 +134,8 @@ package puzzle.ingame
 		protected override function onStart(event:SceneEvent):void
 		{
 			//음악 on
+			if(_soundManager)
+				_soundManager.wakeAll();
 		}
 		
 		protected override function onUpdate(event:EnterFrameEvent):void
@@ -149,6 +147,9 @@ package puzzle.ingame
 		protected override function onEnded(event:SceneEvent):void
 		{
 			//음악 off
+			if(_soundManager)
+				_soundManager.stopAll();
+			NativeApplication.nativeApplication.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
 		
 		protected override function onDestroy(event:SceneEvent):void
@@ -224,6 +225,7 @@ package puzzle.ingame
 			_resources.destroy();
 			_resources = null;
 			
+			_soundManager.stopAll();
 			_soundManager.destroy();
 			_soundManager = null;
 			
@@ -439,7 +441,34 @@ package puzzle.ingame
 			
 			readyTime();
 			
-			trace(flash.display.Screen.mainScreen.bounds);
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			
+//			trace(flash.display.Screen.mainScreen.bounds);
+		}
+		
+		private function onKeyDown(event:KeyboardEvent):void
+		{
+			if(event.keyCode == Keyboard.BACK)
+			{
+				event.preventDefault();
+				if(_stagePopupFrame.visible)
+					return;
+				if(_resultPopupFrame.visible)
+					return;
+				
+				if(!_paused)
+				{
+					if(_shopPopupFrame.visible)
+						keepPlay();
+					else
+					{
+						_paused = true;
+						_pausePopupFrame.show();
+					}
+				}
+				else
+					keepPlay();
+			}
 		}
 		
 		private function readyTime():void
@@ -639,7 +668,7 @@ package puzzle.ingame
 		private function onClickedShuffle(event:Event):void
 		{
 			trace("shuffle");
-			if(User.getInstance().search <= 0)
+			if(User.getInstance().shuffle <= 0)
 			{
 				_paused = true;
 				_shopPopup.setItem(event.data as String);

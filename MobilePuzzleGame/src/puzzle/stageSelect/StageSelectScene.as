@@ -1,6 +1,8 @@
 package puzzle.stageSelect
 {
-	import flash.filesystem.File;
+	import flash.desktop.NativeApplication;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 	
 	import customize.PopupFrame;
 	import customize.Progress;
@@ -21,19 +23,16 @@ package puzzle.stageSelect
 	import puzzle.shop.Shop;
 	import puzzle.title.TitleScene;
 	import puzzle.user.User;
+	import puzzle.user.UserInfo;
 	
 	import starling.display.Button;
 	import starling.display.Image;
 	import starling.events.EnterFrameEvent;
 	import starling.events.Event;
 	import starling.text.TextFormat;
-	import puzzle.user.UserInfo;
 
 	public class StageSelectScene extends Scene
 	{	
-//		private var _spriteDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/stageSelectSpriteSheet");
-//		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/sound");
-//		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/stageSelect/resources/image");
 		private var _resources:Resources;
 		private var _dbLoader:DBLoader;
 		
@@ -46,7 +45,6 @@ package puzzle.stageSelect
 		private var _nextButton:Button;
 		private var _prevButton:Button;
 		
-//		private var _heartTimer:HeartTimer;
 		private var _userInfo:UserInfo;
 		
 		private var _defaultTextFormat:TextFormat;
@@ -54,7 +52,6 @@ package puzzle.stageSelect
 		private var _attendPopup:Attend;
 		private var _attendPopupFrame:PopupFrame;
 		
-//		private var _settingButton:Button;
 		private var _settingPopup:SettingPopup;
 		private var _popupFrame:PopupFrame;
 		
@@ -63,6 +60,9 @@ package puzzle.stageSelect
 		
 		private var _shopPopup:Shop;
 		private var _shopPopupFrame:PopupFrame;
+		
+		private var _exitPopup:ExitPopup;
+		private var _exitPopupFrame:PopupFrame;
 		
 		private var _soundManager:SoundManager;
 		
@@ -87,6 +87,7 @@ package puzzle.stageSelect
 			_resources.addSpriteName("ShopSpriteSheet.png");
 			_resources.addSpriteName("StagePopupSpriteSheet.png");
 			_resources.addSpriteName("AttendSpriteSheet.png");
+			_resources.addSpriteName("ExitPopupSpriteSheet.png");
 			_resources.addSoundName("White.mp3");
 			
 			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteResourceLoading);
@@ -110,6 +111,7 @@ package puzzle.stageSelect
 		{
 			if(_soundManager)
 				_soundManager.stopAll();
+			NativeApplication.nativeApplication.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
 		
 		protected override function onDestroy(event:SceneEvent):void
@@ -194,12 +196,24 @@ package puzzle.stageSelect
 			_shopPopupFrame.destroy();
 			_shopPopupFrame = null;
 			
+			_exitPopup.removeEventListener(ExitPopup.CLICKED_OK, onClickedExitOk);
+			_exitPopup.removeEventListener(ExitPopup.CLICKED_CLOSE, onClickedExitClose);
+			_exitPopup.removeFromParent();
+			_exitPopup.destroy();
+			_exitPopup = null;
+			
+			_exitPopupFrame.removeEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			_exitPopupFrame.removeFromParent();
+			_exitPopupFrame.destroy();
+			_exitPopupFrame = null;
+			
 			_userInfo.removeEventListener(UserInfo.CLICKED_PROFILL, onClickedProfill);
 			_userInfo.removeEventListener(UserInfo.CLICKED_FORK, onClickedFork);
 			_userInfo.removeEventListener(UserInfo.CLICKED_SEARCH, onClickedSearch);
 			_userInfo.removeEventListener(UserInfo.CLICKED_SHUFFLE, onClickedShuffle);
 			_userInfo.removeEventListener(UserInfo.CLICKED_HEART, onClickedHeart);
 			_userInfo.removeEventListener(UserInfo.CLICKED_LOGOUT, onClickedLogOut);
+			_userInfo.removeEventListener(UserInfo.CLICKED_ATTEND, onClickedAttend);
 			_userInfo.removeFromParent();
 			_userInfo.destroy();
 			_userInfo = null;
@@ -209,6 +223,7 @@ package puzzle.stageSelect
 			_resources.destroy();
 			_resources = null;
 			
+			_soundManager.stopAll();
 			_soundManager.destroy();
 			_soundManager = null;
 			
@@ -284,7 +299,6 @@ package puzzle.stageSelect
 			_nextButton.x = 502;
 			_nextButton.y = 913;
 			_nextButton.textFormat = _defaultTextFormat;
-			_nextButton.text = "N";
 			_nextButton.addEventListener(Event.TRIGGERED, onClickedNextButton);
 			addChild(_nextButton);
 			
@@ -295,7 +309,6 @@ package puzzle.stageSelect
 			_prevButton.x = 100;
 			_prevButton.y = 913;
 			_prevButton.textFormat = _defaultTextFormat;
-			_prevButton.text = "P";
 			_prevButton.addEventListener(Event.TRIGGERED, onClickedPrevButton);
 			addChild(_prevButton);
 			
@@ -307,6 +320,7 @@ package puzzle.stageSelect
 			_userInfo.addEventListener(UserInfo.CLICKED_SHUFFLE, onClickedShuffle);
 			_userInfo.addEventListener(UserInfo.CLICKED_HEART, onClickedHeart);
 			_userInfo.addEventListener(UserInfo.CLICKED_LOGOUT, onClickedLogOut);
+			_userInfo.addEventListener(UserInfo.CLICKED_ATTEND, onClickedAttend);
 			addChild(_userInfo);
 			
 //			_settingButton = new Button(_resources.getSubTexture("stageSelectSceneSprite0.png", "settingButton"));
@@ -358,6 +372,16 @@ package puzzle.stageSelect
 			_stagePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
 			addChild(_stagePopupFrame);
 			
+			_exitPopup = new ExitPopup(_resources);
+			_exitPopup.addEventListener(ExitPopup.CLICKED_OK, onClickedExitOk);
+			_exitPopup.addEventListener(ExitPopup.CLICKED_CLOSE, onClickedExitClose);
+			_exitPopup.init(400, 200);
+			
+			_exitPopupFrame = new PopupFrame(576, 1024);
+			_exitPopupFrame.setContent(_exitPopup);
+			_exitPopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			addChild(_exitPopupFrame);
+			
 			_progress = new Progress();
 			_progress.init(100, 100);
 			
@@ -406,6 +430,7 @@ package puzzle.stageSelect
 				attend();
 			}
 			User.getInstance().pullUserData();
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
 		
 		private function attend():void
@@ -437,6 +462,49 @@ package puzzle.stageSelect
 			_popupFrame.hide();
 		}
 		
+		private function onKeyDown(event:KeyboardEvent):void
+		{
+			trace("aa");
+			if(event.keyCode == Keyboard.BACK)
+			{
+				event.preventDefault();
+				if(!_exitPopupFrame.visible)
+				{
+					if(_stagePopupFrame.visible)
+						_stagePopupFrame.hide();
+					else if(_popupFrame.visible)
+						_popupFrame.hide();
+					else if(_attendPopupFrame.visible)
+						_attendPopupFrame.hide();
+					else if(_shopPopupFrame.visible)
+						_shopPopupFrame.hide();
+					else
+					{
+						_exitPopup.setTitleMessage("종료 하시겠습니까??");
+						_exitPopup.logOut = false;
+						_exitPopupFrame.show();
+					}
+				}
+				else
+					_exitPopupFrame.hide();
+			}
+		}
+		
+		private function onClickedExitOk(event:Event):void
+		{
+			if(event.data as Boolean)
+			{
+				User.getInstance().pullUserData(completePullUserData);
+			}
+			else
+				NativeApplication.nativeApplication.exit();
+		}
+		
+		private function onClickedExitClose(event:Event):void
+		{
+			_exitPopupFrame.hide();
+		}
+		
 		private function onClickedCover(event:Event):void
 		{
 //			_popupFrame.visible = false;
@@ -446,15 +514,16 @@ package puzzle.stageSelect
 				_popupFrame.hide();
 			else if(event.currentTarget == _attendPopupFrame)
 				_attendPopupFrame.hide();
-			else if(event.currentTarget == _shopPopup)
+			else if(event.currentTarget == _shopPopupFrame)
 				_shopPopupFrame.hide();
+			else if(event.currentTarget == _exitPopupFrame)
+				_exitPopupFrame.hide();
 		}
 		
 		private function onClickedAttenPopup(event:Event):void
 		{
 			_attendPopupFrame.hide();
 		}
-
 		
 		private function onClickedProfill(event:Event):void
 		{
@@ -464,14 +533,17 @@ package puzzle.stageSelect
 		
 		private function onClickedLogOut(event:Event):void
 		{
-			User.getInstance().pullUserData(completePullUserData);
+			_exitPopup.setTitleMessage("로그아웃 하시겠습니까??");
+			_exitPopup.logOut = true;
+			_exitPopupFrame.show();
 		}
 		
 		private function completePullUserData():void
 		{
 			User.getInstance().logout();
-			SceneManager.current.addScene(TitleScene, "title");
-			SceneManager.current.switchScene("title");
+			NativeApplication.nativeApplication.exit();
+//			SceneManager.current.addScene(TitleScene, "title");
+//			SceneManager.current.switchScene("title");
 		}
 		
 		private function onClickedFork(event:Event):void
@@ -504,6 +576,11 @@ package puzzle.stageSelect
 //			User.getInstance().heart += 1;
 			_shopPopup.setItem(event.data as String);
 			_shopPopupFrame.show();
+		}
+		
+		private function onClickedAttend(event:Event):void
+		{
+			_attendPopupFrame.show();
 		}
 		
 		private function onClickedStageButton(event:Event):void

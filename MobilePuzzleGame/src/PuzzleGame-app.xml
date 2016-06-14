@@ -93,7 +93,7 @@
 
         <!-- The aspect ratio of the app ("portrait" or "landscape" or "any"). Optional. Mobile only. Default is the natural orientation of the device -->
 
-        <!-- <aspectRatio></aspectRatio> -->
+        <aspectRatio>portrait</aspectRatio>
 
         <!-- Whether the app will begin auto-orienting on launch. Optional. Mobile only. Default false -->
 
@@ -139,8 +139,8 @@
 
 	<!-- The icon the system uses for the application. For at least one resolution,
 	specify the path to a PNG file included in the AIR package. Optional. -->
-	<!-- <icon>
-		<image16x16></image16x16>
+	<icon>
+	<!-- <image16x16></image16x16>
 		<image29x29></image29x29>
 		<image32x32></image32x32>
 		<image36x36></image36x36>
@@ -166,11 +166,11 @@
 		<image152x152></image152x152>
         <image167x167></image167x167>
 		<image180x180></image180x180>
-		<image192x192></image192x192>
-		<image512x512></image512x512>
-		<image732x412></image732x412>
-		<image1024x1024></image1024x1024>
-	</icon> -->
+		<image192x192></image192x192>-->
+		<image512x512>PuzzleIcon.png</image512x512>
+	<!-- <image732x412></image732x412>
+		<image1024x1024></image1024x1024> -->
+	</icon>
 
 	<!-- Whether the application handles the update when a user double-clicks an update version
 	of the AIR file (true), or the default AIR application installer handles the update (false).
@@ -306,9 +306,10 @@
 							<category android:name="android.intent.category.LAUNCHER"/>
 						</intent-filter>
 					</activity>
-				
-					<activity android:name="com.facebook.extension.LoginActivity"/>
-					<activity android:name="com.facebook.FacebookActivity"/>
+					
+					<activity android:name="com.facebook.extension.LogoutActivity" android:theme="@android:style/Theme.Translucent"/>
+					<activity android:name="com.facebook.extension.LoginActivity" android:theme="@android:style/Theme.Translucent"/>
+					<activity android:name="com.facebook.FacebookActivity" android:theme="@android:style/Theme.Translucent"/>
 					
 					<service android:name="com.push.LocalNotificationService"/>
 					<receiver android:name="com.push.AlarmReceive" android:process=":remote"></receiver>
@@ -330,6 +331,9 @@
 <extensions>
         <extensionID>com.facebook.extension.FacebookExtension</extensionID>
     <extensionID>com.distriqt.AndroidSupport</extensionID>
-        <extensionID>com.push.PushExtension</extensionID>
+        
+    <extensionID>com.push.PushExtension</extensionID>
+    <extensionID>com.dialog.DialogExtension</extensionID>
+    <extensionID>com.lpesign.ToastExtension</extensionID>
     </extensions>
 </application>

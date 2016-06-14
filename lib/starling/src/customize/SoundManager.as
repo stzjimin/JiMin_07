@@ -11,6 +11,8 @@ package customize
 		private var _isBgmActive:Boolean;
 		private var _isEffectActive:Boolean;
 		
+		private var _isStopAll:Boolean;
+		
 		public function SoundManager()
 		{
 			_sounds = new Dictionary();
@@ -106,6 +108,9 @@ package customize
 		
 		public function stopAll():void
 		{
+			if(_isStopAll)
+				return;
+			
 //			SoundMixer.stopAll();
 			
 			var sound:Sound;
@@ -118,10 +123,14 @@ package customize
 					sound.channel.stop();
 				}
 			}
+			_isStopAll = true;
 		}
 		
 		public function wakeAll():void
 		{
+			if(!_isStopAll)
+				return;
+			
 			var sound:Sound;
 			for(var key:String in _sounds)
 			{
@@ -129,6 +138,8 @@ package customize
 				if(sound.isPlay)
 					sound.wake();
 			}
+			
+			_isStopAll = false;
 		}
 
 		public function get isBgmActive():Boolean

@@ -1,5 +1,7 @@
 package puzzle.shop
 {
+	import com.lpesign.ToastExtension;
+	
 	import flash.display.Bitmap;
 	
 	import puzzle.item.ItemType;
@@ -28,12 +30,14 @@ package puzzle.shop
 		private var _closeButton:Button;
 		
 		private var _itemType:String;
+		private var _toastExtenstion:ToastExtension;
 		
 		private var _resources:Resources;
 		
 		public function Shop(resources:Resources)
 		{
 			_resources = resources;
+			_toastExtenstion = new ToastExtension();
 			
 			super();
 		}
@@ -70,6 +74,8 @@ package puzzle.shop
 			addChild(_item);
 			
 			_buyButton = new Button(_resources.getSubTexture("ShopSpriteSheet.png", "popupTitle"), "구매");
+			_buyButton.textFormat.bold = true;
+			_buyButton.textFormat.size = 20;
 			_buyButton.width = width * 0.4;
 			_buyButton.height = height * 0.2;
 			_buyButton.alignPivot(Align.LEFT, Align.TOP);
@@ -79,6 +85,8 @@ package puzzle.shop
 			addChild(_buyButton);
 			
 			_closeButton = new Button(_resources.getSubTexture("ShopSpriteSheet.png", "popupTitle"), "닫기");
+			_closeButton.textFormat.bold = true;
+			_closeButton.textFormat.size = 20;
 			_closeButton.width = width * 0.4;
 			_closeButton.height = height * 0.2;
 			_closeButton.alignPivot(Align.LEFT, Align.TOP);
@@ -146,15 +154,19 @@ package puzzle.shop
 			{
 				case ItemType.FORK :
 					User.getInstance().fork += 1;
+					_toastExtenstion.toast("포크를 구매했습니다!!");
 					break;
 				case ItemType.SEARCH :
 					User.getInstance().search += 1;
+					_toastExtenstion.toast("힌트를 구매했습니다!!");
 					break;
 				case ItemType.SHUFFLE :
 					User.getInstance().shuffle += 1;
+					_toastExtenstion.toast("셔플을 구매했습니다!!");
 					break;
 				case ItemType.HEART :
 					User.getInstance().heart += 1;
+					_toastExtenstion.toast("하트를 구매했습니다!!");
 					break;
 			}
 			

@@ -67,6 +67,7 @@ package customize
 		 */		
 		protected function onDestroy(event:SceneEvent):void
 		{
+			trace("scene destroy");
 			removeEventListener(SceneEvent.CREATE, onCreate);
 			removeEventListener(SceneEvent.START, onStart);
 			removeEventListener(EnterFrameEvent.ENTER_FRAME, onUpdate);
@@ -90,7 +91,7 @@ package customize
 		}
 		
 		/**
-		 * 게임이 디엑티브될대 호출됩니다. 
+		 * 게임이 디엑티브될때 호출됩니다. 
 		 * @param event
 		 * 
 		 */		

@@ -137,17 +137,19 @@ package customize
 		private function onActivate(event:SceneEvent):void
 		{
 			trace("activate");
+			trace("_currentScene.name = " + _currentScene.name);
 			_currentScene.dispatchEvent(new SceneEvent(SceneEvent.ACTIVATE));
-			if(getChildIndex(_currentScene) < 0)
-				addChild(_currentScene);
+//			if(getChildIndex(_currentScene) < 0)
+//				addChild(_currentScene);
 		}
 		
 		private function onDeActivate(event:SceneEvent):void
 		{
 			trace("deactivate");
+			trace("_currentScene.name = " + _currentScene.name);
 			_currentScene.dispatchEvent(new SceneEvent(SceneEvent.DEACTIVATE));
-			if(getChildIndex(_currentScene) >= 0)
-				removeChild(_currentScene);
+//			if(getChildIndex(_currentScene) >= 0)
+//				removeChild(_currentScene);
 		}
 
 		public static function get current():SceneManager

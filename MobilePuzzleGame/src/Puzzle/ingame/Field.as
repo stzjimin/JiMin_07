@@ -33,6 +33,7 @@ package puzzle.ingame
 		public static const PADDING:uint = 18;
 		
 		public static const PANG:String = "pang";
+		public static const GAME_FAILED:String = "gameFailed";
 		
 		private var _resources:Resources;
 		private var _juggler:Juggler;
@@ -57,6 +58,9 @@ package puzzle.ingame
 		
 		private var _isFork:Boolean;
 		private var _forker:Forker;
+		
+		private var _shuffleCount:int;
+		private var _blockShuffleMax:int;
 		
 		public function Field(resources:Resources)
 		{
@@ -151,6 +155,8 @@ package puzzle.ingame
 		
 		public function shuffle():void
 		{
+			_shuffleCount = 0;
+			_blockShuffleMax = factorial(_possibleChecker.blockCount);
 			_shuffler.shuffle(_cells);
 		}
 		
@@ -322,10 +328,29 @@ package puzzle.ingame
 		
 		private function onCompleteShuffle(event:Event):void
 		{
-//			_possibleChecker.checkPossibleCell(_cells);
-			checkPossibleCell();
+			_possibleChecker.init();
+			_possibleChecker.checkPossibleCell(_cells);
+			//			checkPossibleCell();
 			if(_possibleChecker.blockCount >= 2 && _possibleChecker.possibleCount == 0)
-				shuffle();
+			{
+				_shuffleCount++;
+				if(_shuffleCount <= _blockShuffleMax)
+					_shuffler.shuffle(_cells);
+				else
+				{
+					dispatchEvent(new Event(Field.GAME_FAILED));
+					trace("게임 핵 못함");
+				}
+			}
+		}
+		
+		private function factorial(number:int):Number 
+		{ 
+			if (number < 2) 
+			{
+				return 1;
+			}
+			return number*factorial(number-1);
 		}
 		
 		private function onSame(event:Event):void

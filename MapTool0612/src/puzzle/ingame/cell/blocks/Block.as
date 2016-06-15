@@ -1,5 +1,7 @@
 package puzzle.ingame.cell.blocks
 {	
+	import flash.display.Bitmap;
+	
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
 	import puzzle.loading.Resources;
@@ -15,6 +17,9 @@ package puzzle.ingame.cell.blocks
 
 	public class Block extends DisplayObjectContainer implements IAnimatable
 	{	
+		[Embed(source="wall.png")]
+		private const wallImage:Class;
+		
 		public static const PADDING_SIZE:Number = 5;
 		
 		private var _resources:Resources;
@@ -51,31 +56,38 @@ package puzzle.ingame.cell.blocks
 			{
 				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "pinky");
 				_type = BlockType.PINKY;
-				this.name = "pink";
+				this.name = BlockType.PINKY;
 			}
 			else if(type == BlockType.BLUE)
 			{
 				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue");
 				_type = BlockType.BLUE;
-				this.name = "blue";
+				this.name = BlockType.BLUE;
 			}
 			else if(type == BlockType.MICKY)
 			{
 				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky");
 				_type = BlockType.MICKY;
-				this.name = "micky";
+				this.name = BlockType.MICKY;
 			}
 			else if(type == BlockType.LUCY)
 			{
 				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy");
 				_type = BlockType.LUCY;
-				this.name = "lucy";
+				this.name = BlockType.LUCY;
 			}
 			else if(type == BlockType.MONGYI)
 			{
 				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi");
 				_type = BlockType.MONGYI;
-				this.name = "mongyi";
+				this.name = BlockType.MONGYI;
+			}
+			else if(type == BlockType.WALL)
+			{
+				_blockTexture = Texture.fromBitmap(new wallImage() as Bitmap);
+				_type = BlockType.WALL;
+				this.name = BlockType.WALL;
+				this.touchable = false;
 			}
 			
 			_blockImage = new Image(_blockTexture);

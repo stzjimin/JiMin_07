@@ -8,6 +8,8 @@ package
 	import flash.display.NativeWindowType;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.filesystem.File;
+	import flash.net.FileFilter;
 	
 	import puzzle.ingame.Field;
 	import puzzle.ingame.cell.Cell;
@@ -79,6 +81,15 @@ package
 		private var _block4:Button;
 		private var _block5:Button;
 		private var _wall:Button;
+		private var _removeBlockButton:Button;
+		
+		private var _block1Texture:Texture;
+		private var _block2Texture:Texture;
+		private var _block3Texture:Texture;
+		private var _block4Texture:Texture;
+		private var _block5Texture:Texture;
+		private var _wallTexture:Texture;
+		private var _emptyBlockTexture:Texture;
 		
 		private var _countTime:int;
 		private var _countTimeText:TextField;
@@ -133,7 +144,7 @@ package
 		
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
-			_countTime = 0;
+			_countTime = 10;
 			
 			_backGround = new Image(Texture.fromBitmap(new ingameBackGroundImage() as Bitmap));
 			_backGround.width = 800;
@@ -141,11 +152,13 @@ package
 			_backGround.addEventListener(TouchEvent.TOUCH, onTouch);
 			addChild(_backGround);
 			
+			_emptyBlockTexture = Texture.fromBitmap(new backGroundImage() as Bitmap);
+			
 			_cells = new Vector.<MapToolCell>();
 			var columnNum:int = 0;
 			for(var i:int = 0; i < COLUMN_NUM*ROW_NUM; i++)
 			{
-				var cell:MapToolCell = new MapToolCell(Texture.fromBitmap(new backGroundImage() as Bitmap), Cell.WIDTH_SIZE, Cell.HEIGHT_SIZE);
+				var cell:MapToolCell = new MapToolCell(_emptyBlockTexture, Cell.WIDTH_SIZE, Cell.HEIGHT_SIZE);
 				var rowNum:int = i%ROW_NUM;
 				_cells.push(cell);
 				//				cell.addEventListener(PossibleCheckerEventType.ADD_PREV, onAddPrev);
@@ -174,7 +187,14 @@ package
 					columnNum++;
 			}
 			
-			_block1 = new Button(Texture.fromBitmap(new block1Image() as Bitmap));
+			_block1Texture = Texture.fromBitmap(new block1Image() as Bitmap)
+			_block2Texture = Texture.fromBitmap(new block2Image() as Bitmap)
+			_block3Texture = Texture.fromBitmap(new block3Image() as Bitmap)
+			_block4Texture = Texture.fromBitmap(new block4Image() as Bitmap)
+			_block5Texture = Texture.fromBitmap(new block5Image() as Bitmap)
+			_wallTexture = Texture.fromBitmap(new wallImage() as Bitmap)
+			
+			_block1 = new Button(_block1Texture);
 			_block1.name = BlockType.BLUE;
 			_block1.width = Cell.WIDTH_SIZE;
 			_block1.height = Cell.HEIGHT_SIZE;
@@ -183,7 +203,7 @@ package
 			_block1.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block1);
 			
-			_block2 = new Button(Texture.fromBitmap(new block2Image() as Bitmap));
+			_block2 = new Button(_block2Texture);
 			_block2.name = BlockType.LUCY;
 			_block2.width = Cell.WIDTH_SIZE;
 			_block2.height = Cell.HEIGHT_SIZE;
@@ -192,7 +212,7 @@ package
 			_block2.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block2);
 			
-			_block3 = new Button(Texture.fromBitmap(new block3Image() as Bitmap));
+			_block3 = new Button(_block3Texture);
 			_block3.name = BlockType.MICKY;
 			_block3.width = Cell.WIDTH_SIZE;
 			_block3.height = Cell.HEIGHT_SIZE;
@@ -201,7 +221,7 @@ package
 			_block3.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block3);
 			
-			_block4 = new Button(Texture.fromBitmap(new block4Image() as Bitmap));
+			_block4 = new Button(_block4Texture);
 			_block4.name = BlockType.MONGYI;
 			_block4.width = Cell.WIDTH_SIZE;
 			_block4.height = Cell.HEIGHT_SIZE;
@@ -210,7 +230,7 @@ package
 			_block4.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block4);
 			
-			_block5 = new Button(Texture.fromBitmap(new block5Image() as Bitmap));
+			_block5 = new Button(_block5Texture);
 			_block5.name = BlockType.PINKY;
 			_block5.width = Cell.WIDTH_SIZE;
 			_block5.height = Cell.HEIGHT_SIZE;
@@ -219,7 +239,7 @@ package
 			_block5.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block5);
 			
-			_wall = new Button(Texture.fromBitmap(new wallImage() as Bitmap));
+			_wall = new Button(_wallTexture);
 			_wall.name = BlockType.WALL;
 			_wall.width = Cell.WIDTH_SIZE;
 			_wall.height = Cell.HEIGHT_SIZE;
@@ -228,6 +248,15 @@ package
 			_wall.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_wall);
 			
+			_removeBlockButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap));
+			_removeBlockButton.name = Main.NONE;
+			_removeBlockButton.width = Cell.WIDTH_SIZE;
+			_removeBlockButton.height = Cell.HEIGHT_SIZE;
+			_removeBlockButton.x = _block1.x + _block1.width + 20;
+			_removeBlockButton.y = _block1.y;
+			_removeBlockButton.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_removeBlockButton);
+				
 			_countUpButton = new Button(Texture.fromBitmap(new upArrowImage() as Bitmap));
 			_countUpButton.width = 50;
 			_countUpButton.height = 50;
@@ -262,6 +291,26 @@ package
 			_testButton.y = 870;
 			_testButton.addEventListener(Event.TRIGGERED, onClickdedTestButton);
 			addChild(_testButton);
+			
+			_saveButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap), "SAVE");
+			_saveButton.width = 80;
+			_saveButton.height = 60;
+			_saveButton.textFormat.bold = true;
+			_saveButton.textFormat.size = 20;
+			_saveButton.x = _testButton.x + _testButton.width + 20;
+			_saveButton.y = _testButton.y;
+			_saveButton.addEventListener(Event.TRIGGERED, onClickdedSaveButton);
+			addChild(_saveButton);
+			
+			_loadButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap), "LOAD");
+			_loadButton.width = 80;
+			_loadButton.height = 60;
+			_loadButton.textFormat.bold = true;
+			_loadButton.textFormat.size = 20;
+			_loadButton.x = _saveButton.x + _saveButton.width + 20;
+			_loadButton.y = _saveButton.y;
+			_loadButton.addEventListener(Event.TRIGGERED, onClickdedLoadButton);
+			addChild(_loadButton);
 		}
 		
 		private function onClickedBlock(event:Event):void
@@ -309,7 +358,75 @@ package
 		
 		private function onClickdedTestButton(event:Event):void
 		{
-			createNativeWindow(parseData());
+			var jsonString:String = parseData();
+			if(jsonString == null)
+				trace("블럭잉벗음");
+			else
+				createNativeWindow(jsonString);
+		}
+		
+		private function onClickdedSaveButton(event:Event):void
+		{
+			var jsonString:String = parseData();
+			
+			var ioManager:FileIOManager = new FileIOManager();
+			ioManager.saveFile("저장 위치 선택", jsonString);
+		}
+		
+		private function onClickdedLoadButton(event:Event):void
+		{
+			var ioManager:FileIOManager = new FileIOManager();
+			ioManager.addEventListener(FileEvent.LOAD_COMPLETE, onCompleteLoad);
+			ioManager.selectFile("저장 위치 선택", new FileFilter("JSON파일", "*.json"));
+			
+			function onCompleteLoad(event:FileEvent):void
+			{
+				trace(event.data as String);
+				var mapData:Object = JSON.parse(event.data as String);
+				_countTime = mapData.countTime;
+				trace(mapData.countTime);
+				swapCountTimeText();
+				
+				var blockData:Object = mapData.blockData;
+				var index:int;
+				var blockTexture:Texture;
+				for(var i:int = 0; i < blockData.length; i++)
+				{
+					index = (blockData[i].row*ROW_NUM) + (blockData[i].column);
+					
+					var type:String = blockData[i].type;
+					if(type == BlockType.PINKY)
+					{
+						_cells[index].setBackGroundTexture(_block1Texture);
+						_cells[index].name = BlockType.PINKY;
+					}
+					else if(type == BlockType.BLUE)
+					{
+						_cells[index].setBackGroundTexture(_block2Texture);
+						_cells[index].name = BlockType.BLUE;
+					}
+					else if(type == BlockType.MICKY)
+					{
+						_cells[index].setBackGroundTexture(_block3Texture);
+						_cells[index].name = BlockType.MICKY;
+					}
+					else if(type == BlockType.LUCY)
+					{
+						_cells[index].setBackGroundTexture(_block4Texture);
+						_cells[index].name = BlockType.LUCY;
+					}
+					else if(type == BlockType.MONGYI)
+					{
+						_cells[index].setBackGroundTexture(_block5Texture);
+						_cells[index].name = BlockType.MONGYI;
+					}
+					else if(type == BlockType.WALL)
+					{
+						_cells[index].setBackGroundTexture(_wallTexture);
+						_cells[index].name = BlockType.WALL;
+					}
+				}
+			}
 		}
 		
 		private function parseData():String
@@ -335,6 +452,9 @@ package
 			block = null;
 			blockData.length = length;
 			
+			if(blockData.length == 0)
+				return null;
+			
 			mapData.blockData = blockData;
 			
 			var jsonString:String = JSON.stringify(mapData);
@@ -345,15 +465,20 @@ package
 		private function onClickedUpButton(event:Event):void
 		{
 			_countTime += 10;
-			_countTimeText.text = "제한시간 : " + _countTime + "초";
+			swapCountTimeText();
 		}
 		
 		private function onClickedDownButton(event:Event):void
 		{
 			_countTime -= 10;
-			if(_countTime < 0)
-				_countTime = 0;
+			if(_countTime < 10)
+				_countTime = 10;
 			
+			swapCountTimeText();
+		}
+		
+		private function swapCountTimeText():void
+		{
 			_countTimeText.text = "제한시간 : " + _countTime + "초";
 		}
 		

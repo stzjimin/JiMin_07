@@ -12,6 +12,8 @@ package puzzle.loading.loader
 
 	public class DBLoader extends EventDispatcher
 	{
+		public static const SEVER_URL:String = "http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com";
+		
 		private var _user:User;
 		
 		public function DBLoader(user:User)
@@ -36,7 +38,7 @@ package puzzle.loading.loader
 				if(result == 0)
 				{
 					trace(_user.playdate);
-					urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/insertUser.php?id="+_user.id+"&name="+_user.name+"&email="+_user.email);
+					urlRequest = new URLRequest(SEVER_URL + "/insertUser.php?id="+_user.id+"&name="+_user.name+"&email="+_user.email);
 					dbLoader = new URLLoader();
 					dbLoader.addEventListener(Event.COMPLETE, onCompleteInsertUser);
 					dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildInsertUser);
@@ -61,7 +63,7 @@ package puzzle.loading.loader
 				}
 				else
 				{
-					urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/selectUser.php?id="+_user.id);
+					urlRequest = new URLRequest(SEVER_URL + "/selectUser.php?id="+_user.id);
 					dbLoader = new URLLoader();
 					dbLoader.addEventListener(Event.COMPLETE, onCompleteSelectUser);
 					dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildSelectUser);
@@ -140,7 +142,7 @@ package puzzle.loading.loader
 			
 			trace("setString = " + setString);
 			
-			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/updateUser.php?id=" + _user.id + "&set="+setString);
+			urlRequest = new URLRequest(SEVER_URL + "/updateUser.php?id=" + _user.id + "&set="+setString);
 			dbLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCompleteUpdateUser);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateUser);
@@ -168,7 +170,7 @@ package puzzle.loading.loader
 			var urlRequest:URLRequest;
 			var dbLoader:URLLoader;
 			
-			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/selectScore.php?stage="+stageNumber.toString());
+			urlRequest = new URLRequest(SEVER_URL + "/selectScore.php?stage="+stageNumber.toString());
 			dbLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCompleteSelectScore);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
@@ -214,7 +216,7 @@ package puzzle.loading.loader
 			var urlRequest:URLRequest;
 			var dbLoader:URLLoader;
 			
-			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/selectUserScore.php?id="+_user.id+"&stage="+stage.toString());
+			urlRequest = new URLRequest(SEVER_URL + "/selectUserScore.php?id="+_user.id+"&stage="+stage.toString());
 			dbLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCompleteSelectScore);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildSelectScore);
@@ -256,7 +258,7 @@ package puzzle.loading.loader
 			var urlRequest:URLRequest;
 			var dbLoader:URLLoader;
 			
-			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/insertScore.php?id="+_user.id+"&stage="+stageNumber.toString()+"&score="+score.toString());
+			urlRequest = new URLRequest(SEVER_URL + "/insertScore.php?id="+_user.id+"&stage="+stageNumber.toString()+"&score="+score.toString());
 			dbLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCompleteInsertScore);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildInsertScore);
@@ -284,7 +286,7 @@ package puzzle.loading.loader
 			var urlRequest:URLRequest;
 			var dbLoader:URLLoader;
 			
-			urlRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/updateScore.php?id="+_user.id+"&stage="+stageNumber.toString()+"&target=score"+"&value="+score.toString());
+			urlRequest = new URLRequest(SEVER_URL + "/updateScore.php?id="+_user.id+"&stage="+stageNumber.toString()+"&target=score"+"&value="+score.toString());
 			dbLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCompleteUpdateScore);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildUpdateScore);
@@ -309,7 +311,7 @@ package puzzle.loading.loader
 		
 		private function checkID(resultFunction:Function):void
 		{
-			var urlRequest:URLRequest = new URLRequest("http://ec2-52-78-35-135.ap-northeast-2.compute.amazonaws.com/checkID.php?id="+_user.id);
+			var urlRequest:URLRequest = new URLRequest(SEVER_URL + "/checkID.php?id="+_user.id);
 			var dbLoader:URLLoader = new URLLoader();
 			dbLoader.addEventListener(Event.COMPLETE, onCheckUserId);
 			dbLoader.addEventListener(IOErrorEvent.IO_ERROR, onFaildCheckUserId);

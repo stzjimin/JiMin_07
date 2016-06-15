@@ -4,6 +4,7 @@ package puzzle.ingame.util.possibleCheck
 	
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.cell.NeigborType;
+	import puzzle.ingame.cell.blocks.BlockType;
 	
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -115,12 +116,12 @@ package puzzle.ingame.util.possibleCheck
 			_blockCount = 0;
 			for(var i:int = 0; i < cells.length-1; i++)
 			{
-				if(cells[i].block == null)
+				if(cells[i].block == null || cells[i].block.type == BlockType.WALL)
 					continue;	//블록이 없는 경우는 검사할 필요가 없으니 제외
 				_blockCount++;
 				for(var j:int = i+1; j < cells.length; j++)
 				{
-					if(cells[j].block == null)
+					if(cells[j].block == null || cells[i].block.type == BlockType.WALL)
 						continue;	//블록이 없는 경우는 검사할 필요가 없으니 제외
 					
 					if(cells[i].block.type == cells[j].block.type)

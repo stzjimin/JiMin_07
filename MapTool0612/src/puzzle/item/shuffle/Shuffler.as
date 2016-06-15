@@ -2,6 +2,7 @@ package puzzle.item.shuffle
 {
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.cell.blocks.Block;
+	import puzzle.ingame.cell.blocks.BlockType;
 	
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -34,7 +35,7 @@ package puzzle.item.shuffle
 		{
 			for(var i:int = 0; i < cells.length; i++)
 			{
-				if(cells[i].block == null)
+				if(cells[i].block == null || cells[i].block.type == BlockType.WALL)
 					continue;
 				
 				_isBlockCells.push(cells[i]);

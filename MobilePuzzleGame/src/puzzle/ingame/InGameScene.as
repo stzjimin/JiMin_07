@@ -12,6 +12,7 @@ package puzzle.ingame
 	import customize.Sound;
 	import customize.SoundManager;
 	
+	import puzzle.StagePopup;
 	import puzzle.ingame.cell.blocks.BlockData;
 	import puzzle.ingame.cell.blocks.BlockType;
 	import puzzle.ingame.timer.ComboTimer;
@@ -24,6 +25,7 @@ package puzzle.ingame
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	import puzzle.loading.loader.DBLoader;
+	import puzzle.loading.loader.MapLoader;
 	import puzzle.shop.Shop;
 	import puzzle.stageSelect.StagePopup;
 	import puzzle.user.User;
@@ -41,6 +43,8 @@ package puzzle.ingame
 	
 	public class InGameScene extends Scene
 	{	
+		private static var _testMapData:String;
+		
 		private var _stageNumber:uint;
 		
 		private var _resources:Resources;
@@ -61,7 +65,7 @@ package puzzle.ingame
 		
 		private var _paused:Boolean;
 		private var _timer:Timer;
-		
+		private var _countTime:int;
 		private var _comboTimer:ComboTimer;
 		
 		private var _items:Items;
@@ -166,6 +170,7 @@ package puzzle.ingame
 			_field.removeEventListener(CheckEvent.CHECKED_COMPLETE, onCompletePossibleCheck);
 			_field.removeEventListener(Forker.GET_FORK, onGetFork);
 			_field.removeEventListener(Field.PANG, onCompletePang);
+			_field.removeEventListener(Field.GAME_FAILED, onFailedGame);
 			_field.removeFromParent();
 			_field.destroy();
 			_field = null;
@@ -266,6 +271,56 @@ package puzzle.ingame
 		
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
+			_blockDatas = new Vector.<BlockData>();
+			if(_stageNumber == 0)
+			{
+				trace(_testMapData);
+				var mapData:Object = JSON.parse(_testMapData);
+				_countTime = mapData.countTime;
+				trace(_countTime);
+				var blockDatas:Object = mapData.blockData;
+				for(var i:int = 0; i < blockDatas.length; i++)
+					_blockDatas.push(new BlockData(blockDatas[i].row, blockDatas[i].column, blockDatas[i].type));
+				createGame();
+			}
+			else
+			{
+				var mapLoader:MapLoader = new MapLoader(_stageNumber);
+				mapLoader.addEventListener(LoadingEvent.COMPLETE, onCompleteMapLoading);
+				mapLoader.addEventListener(LoadingEvent.FAILED, onFailedMapLoading);
+				mapLoader.load();
+			}
+		}
+		
+		private function onCompleteMapLoading(event:LoadingEvent):void
+		{
+			event.currentTarget.removeEventListener(LoadingEvent.COMPLETE, onCompleteMapLoading);
+			event.currentTarget.removeEventListener(LoadingEvent.FAILED, onFailedMapLoading);
+			
+			var jsonString:String = event.data as String;
+			var mapData:Object = JSON.parse(jsonString);
+			_countTime = mapData.countTime;
+			trace(_countTime);
+			var blockDatas:Object = mapData.blockData;
+			for(var i:int = 0; i < blockDatas.length; i++)
+				_blockDatas.push(new BlockData(blockDatas[i].row, blockDatas[i].column, blockDatas[i].type));
+			createGame();
+		}
+		
+		private function onFailedMapLoading(event:LoadingEvent):void
+		{
+			event.currentTarget.removeEventListener(LoadingEvent.COMPLETE, onCompleteMapLoading);
+			event.currentTarget.removeEventListener(LoadingEvent.FAILED, onFailedMapLoading);
+			
+			trace(event.data);
+			var mapLoader:MapLoader = new MapLoader(_stageNumber);
+			mapLoader.addEventListener(LoadingEvent.COMPLETE, onCompleteMapLoading);
+			mapLoader.addEventListener(LoadingEvent.FAILED, onFailedMapLoading);
+			mapLoader.load();
+		}
+		
+		private function createGame():void
+		{
 			Loading.getInstance().completeLoading();
 			
 			_soundManager.addSound("MilkOut.mp3", _resources.getSoundFile("MilkOut.mp3"));
@@ -276,7 +331,7 @@ package puzzle.ingame
 			_soundManager.addSound("searchSound.mp3", _resources.getSoundFile("searchSound.mp3"));
 			_soundManager.addSound("shuffleSound2.mp3", _resources.getSoundFile("shuffleSound2.mp3"));
 			_soundManager.play("MilkOut.mp3", Sound.INFINITE);
-
+			
 			_score = 0;
 			
 			_backGround = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "IngameBackGround"));
@@ -310,8 +365,8 @@ package puzzle.ingame
 			
 			_timer = new Timer(_resources);
 			_timer.init(70, 10, 450, 50);
+			_timer.startCount(_countTime);
 			_timer.addEventListener(Timer.TIME_OVER, onTimeOver);
-			_timer.startCount(60);
 			addChild(_timer);
 			
 			_comboTimer = new ComboTimer(_resources);
@@ -328,37 +383,6 @@ package puzzle.ingame
 			_items.addEventListener(Items.CLICKED_SHUFFLE, onClickedShuffle);
 			addChild(_items);
 			
-			_blockDatas = new Vector.<BlockData>();
-			_blockDatas.push(new BlockData(0, 0, BlockType.BLUE));
-			_blockDatas.push(new BlockData(11, 11, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 1, BlockType.MICKY));
-			_blockDatas.push(new BlockData(2, 1, BlockType.MICKY));
-			_blockDatas.push(new BlockData(6, 6, BlockType.MICKY));
-			_blockDatas.push(new BlockData(2, 2, BlockType.PINKY));
-			_blockDatas.push(new BlockData(4, 3, BlockType.PINKY));
-			_blockDatas.push(new BlockData(6, 4, BlockType.MICKY));
-			_blockDatas.push(new BlockData(2, 5, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 4, BlockType.MICKY));
-			_blockDatas.push(new BlockData(1, 5, BlockType.MICKY));
-			_blockDatas.push(new BlockData(1, 2, BlockType.BLUE));
-			_blockDatas.push(new BlockData(5, 1, BlockType.BLUE));
-			_blockDatas.push(new BlockData(4, 2, BlockType.PINKY));
-			_blockDatas.push(new BlockData(3, 6, BlockType.PINKY));
-			_blockDatas.push(new BlockData(10, 10, BlockType.MONGYI));
-			_blockDatas.push(new BlockData(10, 3, BlockType.MONGYI));
-			_blockDatas.push(new BlockData(7, 10, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 1, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 2, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 8, BlockType.LUCY));
-			_blockDatas.push(new BlockData(8, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(3, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 9, BlockType.LUCY));
-			_blockDatas.push(new BlockData(9, 3, BlockType.LUCY));
-			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
-			
 			_field = new Field(_resources);
 			//			_field.x = 18;
 			_field.y = 100;
@@ -366,6 +390,7 @@ package puzzle.ingame
 			_field.addEventListener(CheckEvent.CHECKED_COMPLETE, onCompletePossibleCheck);
 			_field.addEventListener(Forker.GET_FORK, onGetFork);
 			_field.addEventListener(Field.PANG, onCompletePang);
+			_field.addEventListener(Field.GAME_FAILED, onFailedGame);
 			addChild(_field);
 			
 			_pauseButton = new Button(_resources.getSubTexture("IngameSpriteSheet.png", "popUpButton"));
@@ -403,7 +428,7 @@ package puzzle.ingame
 			
 			_stagePopupFrame = new PopupFrame(576, 1024);
 			_stagePopupFrame.setContent(_stagePopup);
-//			_stagePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
+			//			_stagePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
 			addChild(_stagePopupFrame);
 			
 			_shopPopup = new Shop(_resources);
@@ -443,7 +468,7 @@ package puzzle.ingame
 			
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			
-//			trace(flash.display.Screen.mainScreen.bounds);
+			//			trace(flash.display.Screen.mainScreen.bounds);
 		}
 		
 		private function onKeyDown(event:KeyboardEvent):void
@@ -518,6 +543,12 @@ package puzzle.ingame
 			_field.checkPossibleCell();
 		}
 		
+		private function onFailedGame(event:Event):void
+		{
+			_isClear = false;
+			getResult();
+		}
+		
 		private function onCompletePossibleCheck(event:CheckEvent):void
 		{
 			_blockCount.text = event.blockCount.toString();
@@ -530,18 +561,23 @@ package puzzle.ingame
 				trace(_stageNumber);
 				_isClear = true;
 				
-				_record = _timer.getRecord();
-				_score += int(_record * 100);
-				
-				_playJuggler.remove(_timer);
-				_playJuggler.remove(_comboTimer);
-				
-				if(User.getInstance().clearstage < _stageNumber)
-					User.getInstance().clearstage = _stageNumber;
-//				User.getInstance().heart = 1;
-				
-				User.getInstance().pullUserData(setScoreData);
+				getResult();
 			}
+		}
+		
+		private function getResult():void
+		{
+			_record = _timer.getRecord();
+			_score += int(_record * 100);
+			
+			_playJuggler.remove(_timer);
+			_playJuggler.remove(_comboTimer);
+			
+			if(User.getInstance().clearstage < _stageNumber)
+				User.getInstance().clearstage = _stageNumber;
+			//				User.getInstance().heart = 1;
+			
+			User.getInstance().pullUserData(setScoreData);
 		}
 		
 		private function setScoreData():void

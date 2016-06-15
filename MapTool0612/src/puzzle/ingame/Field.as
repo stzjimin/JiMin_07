@@ -322,7 +322,8 @@ package puzzle.ingame
 		
 		private function onCompleteShuffle(event:Event):void
 		{
-			_possibleChecker.checkPossibleCell(_cells);
+//			_possibleChecker.checkPossibleCell(_cells);
+			checkPossibleCell();
 			if(_possibleChecker.blockCount >= 2 && _possibleChecker.possibleCount == 0)
 				shuffle();
 		}

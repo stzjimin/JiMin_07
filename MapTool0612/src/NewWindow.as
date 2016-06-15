@@ -2,6 +2,7 @@ package
 {
 	import flash.display.NativeWindow;
 	import flash.display.NativeWindowInitOptions;
+	import flash.events.Event;
 	
 	import customize.SceneManager;
 	
@@ -45,12 +46,20 @@ package
 //			_starling.start();
 		}
 		
-		private function onRootCreated(event:Event):void
+		private function onRootCreated(event:starling.events.Event):void
 		{
 			_starling.removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
 			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game");
 			_starling.start();
+			
+			addEventListener(flash.events.Event.CLOSE, onClosed);
+		}
+		
+		private function onClosed(event:flash.events.Event):void
+		{
+			if(SceneManager.current)
+				SceneManager.current.destroy();
 		}
 	}
 }

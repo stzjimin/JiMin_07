@@ -38,11 +38,22 @@ package customize
 			_sceneDic = null;
 			
 			for(var i:int = 0; i < _sceneVector.length; i++)
-				_sceneVector[i].destroy();
+			{
+				Scene(_sceneVector[i]).dispatchEvent(new SceneEvent(SceneEvent.END));
+				Scene(_sceneVector[i]).dispatchEvent(new SceneEvent(SceneEvent.DESTROY));
+			}
 			_sceneVector.splice(0, _sceneVector.length);
+			
+			if(_currentScene)
+			{
+				_currentScene.dispatchEvent(new SceneEvent(SceneEvent.END));
+				_currentScene.dispatchEvent(new SceneEvent(SceneEvent.DESTROY));
+			}
 			
 			removeEventListener(SceneEvent.ACTIVATE, onActivate);
 			removeEventListener(SceneEvent.DEACTIVATE, onDeActivate);
+			
+			_current = null;
 		}
 		
 		public function addScene(sceneClass:Class, key:String):void

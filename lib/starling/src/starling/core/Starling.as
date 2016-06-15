@@ -384,6 +384,10 @@ package starling.core
         {
             if (_sceneManager == null && _sceneManagerClass != null)
             {
+				if(SceneManager.current)
+				{
+					SceneManager.current.destroy();
+				}
                 _sceneManager = new _sceneManagerClass() as SceneManager;
 				_sceneManager.init();
                 if (_sceneManager == null) throw new Error("Invalid root class: " + _sceneManagerClass);

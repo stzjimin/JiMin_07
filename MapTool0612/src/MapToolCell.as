@@ -55,6 +55,7 @@ package
 			_color = new Quad(this.width, this.height, 0x0);
 			_color.x = 0;
 			_color.y = 0;
+			_color.alpha = 0.7;
 			_color.visible = false;
 			addChild(_color);
 		}

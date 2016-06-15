@@ -31,6 +31,7 @@ package puzzle.ingame
 	import puzzle.user.User;
 	
 	import starling.animation.Juggler;
+	import starling.animation.Tween;
 	import starling.core.Starling;
 	import starling.display.Button;
 	import starling.display.Image;
@@ -83,8 +84,10 @@ package puzzle.ingame
 		private var _stagePopup:StagePopup;
 		private var _stagePopupFrame:PopupFrame;
 		
-		private var _readyTextures:TextureAtlas;
-		private var _readyMovie:MovieClip;
+		private var _readyImage:Image;
+		private var _goImage:Image;
+//		private var _readyTextures:TextureAtlas;
+//		private var _readyMovie:MovieClip;
 		
 		private var _shopPopup:Shop;
 		private var _shopPopupFrame:PopupFrame;
@@ -224,6 +227,9 @@ package puzzle.ingame
 			_items.removeFromParent();
 			_items.destroy();
 			_items = null;
+			
+//			_readyMovie.dispose();
+//			_readyMovie = null;
 			
 			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
 			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
@@ -456,13 +462,27 @@ package puzzle.ingame
 			_playJuggler.add(_timer);
 			_playJuggler.add(_comboTimer);
 			
-			_readyTextures = _resources.getSpriteSheet("readyClip.png");
-			_readyMovie = new MovieClip(_readyTextures.getTextures("ready_"), 10);
-			_readyMovie.width = 300;
-			_readyMovie.height = 500;
-			_readyMovie.alignPivot();
-			_readyMovie.x = _backGround.width / 2;
-			_readyMovie.y = _backGround.height / 2;
+//			_readyTextures = _resources.getSpriteSheet("readyClip.png");
+//			_readyMovie = new MovieClip(_readyTextures.getTextures("ready_"), 10);
+//			_readyMovie.width = 300;
+//			_readyMovie.height = 500;
+//			_readyMovie.alignPivot();
+//			_readyMovie.x = _backGround.width / 2;
+//			_readyMovie.y = _backGround.height / 2;
+			
+			_readyImage = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "ready"));
+			_readyImage.width = 300;
+			_readyImage.height = 200;
+			_readyImage.alignPivot();
+			_readyImage.x = _backGround.width / 2;
+			_readyImage.y = _backGround.height / 2;
+			
+			_goImage = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "go"));
+			_goImage.width = 300;
+			_goImage.height = 200;
+			_goImage.alignPivot();
+			_goImage.x = _backGround.width / 2;
+			_goImage.y = _backGround.height / 2;
 			
 			readyTime();
 			
@@ -500,15 +520,32 @@ package puzzle.ingame
 		private function readyTime():void
 		{
 			this.touchable = false;
-			addChild(_readyMovie);
-			Starling.juggler.add(_readyMovie);
-			Starling.juggler.delayCall(goTime, 1.5);
+			addChild(_readyImage);
+			var tween:Tween = new Tween(_readyImage, 1.0);
+			tween.fadeTo(0.0);
+			tween.addEventListener(Event.REMOVE_FROM_JUGGLER, goTime);
+			Starling.juggler.add(tween);
+//			Starling.juggler.delayCall(goTime, 1.5);
 		}
 		
-		private function goTime():void
+		private function goTime(event:Event):void
 		{
-			Starling.juggler.remove(_readyMovie);
-			_readyMovie.removeFromParent();
+			event.currentTarget.removeEventListener(Event.REMOVE_FROM_JUGGLER, goTime);
+			removeChild(_readyImage);
+//			Starling.juggler.remove(_readyMovie);
+//			_readyMovie.removeFromParent();
+			addChild(_goImage);
+			var tween:Tween = new Tween(_goImage, 0.5);
+			tween.fadeTo(0.0);
+			tween.addEventListener(Event.REMOVE_FROM_JUGGLER, gameStart);
+			Starling.juggler.add(tween);
+		}
+		
+		private function gameStart(event:Event):void
+		{
+			event.currentTarget.removeEventListener(Event.REMOVE_FROM_JUGGLER, goTime);
+			removeChild(_goImage);
+			
 			_paused = false;
 			this.touchable = true;
 		}

@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TextureAtlas imagePath="FieldSpriteSheet.png">
-   <SubTexture name="alert" x="674" y="54" width="75" height="74" />
+   <SubTexture name="wall" x="674" y="54" width="204" height="204" />
+   <SubTexture name="alert" x="0" y="883" width="75" height="74" />
    <SubTexture name="backGround" x="0" y="126" width="640" height="755" />
-   <SubTexture name="blockBottomPadding" x="751" y="54" width="47" height="10" />
-   <SubTexture name="blockRightPadding" x="0" y="883" width="9" height="57" />
-   <SubTexture name="blue" x="751" y="66" width="45" height="60" />
+   <SubTexture name="blockBottomPadding" x="934" y="0" width="47" height="10" />
+   <SubTexture name="blockRightPadding" x="642" y="126" width="9" height="57" />
+   <SubTexture name="blue" x="642" y="260" width="45" height="60" />
    <SubTexture name="bottomPadding" x="0" y="54" width="672" height="35" />
-   <SubTexture name="columLine" x="642" y="130" width="52" height="856" />
-   <SubTexture name="leftPadding" x="905" y="0" width="32" height="790" />
-   <SubTexture name="lucy" x="696" y="130" width="45" height="60" />
-   <SubTexture name="micky" x="800" y="54" width="45" height="60" />
-   <SubTexture name="mongyi" x="858" y="0" width="45" height="60" />
-   <SubTexture name="pinky" x="743" y="130" width="45" height="60" />
-   <SubTexture name="rightPadding" x="696" y="192" width="34" height="790" />
+   <SubTexture name="columLine" x="880" y="0" width="52" height="856" />
+   <SubTexture name="leftPadding" x="934" y="74" width="32" height="790" />
+   <SubTexture name="lucy" x="934" y="12" width="45" height="60" />
+   <SubTexture name="micky" x="689" y="260" width="45" height="60" />
+   <SubTexture name="mongyi" x="77" y="883" width="45" height="60" />
+   <SubTexture name="pinky" x="642" y="322" width="45" height="60" />
+   <SubTexture name="rightPadding" x="983" y="0" width="34" height="790" />
    <SubTexture name="rowLine" x="0" y="0" width="856" height="52" />
    <SubTexture name="topPadding" x="0" y="91" width="672" height="33" />
 </TextureAtlas>

@@ -6,6 +6,7 @@ package puzzle.loading.loader
 	import flash.net.URLRequest;
 	
 	import puzzle.loading.LoadingEvent;
+	import puzzle.loading.StringHelper;
 	
 	import starling.events.EventDispatcher;
 
@@ -33,7 +34,16 @@ package puzzle.loading.loader
 			_urlLoader.addEventListener(Event.COMPLETE, onCompleteLoaded);
 			_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onFailedLoaded);
 			
-			dispatchEvent(new LoadingEvent(LoadingEvent.COMPLETE, _urlLoader.data));
+			trace(_urlLoader.dataFormat);
+			trace(_urlLoader.bytesTotal);
+			trace(_urlLoader.data);
+			trace(String(_urlLoader.data));
+			
+//			var mapString:String = StringHelper.unescapeString(String(_urlLoader.data));
+			var mapString:String = String(_urlLoader.data).substring(2, String(_urlLoader.data).length);
+			trace(mapString);
+			
+			dispatchEvent(new LoadingEvent(LoadingEvent.COMPLETE, mapString));
 		}
 		
 		private function onFailedLoaded(event:IOErrorEvent):void

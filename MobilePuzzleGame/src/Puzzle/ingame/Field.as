@@ -9,13 +9,14 @@ package puzzle.ingame
 	import puzzle.ingame.cell.NeigborType;
 	import puzzle.ingame.cell.blocks.Block;
 	import puzzle.ingame.cell.blocks.BlockData;
-	import puzzle.item.fork.ForkEvent;
-	import puzzle.item.fork.Forker;
-	import puzzle.item.shuffle.Shuffler;
+	import puzzle.ingame.cell.blocks.BlockType;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
 	import puzzle.ingame.util.possibleCheck.Possible;
 	import puzzle.ingame.util.possibleCheck.PossibleChecker;
 	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
+	import puzzle.item.fork.ForkEvent;
+	import puzzle.item.fork.Forker;
+	import puzzle.item.shuffle.Shuffler;
 	import puzzle.loading.Resources;
 	
 	import starling.animation.IAnimatable;
@@ -369,6 +370,35 @@ package puzzle.ingame
 			tween2.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
 			_juggler.add(tween1);
 			_juggler.add(tween2);
+			
+			var neigborTypes:Vector.<int> = NeigborType.TYPES;
+			
+			for(var i:int = 0; i < neigborTypes.length; i++)
+			{
+				if(possible.startCell.neigbor[neigborTypes[i]] && Cell(possible.startCell.neigbor[neigborTypes[i]]).block)
+				{
+					if(Cell(possible.startCell.neigbor[neigborTypes[i]]).block.type == BlockType.WALL)
+					{
+						var tween:Tween = new Tween(Cell(possible.startCell.neigbor[neigborTypes[i]]).block, 0.5);
+						tween.fadeTo(0.0);
+						tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+						Cell(possible.startCell.neigbor[neigborTypes[i]]).block = null;
+						_juggler.add(tween);
+					}
+				}
+				
+				if(possible.destCell.neigbor[neigborTypes[i]] && Cell(possible.destCell.neigbor[neigborTypes[i]]).block)
+				{
+					if(Cell(possible.destCell.neigbor[neigborTypes[i]]).block.type == BlockType.WALL)
+					{
+						tween = new Tween(Cell(possible.destCell.neigbor[neigborTypes[i]]).block, 0.5);
+						tween.fadeTo(0.0);
+						tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onTweenComplete);
+						Cell(possible.destCell.neigbor[neigborTypes[i]]).block = null;
+						_juggler.add(tween);
+					}
+				}
+			}
 			
 //			checkPossibleCell();
 			

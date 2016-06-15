@@ -17,9 +17,6 @@ package puzzle.ingame.cell.blocks
 
 	public class Block extends DisplayObjectContainer implements IAnimatable
 	{	
-		[Embed(source="wall.png")]
-		private const wallImage:Class;
-		
 		public static const PADDING_SIZE:Number = 5;
 		
 		private var _resources:Resources;
@@ -84,7 +81,7 @@ package puzzle.ingame.cell.blocks
 			}
 			else if(type == BlockType.WALL)
 			{
-				_blockTexture = Texture.fromBitmap(new wallImage() as Bitmap);
+				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "wall");
 				_type = BlockType.WALL;
 				this.name = BlockType.WALL;
 				this.touchable = false;

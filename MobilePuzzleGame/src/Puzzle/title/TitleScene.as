@@ -166,7 +166,7 @@ package puzzle.title
 		
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
-			Loading.getInstance().init(576, 1024, _resources.getImageFile("loadingImage.png"));
+			Loading.getInstance().init(PuzzleGame.stageWidth, PuzzleGame.stageHeight, _resources.getImageFile("loadingImage.png"));
 			
 			_soundManager.addSound("Rose.mp3", _resources.getSoundFile("Rose.mp3"));
 			_soundManager.play("Rose.mp3", Sound.INFINITE, true);
@@ -213,6 +213,9 @@ package puzzle.title
 				_facebook.addEventListener(FacebookEvent.TOKEN_FALSE, onFailToken);
 				_facebook.loadUserInfo();
 			}
+			
+			this.scaleX *= (PuzzleGame.stageWidth / 576);
+			this.scaleY *= (PuzzleGame.stageHeight / 1024);
 		}
 		
 		private function onFailedLoading(event:LoadingEvent):void

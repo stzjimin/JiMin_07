@@ -1,5 +1,7 @@
 package puzzle.stageSelect
 {
+	import com.lpesign.ToastExtension;
+	
 	import flash.desktop.NativeApplication;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
@@ -392,6 +394,9 @@ package puzzle.stageSelect
 			_soundManager.play("White.mp3", Sound.INFINITE);
 			
 			setButtonState();
+			
+			this.scaleX *= (PuzzleGame.stageWidth / 576);
+			this.scaleY *= (PuzzleGame.stageHeight / 1024);
 		}
 		
 		private function onFailedResourcLoading(event:LoadingEvent):void
@@ -625,6 +630,12 @@ package puzzle.stageSelect
 		
 		private function onClickedStartButton(event:Event):void
 		{
+			if(User.getInstance().heart <= 0)
+			{
+				var toastExtension:ToastExtension = new ToastExtension();
+				toastExtension.toast("하트가 부족해요!!");
+				return;
+			}
 			_stagePopupFrame.hide();
 			User.getInstance().heart -= 1;
 			SceneManager.current.addScene(InGameScene, "game");

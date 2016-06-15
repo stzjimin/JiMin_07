@@ -8,8 +8,9 @@ package
 	import flash.display.NativeWindowType;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
-	import flash.filesystem.File;
+	import flash.events.KeyboardEvent;
 	import flash.net.FileFilter;
+	import flash.ui.Keyboard;
 	
 	import puzzle.ingame.Field;
 	import puzzle.ingame.cell.Cell;
@@ -19,7 +20,6 @@ package
 	import puzzle.loading.Resources;
 	
 	import starlingOrigin.display.Button;
-	import starlingOrigin.display.DisplayObject;
 	import starlingOrigin.display.DisplayObjectContainer;
 	import starlingOrigin.display.Image;
 	import starlingOrigin.events.Event;
@@ -83,11 +83,11 @@ package
 		private var _wall:Button;
 		private var _removeBlockButton:Button;
 		
-		private var _block1Texture:Texture;
-		private var _block2Texture:Texture;
-		private var _block3Texture:Texture;
-		private var _block4Texture:Texture;
-		private var _block5Texture:Texture;
+		private var _blueTexture:Texture;
+		private var _lucyTexture:Texture;
+		private var _mickyTexture:Texture;
+		private var _mogyiTexture:Texture;
+		private var _pinkyTexture:Texture;
 		private var _wallTexture:Texture;
 		private var _emptyBlockTexture:Texture;
 		
@@ -99,6 +99,7 @@ package
 		private var _testButton:Button;
 		private var _saveButton:Button;
 		private var _loadButton:Button;
+		private var _clearButton:Button;
 		
 		private var _newWindow:NewWindow;
 		
@@ -145,6 +146,7 @@ package
 		private function onCompleteLoading(event:LoadingEvent):void
 		{
 			_countTime = 10;
+			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			
 			_backGround = new Image(Texture.fromBitmap(new ingameBackGroundImage() as Bitmap));
 			_backGround.width = 800;
@@ -187,14 +189,16 @@ package
 					columnNum++;
 			}
 			
-			_block1Texture = Texture.fromBitmap(new block1Image() as Bitmap)
-			_block2Texture = Texture.fromBitmap(new block2Image() as Bitmap)
-			_block3Texture = Texture.fromBitmap(new block3Image() as Bitmap)
-			_block4Texture = Texture.fromBitmap(new block4Image() as Bitmap)
-			_block5Texture = Texture.fromBitmap(new block5Image() as Bitmap)
+			_blueTexture = Texture.fromBitmap(new block1Image() as Bitmap)
+			_lucyTexture = Texture.fromBitmap(new block2Image() as Bitmap)
+			_mickyTexture = Texture.fromBitmap(new block3Image() as Bitmap)
+			_mogyiTexture = Texture.fromBitmap(new block4Image() as Bitmap)
+			_pinkyTexture = Texture.fromBitmap(new block5Image() as Bitmap)
 			_wallTexture = Texture.fromBitmap(new wallImage() as Bitmap)
 			
-			_block1 = new Button(_block1Texture);
+			_block1 = new Button(_blueTexture, "Q");
+			_block1.textFormat.bold = true;
+			_block1.textFormat.size = 20;
 			_block1.name = BlockType.BLUE;
 			_block1.width = Cell.WIDTH_SIZE;
 			_block1.height = Cell.HEIGHT_SIZE;
@@ -203,7 +207,9 @@ package
 			_block1.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block1);
 			
-			_block2 = new Button(_block2Texture);
+			_block2 = new Button(_lucyTexture, "W");
+			_block2.textFormat.bold = true;
+			_block2.textFormat.size = 20;
 			_block2.name = BlockType.LUCY;
 			_block2.width = Cell.WIDTH_SIZE;
 			_block2.height = Cell.HEIGHT_SIZE;
@@ -212,7 +218,9 @@ package
 			_block2.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block2);
 			
-			_block3 = new Button(_block3Texture);
+			_block3 = new Button(_mickyTexture, "E");
+			_block3.textFormat.bold = true;
+			_block3.textFormat.size = 20;
 			_block3.name = BlockType.MICKY;
 			_block3.width = Cell.WIDTH_SIZE;
 			_block3.height = Cell.HEIGHT_SIZE;
@@ -221,7 +229,9 @@ package
 			_block3.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block3);
 			
-			_block4 = new Button(_block4Texture);
+			_block4 = new Button(_mogyiTexture, "R");
+			_block4.textFormat.bold = true;
+			_block4.textFormat.size = 20;
 			_block4.name = BlockType.MONGYI;
 			_block4.width = Cell.WIDTH_SIZE;
 			_block4.height = Cell.HEIGHT_SIZE;
@@ -230,7 +240,9 @@ package
 			_block4.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block4);
 			
-			_block5 = new Button(_block5Texture);
+			_block5 = new Button(_pinkyTexture, "T");
+			_block5.textFormat.bold = true;
+			_block5.textFormat.size = 20;
 			_block5.name = BlockType.PINKY;
 			_block5.width = Cell.WIDTH_SIZE;
 			_block5.height = Cell.HEIGHT_SIZE;
@@ -239,7 +251,9 @@ package
 			_block5.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block5);
 			
-			_wall = new Button(_wallTexture);
+			_wall = new Button(_wallTexture, "A");
+			_wall.textFormat.bold = true;
+			_wall.textFormat.size = 20;
 			_wall.name = BlockType.WALL;
 			_wall.width = Cell.WIDTH_SIZE;
 			_wall.height = Cell.HEIGHT_SIZE;
@@ -248,7 +262,9 @@ package
 			_wall.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_wall);
 			
-			_removeBlockButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap));
+			_removeBlockButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap), "C");
+			_removeBlockButton.textFormat.bold = true;
+			_removeBlockButton.textFormat.size = 20;
 			_removeBlockButton.name = Main.NONE;
 			_removeBlockButton.width = Cell.WIDTH_SIZE;
 			_removeBlockButton.height = Cell.HEIGHT_SIZE;
@@ -311,6 +327,16 @@ package
 			_loadButton.y = _saveButton.y;
 			_loadButton.addEventListener(Event.TRIGGERED, onClickdedLoadButton);
 			addChild(_loadButton);
+			
+			_clearButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap), "CLEAR");
+			_clearButton.width = 80;
+			_clearButton.height = 60;
+			_clearButton.textFormat.bold = true;
+			_clearButton.textFormat.size = 20;
+			_clearButton.x = _loadButton.x + _loadButton.width + 20;
+			_clearButton.y = _loadButton.y;
+			_clearButton.addEventListener(Event.TRIGGERED, onClickdedClearButton);
+			addChild(_clearButton);
 		}
 		
 		private function onClickedBlock(event:Event):void
@@ -326,6 +352,35 @@ package
 			_currentClickedCell.setBackGroundTexture(target.upState);
 			
 			_currentClickedCell.dispatchEvent(new Event(Event.TRIGGERED));
+		}
+		
+		private function onKeyDown(event:KeyboardEvent):void
+		{
+			trace("aa");
+			switch(event.keyCode)
+			{
+				case Keyboard.Q :
+					_block1.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+				case Keyboard.W :
+					_block2.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+				case Keyboard.E :
+					_block3.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+				case Keyboard.R :
+					_block4.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+				case Keyboard.T :
+					_block5.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+				case Keyboard.A :
+					_wall.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+				case Keyboard.C :
+					_removeBlockButton.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+			}
 		}
 		
 		private function onClickedCell(event:Event):void
@@ -381,6 +436,8 @@ package
 			
 			function onCompleteLoad(event:FileEvent):void
 			{
+				fieldClear();
+				
 				trace(event.data as String);
 				var mapData:Object = JSON.parse(event.data as String);
 				_countTime = mapData.countTime;
@@ -397,27 +454,27 @@ package
 					var type:String = blockData[i].type;
 					if(type == BlockType.PINKY)
 					{
-						_cells[index].setBackGroundTexture(_block1Texture);
+						_cells[index].setBackGroundTexture(_pinkyTexture);
 						_cells[index].name = BlockType.PINKY;
 					}
 					else if(type == BlockType.BLUE)
 					{
-						_cells[index].setBackGroundTexture(_block2Texture);
+						_cells[index].setBackGroundTexture(_blueTexture);
 						_cells[index].name = BlockType.BLUE;
 					}
 					else if(type == BlockType.MICKY)
 					{
-						_cells[index].setBackGroundTexture(_block3Texture);
+						_cells[index].setBackGroundTexture(_mickyTexture);
 						_cells[index].name = BlockType.MICKY;
 					}
 					else if(type == BlockType.LUCY)
 					{
-						_cells[index].setBackGroundTexture(_block4Texture);
+						_cells[index].setBackGroundTexture(_lucyTexture);
 						_cells[index].name = BlockType.LUCY;
 					}
 					else if(type == BlockType.MONGYI)
 					{
-						_cells[index].setBackGroundTexture(_block5Texture);
+						_cells[index].setBackGroundTexture(_mogyiTexture);
 						_cells[index].name = BlockType.MONGYI;
 					}
 					else if(type == BlockType.WALL)
@@ -426,6 +483,20 @@ package
 						_cells[index].name = BlockType.WALL;
 					}
 				}
+			}
+		}
+		
+		private function onClickdedClearButton(event:Event):void
+		{
+			fieldClear();
+		}
+		
+		private function fieldClear():void
+		{
+			for(var i:int; i < _cells.length; i++)
+			{
+				_cells[i].name = Main.NONE;
+				_cells[i].setBackGroundTexture(_emptyBlockTexture);
 			}
 		}
 		

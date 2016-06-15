@@ -1,5 +1,7 @@
 package puzzle.ingame
 {
+	import com.lpesign.ToastExtension;
+	
 	import flash.desktop.NativeApplication;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
@@ -12,9 +14,7 @@ package puzzle.ingame
 	import customize.Sound;
 	import customize.SoundManager;
 	
-	import puzzle.StagePopup;
 	import puzzle.ingame.cell.blocks.BlockData;
-	import puzzle.ingame.cell.blocks.BlockType;
 	import puzzle.ingame.timer.ComboTimer;
 	import puzzle.ingame.timer.Timer;
 	import puzzle.ingame.util.possibleCheck.CheckEvent;
@@ -296,7 +296,7 @@ package puzzle.ingame
 		{
 			event.currentTarget.removeEventListener(LoadingEvent.COMPLETE, onCompleteMapLoading);
 			event.currentTarget.removeEventListener(LoadingEvent.FAILED, onFailedMapLoading);
-			
+			trace(event.data);
 			var jsonString:String = event.data as String;
 			var mapData:Object = JSON.parse(jsonString);
 			_countTime = mapData.countTime;
@@ -468,7 +468,8 @@ package puzzle.ingame
 			
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			
-			//			trace(flash.display.Screen.mainScreen.bounds);
+			this.scaleX *= (PuzzleGame.stageWidth / 576);
+			this.scaleY *= (PuzzleGame.stageHeight / 1024);
 		}
 		
 		private function onKeyDown(event:KeyboardEvent):void
@@ -748,6 +749,13 @@ package puzzle.ingame
 		
 		private function onClickedNext(event:Event):void
 		{
+			if(User.getInstance().clearstage < _stageNumber)
+			{
+				var toastExtension:ToastExtension = new ToastExtension();
+				toastExtension.toast("다음 스테이지는 열리지 않았어요!!");
+				return;
+			}
+			
 			_resultPopupFrame.hide();
 			
 			_dbLoader = new DBLoader(User.getInstance());
@@ -789,10 +797,14 @@ package puzzle.ingame
 		
 		private function onClickedStartButton(event:Event):void
 		{
-			_stagePopupFrame.hide();
-			outThisGame();	
 			if(User.getInstance().heart <= 0)
+			{
+				var toastExtension:ToastExtension = new ToastExtension();
+				toastExtension.toast("하트가 부족해요!!");
 				return;
+			}
+			_stagePopupFrame.hide();
+			outThisGame();
 			User.getInstance().heart -= 1;
 			SceneManager.current.addScene(InGameScene, "game");
 			SceneManager.current.goScene("game", _clickedStageNumber);

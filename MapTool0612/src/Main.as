@@ -309,7 +309,37 @@ package
 		
 		private function onClickdedTestButton(event:Event):void
 		{
-			createNativeWindow();
+			createNativeWindow(parseData());
+		}
+		
+		private function parseData():String
+		{
+			var mapData:Object = new Object();
+			mapData.countTime = _countTime;
+			
+			var blockData:Object = new Object();
+			var length:int = 0;
+			var block:Object;
+			for(var i:int = 0; i < _cells.length; i++)
+			{
+				if(_cells[i].name != Main.NONE)
+				{
+					block = new Object();
+					blockData[length] = block;
+					blockData[length].row = _cells[i].row;
+					blockData[length].column = _cells[i].column;
+					blockData[length].type = _cells[i].name;
+					length++;
+				}
+			}
+			block = null;
+			blockData.length = length;
+			
+			mapData.blockData = blockData;
+			
+			var jsonString:String = JSON.stringify(mapData);
+			
+			return jsonString
 		}
 		
 		private function onClickedUpButton(event:Event):void
@@ -339,7 +369,7 @@ package
 			}
 		}
 		
-		private function createNativeWindow():void
+		private function createNativeWindow(data:String):void
 		{
 			if(_newWindow != null)
 			{
@@ -364,7 +394,7 @@ package
 			
 			_newWindow.activate();
 			
-			_newWindow.startStarling();
+			_newWindow.startStarling(data);
 		}
 	}
 }

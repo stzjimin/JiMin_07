@@ -41,6 +41,8 @@ package puzzle.ingame
 	
 	public class InGameScene extends Scene
 	{	
+		private static var _testMapData:String;
+		
 		private var _stageNumber:uint;
 		
 		private var _resources:Resources;
@@ -62,8 +64,8 @@ package puzzle.ingame
 		private var _paused:Boolean;
 		private var _timer:Timer;
 		
+		private var _countTime:int;
 		private var _comboTimer:ComboTimer;
-		
 		private var _items:Items;
 		
 		private var _playJuggler:Juggler;
@@ -311,7 +313,6 @@ package puzzle.ingame
 			_timer = new Timer(_resources);
 			_timer.init(70, 10, 450, 50);
 			_timer.addEventListener(Timer.TIME_OVER, onTimeOver);
-			_timer.startCount(60);
 			addChild(_timer);
 			
 			_comboTimer = new ComboTimer(_resources);
@@ -329,35 +330,50 @@ package puzzle.ingame
 			addChild(_items);
 			
 			_blockDatas = new Vector.<BlockData>();
-			_blockDatas.push(new BlockData(0, 0, BlockType.BLUE));
-			_blockDatas.push(new BlockData(11, 11, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 1, BlockType.MICKY));
-			_blockDatas.push(new BlockData(2, 1, BlockType.MICKY));
-			_blockDatas.push(new BlockData(6, 6, BlockType.MICKY));
-			_blockDatas.push(new BlockData(2, 2, BlockType.PINKY));
-			_blockDatas.push(new BlockData(4, 3, BlockType.PINKY));
-			_blockDatas.push(new BlockData(6, 4, BlockType.MICKY));
-			_blockDatas.push(new BlockData(2, 5, BlockType.BLUE));
-			_blockDatas.push(new BlockData(1, 4, BlockType.MICKY));
-			_blockDatas.push(new BlockData(1, 5, BlockType.MICKY));
-			_blockDatas.push(new BlockData(1, 2, BlockType.BLUE));
-			_blockDatas.push(new BlockData(5, 1, BlockType.BLUE));
-			_blockDatas.push(new BlockData(4, 2, BlockType.PINKY));
-			_blockDatas.push(new BlockData(3, 6, BlockType.PINKY));
-			_blockDatas.push(new BlockData(10, 10, BlockType.MONGYI));
-			_blockDatas.push(new BlockData(10, 3, BlockType.MONGYI));
-			_blockDatas.push(new BlockData(7, 10, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 1, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 2, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 8, BlockType.LUCY));
-			_blockDatas.push(new BlockData(8, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(3, 5, BlockType.LUCY));
-			_blockDatas.push(new BlockData(10, 9, BlockType.LUCY));
-			_blockDatas.push(new BlockData(9, 3, BlockType.LUCY));
-			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
+			if(_stageNumber == 0)
+			{
+				trace(_testMapData);
+				var mapData:Object = JSON.parse(_testMapData);
+				_countTime = mapData.countTime;
+				trace(_countTime);
+				_timer.startCount(_countTime);
+				var blockDatas:Object = mapData.blockData;
+				for(var i:int = 0; i < blockDatas.length; i++)
+					_blockDatas.push(new BlockData(blockDatas[i].row, blockDatas[i].column, blockDatas[i].type));
+			}
+			else
+			{
+				
+			}
+//			_blockDatas.push(new BlockData(0, 0, BlockType.BLUE));
+//			_blockDatas.push(new BlockData(11, 11, BlockType.BLUE));
+//			_blockDatas.push(new BlockData(1, 8, BlockType.BLUE));
+//			_blockDatas.push(new BlockData(1, 1, BlockType.MICKY));
+//			_blockDatas.push(new BlockData(2, 1, BlockType.MICKY));
+//			_blockDatas.push(new BlockData(6, 6, BlockType.MICKY));
+//			_blockDatas.push(new BlockData(2, 2, BlockType.PINKY));
+//			_blockDatas.push(new BlockData(4, 3, BlockType.PINKY));
+//			_blockDatas.push(new BlockData(6, 4, BlockType.MICKY));
+//			_blockDatas.push(new BlockData(2, 5, BlockType.BLUE));
+//			_blockDatas.push(new BlockData(1, 4, BlockType.MICKY));
+//			_blockDatas.push(new BlockData(1, 5, BlockType.MICKY));
+//			_blockDatas.push(new BlockData(1, 2, BlockType.BLUE));
+//			_blockDatas.push(new BlockData(5, 1, BlockType.BLUE));
+//			_blockDatas.push(new BlockData(4, 2, BlockType.PINKY));
+//			_blockDatas.push(new BlockData(3, 6, BlockType.PINKY));
+//			_blockDatas.push(new BlockData(10, 10, BlockType.MONGYI));
+//			_blockDatas.push(new BlockData(10, 3, BlockType.MONGYI));
+//			_blockDatas.push(new BlockData(7, 10, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(10, 5, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(10, 1, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(10, 2, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(10, 8, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(8, 5, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(3, 5, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(10, 9, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(9, 3, BlockType.LUCY));
+//			_blockDatas.push(new BlockData(7, 5, BlockType.LUCY));
 			
 			_field = new Field(_resources);
 			//			_field.x = 18;
@@ -803,5 +819,16 @@ package puzzle.ingame
 				_pausePopupFrame.hide();
 			}
 		}
+
+		public static function get testMapData():String
+		{
+			return _testMapData;
+		}
+
+		public static function set testMapData(value:String):void
+		{
+			_testMapData = value;
+		}
+
 	}
 }

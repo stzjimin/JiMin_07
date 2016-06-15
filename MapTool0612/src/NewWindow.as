@@ -18,6 +18,8 @@ package
 		
 		private var _starling:Starling;
 		
+		private var _jsonData:String;
+		
 		public function NewWindow(options:NativeWindowInitOptions)
 		{
 			super(options);
@@ -31,8 +33,10 @@ package
 //			this.active();
 		}
 		
-		public function startStarling():void
+		public function startStarling(jsonData:String):void
 		{
+			_jsonData = jsonData;
+			
 			if(Starling.current == null)
 				Starling.multitouchEnabled = true;
 			_starling = new Starling(SceneManager, stage);
@@ -50,7 +54,8 @@ package
 		{
 			_starling.removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
 			SceneManager.current.addScene(InGameScene, "game");
-			SceneManager.current.goScene("game");
+			InGameScene.testMapData = _jsonData;
+			SceneManager.current.goScene("game", 0);
 			_starling.start();
 			
 			addEventListener(flash.events.Event.CLOSE, onClosed);

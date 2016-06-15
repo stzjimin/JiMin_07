@@ -1,16 +1,29 @@
 package
 {
-	import puzzle.ingame.cell.Cell;
+	import flash.utils.Dictionary;
 	
+	import starlingOrigin.display.DisplayObjectContainer;
 	import starlingOrigin.display.Image;
+	import starlingOrigin.display.Quad;
 	import starlingOrigin.events.Event;
 	import starlingOrigin.events.Touch;
 	import starlingOrigin.events.TouchEvent;
 	import starlingOrigin.events.TouchPhase;
 	import starlingOrigin.textures.Texture;
 
-	public class MapToolCell extends Cell
+	public class MapToolCell extends DisplayObjectContainer
 	{	
+		public static const WIDTH_SIZE:Number = 45;
+		public static const HEIGHT_SIZE:Number = 60;
+		
+		private var _neigbor:Dictionary;
+//		private var _block:Block;
+		
+		private var _row:int;
+		private var _column:int;
+		
+		private var _color:Quad;
+		
 		private var _backGround:Image;
 		
 		private var _versPivotX:Number;
@@ -24,9 +37,6 @@ package
 		public function MapToolCell(backGroundTexture:Texture, width:Number, height:Number)
 		{
 			super();
-			super.width = width;
-			super.height = height;
-			
 			_clicked = false;
 			
 			_originTexture = backGroundTexture;
@@ -37,6 +47,36 @@ package
 			addChild(_backGround);
 			
 			addEventListener(TouchEvent.TOUCH, onTouch);
+		}
+		
+		public function init():void
+		{
+			_neigbor = new Dictionary();
+			_color = new Quad(this.width, this.height, 0x0);
+			_color.x = 0;
+			_color.y = 0;
+			_color.visible = false;
+			addChild(_color);
+		}
+		
+		public function showColor():void
+		{
+			_color.visible = true;
+		}
+		
+		public function offColor():void
+		{
+			_color.visible = false;
+		}
+		
+		public function get neigbor():Dictionary
+		{
+			return _neigbor;
+		}
+		
+		public function set neigbor(value:Dictionary):void
+		{
+			_neigbor = value;
 		}
 
 		private function onTouch(event:TouchEvent):void
@@ -89,5 +129,27 @@ package
 		{
 			_clicked = value;
 		}
+
+		public function get row():int
+		{
+			return _row;
+		}
+
+		public function set row(value:int):void
+		{
+			_row = value;
+		}
+
+		public function get column():int
+		{
+			return _column;
+		}
+
+		public function set column(value:int):void
+		{
+			_column = value;
+		}
+
+
 	}
 }

@@ -1,6 +1,6 @@
 package puzzle.user
 {
-	import starlingOrigin.events.Event;
+	import starling.events.Event;
 
 	public class UserEvent extends Event
 	{

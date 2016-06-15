@@ -7,13 +7,13 @@ package puzzle.user
 	import puzzle.item.ItemType;
 	import puzzle.loading.Resources;
 	
-	import starlingOrigin.display.Button;
-	import starlingOrigin.display.DisplayObjectContainer;
-	import starlingOrigin.display.Image;
-	import starlingOrigin.events.Event;
-	import starlingOrigin.text.TextFormat;
-	import starlingOrigin.textures.Texture;
-	import starlingOrigin.utils.Align;
+	import starling.display.Button;
+	import starling.display.DisplayObjectContainer;
+	import starling.display.Image;
+	import starling.events.Event;
+	import starling.text.TextFormat;
+	import starling.textures.Texture;
+	import starling.utils.Align;
 
 	public class UserInfo extends DisplayObjectContainer
 	{	

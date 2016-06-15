@@ -15,7 +15,7 @@ package puzzle.user
 	import puzzle.loading.DBLoaderEvent;
 	import puzzle.loading.loader.DBLoader;
 	
-	import starlingOrigin.events.EventDispatcher;
+	import starling.events.EventDispatcher;
 
 	public class User extends EventDispatcher
 	{

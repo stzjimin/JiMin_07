@@ -8,13 +8,13 @@ package puzzle.shop
 	import puzzle.loading.Resources;
 	import puzzle.user.User;
 	
-	import starlingOrigin.display.Button;
-	import starlingOrigin.display.DisplayObjectContainer;
-	import starlingOrigin.display.Image;
-	import starlingOrigin.events.Event;
-	import starlingOrigin.text.TextField;
-	import starlingOrigin.textures.Texture;
-	import starlingOrigin.utils.Align;
+	import starling.display.Button;
+	import starling.display.DisplayObjectContainer;
+	import starling.display.Image;
+	import starling.events.Event;
+	import starling.text.TextField;
+	import starling.textures.Texture;
+	import starling.utils.Align;
 
 	public class Shop extends DisplayObjectContainer
 	{

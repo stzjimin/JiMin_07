@@ -1,11 +1,11 @@
 package puzzle.user
 {
 	
-	import starlingOrigin.animation.IAnimatable;
-	import starlingOrigin.animation.Juggler;
-	import starlingOrigin.core.Starling;
-	import starlingOrigin.text.TextField;
-	import starlingOrigin.text.TextFormat;
+	import starling.animation.IAnimatable;
+	import starling.animation.Juggler;
+	import starling.core.Starling;
+	import starling.text.TextField;
+	import starling.text.TextFormat;
 
 	public class HeartTimer extends TextField implements IAnimatable
 	{

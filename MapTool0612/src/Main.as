@@ -8,19 +8,17 @@ package
 	import flash.display.NativeWindowType;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
-	import flash.filesystem.File;
-	
-	import customize.Scene;
 	
 	import puzzle.ingame.Field;
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.cell.NeigborType;
-	import puzzle.ingame.cell.blocks.Block;
 	import puzzle.ingame.cell.blocks.BlockType;
 	import puzzle.loading.LoadingEvent;
 	import puzzle.loading.Resources;
 	
 	import starlingOrigin.display.Button;
+	import starlingOrigin.display.DisplayObject;
+	import starlingOrigin.display.DisplayObjectContainer;
 	import starlingOrigin.display.Image;
 	import starlingOrigin.events.Event;
 	import starlingOrigin.events.Touch;
@@ -30,14 +28,38 @@ package
 	import starlingOrigin.textures.Texture;
 	import starlingOrigin.utils.Color;
 
-	public class Main extends Scene
+	public class Main extends DisplayObjectContainer
 	{	
 		[Embed(source="wall.png")]
 		private const wallImage:Class;
 		
+		[Embed(source="backGround.png")]
+		private const backGroundImage:Class;
+		
+		[Embed(source="IngameBackGround.png")]
+		private const ingameBackGroundImage:Class;
+		
+		[Embed(source="blue.png")]
+		private const block1Image:Class;
+		[Embed(source="lucy.png")]
+		private const block2Image:Class;
+		[Embed(source="micky.png")]
+		private const block3Image:Class;
+		[Embed(source="mongyi.png")]
+		private const block4Image:Class;
+		[Embed(source="pinky.png")]
+		private const block5Image:Class;
+		
+		[Embed(source="upArrow.png")]
+		private const upArrowImage:Class;
+		[Embed(source="downArrow.png")]
+		private const downArrowImage:Class;
+		
 		public static const ROW_NUM:uint = 12;
 		public static const COLUMN_NUM:uint = 12;
 		public static const PADDING:uint = 18;
+		
+		public static const NONE:String = "None";
 		
 //		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/resources/spriteSheet");
 //		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/resources/sound");
@@ -67,6 +89,8 @@ package
 		private var _saveButton:Button;
 		private var _loadButton:Button;
 		
+		private var _newWindow:NewWindow;
+		
 //		private var _cells:Vector.<MapToolCell>;
 		
 		public function Main()
@@ -75,16 +99,16 @@ package
 			
 			_resources = new Resources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
 			
-			_resources.addSpriteName("IngameSpriteSheet.png");
-			_resources.addSpriteName("StageSelectSceneSpriteSheet.png");
-			_resources.addSpriteName("UserInfoSpriteSheet.png");
-			_resources.addSpriteName("PausePopupSpriteSheet.png");
-			_resources.addSpriteName("ResultSpriteSheet.png");
-			_resources.addSpriteName("StagePopupSpriteSheet.png");
-			_resources.addSpriteName("FieldSpriteSheet.png");
-			_resources.addSpriteName("ShopSpriteSheet.png");
-			_resources.addSpriteName("RankingSpriteSheet.png");
-			_resources.addSpriteName("readyClip.png");
+//			_resources.addSpriteName("IngameSpriteSheet.png");
+//			_resources.addSpriteName("StageSelectSceneSpriteSheet.png");
+//			_resources.addSpriteName("UserInfoSpriteSheet.png");
+//			_resources.addSpriteName("PausePopupSpriteSheet.png");
+//			_resources.addSpriteName("ResultSpriteSheet.png");
+//			_resources.addSpriteName("StagePopupSpriteSheet.png");
+//			_resources.addSpriteName("FieldSpriteSheet.png");
+//			_resources.addSpriteName("ShopSpriteSheet.png");
+//			_resources.addSpriteName("RankingSpriteSheet.png");
+//			_resources.addSpriteName("readyClip.png");
 			_resources.addSoundName("MilkOut.mp3");
 			_resources.addSoundName("NeverForget.mp3");
 			_resources.addSoundName("set.mp3");
@@ -111,7 +135,7 @@ package
 		{
 			_countTime = 0;
 			
-			_backGround = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "IngameBackGround"));
+			_backGround = new Image(Texture.fromBitmap(new ingameBackGroundImage() as Bitmap));
 			_backGround.width = 800;
 			_backGround.height = 1024;
 			_backGround.addEventListener(TouchEvent.TOUCH, onTouch);
@@ -121,7 +145,7 @@ package
 			var columnNum:int = 0;
 			for(var i:int = 0; i < COLUMN_NUM*ROW_NUM; i++)
 			{
-				var cell:MapToolCell = new MapToolCell(_resources.getSubTexture("FieldSpriteSheet.png", "backGround"), Cell.WIDTH_SIZE, Cell.HEIGHT_SIZE);
+				var cell:MapToolCell = new MapToolCell(Texture.fromBitmap(new backGroundImage() as Bitmap), Cell.WIDTH_SIZE, Cell.HEIGHT_SIZE);
 				var rowNum:int = i%ROW_NUM;
 				_cells.push(cell);
 				//				cell.addEventListener(PossibleCheckerEventType.ADD_PREV, onAddPrev);
@@ -132,7 +156,7 @@ package
 				cell.y = Field.PADDING + (columnNum * Cell.HEIGHT_SIZE);
 				cell.row = columnNum;
 				cell.column = rowNum;
-				_cells[i].name = rowNum.toString() + "/" + columnNum.toString();
+				cell.name = Main.NONE;
 				cell.init();
 				cell.addEventListener(Event.TRIGGERED, onClickedCell);
 				addChild(cell);
@@ -150,7 +174,7 @@ package
 					columnNum++;
 			}
 			
-			_block1 = new Button(_resources.getSubTexture("FieldSpriteSheet.png", "blue"));
+			_block1 = new Button(Texture.fromBitmap(new block1Image() as Bitmap));
 			_block1.name = BlockType.BLUE;
 			_block1.width = Cell.WIDTH_SIZE;
 			_block1.height = Cell.HEIGHT_SIZE;
@@ -159,7 +183,7 @@ package
 			_block1.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block1);
 			
-			_block2 = new Button(_resources.getSubTexture("FieldSpriteSheet.png", "lucy"));
+			_block2 = new Button(Texture.fromBitmap(new block2Image() as Bitmap));
 			_block2.name = BlockType.LUCY;
 			_block2.width = Cell.WIDTH_SIZE;
 			_block2.height = Cell.HEIGHT_SIZE;
@@ -168,7 +192,7 @@ package
 			_block2.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block2);
 			
-			_block3 = new Button(_resources.getSubTexture("FieldSpriteSheet.png", "micky"));
+			_block3 = new Button(Texture.fromBitmap(new block3Image() as Bitmap));
 			_block3.name = BlockType.MICKY;
 			_block3.width = Cell.WIDTH_SIZE;
 			_block3.height = Cell.HEIGHT_SIZE;
@@ -177,7 +201,7 @@ package
 			_block3.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block3);
 			
-			_block4 = new Button(_resources.getSubTexture("FieldSpriteSheet.png", "mongyi"));
+			_block4 = new Button(Texture.fromBitmap(new block4Image() as Bitmap));
 			_block4.name = BlockType.MONGYI;
 			_block4.width = Cell.WIDTH_SIZE;
 			_block4.height = Cell.HEIGHT_SIZE;
@@ -186,7 +210,7 @@ package
 			_block4.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_block4);
 			
-			_block5 = new Button(_resources.getSubTexture("FieldSpriteSheet.png", "pinky"));
+			_block5 = new Button(Texture.fromBitmap(new block5Image() as Bitmap));
 			_block5.name = BlockType.PINKY;
 			_block5.width = Cell.WIDTH_SIZE;
 			_block5.height = Cell.HEIGHT_SIZE;
@@ -204,7 +228,7 @@ package
 			_wall.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_wall);
 			
-			_countUpButton = new Button(_resources.getSubTexture("StageSelectSceneSpriteSheet.png", "upArrow"));
+			_countUpButton = new Button(Texture.fromBitmap(new upArrowImage() as Bitmap));
 			_countUpButton.width = 50;
 			_countUpButton.height = 50;
 			_countUpButton.x = Field.PADDING;
@@ -221,7 +245,7 @@ package
 			_countTimeText.y = _countUpButton.y;
 			addChild(_countTimeText);
 			
-			_countDownButton = new Button(_resources.getSubTexture("StageSelectSceneSpriteSheet.png", "downArrow"));
+			_countDownButton = new Button(Texture.fromBitmap(new downArrowImage() as Bitmap));
 			_countDownButton.width = 50;
 			_countDownButton.height = 50;
 			_countDownButton.x = _countTimeText.x + _countTimeText.width;
@@ -229,7 +253,7 @@ package
 			_countDownButton.addEventListener(Event.TRIGGERED, onClickedDownButton);
 			addChild(_countDownButton);
 			
-			_testButton = new Button(_resources.getSubTexture("FieldSpriteSheet.png", "backGround"), "TEST");
+			_testButton = new Button(Texture.fromBitmap(new backGroundImage() as Bitmap), "TEST");
 			_testButton.width = 80;
 			_testButton.height = 60;
 			_testButton.textFormat.bold = true;
@@ -317,24 +341,30 @@ package
 		
 		private function createNativeWindow():void
 		{
+			if(_newWindow != null)
+			{
+				trace("aa");
+				_newWindow.close();
+			}
+			
 			var options:NativeWindowInitOptions = new NativeWindowInitOptions();
 			options.transparent = false;
 			options.systemChrome = NativeWindowSystemChrome.STANDARD;
 			options.renderMode = NativeWindowRenderMode.DIRECT;
 			options.type = NativeWindowType.NORMAL;
 			
-			var newWindow:NewWindow = new NewWindow(options);
+			_newWindow = new NewWindow(options);
 			
-			newWindow.title = "A title";
-			newWindow.width = 600;
-			newWindow.height = 1024;
+			_newWindow.title = "A title";
+			_newWindow.width = 600;
+			_newWindow.height = 1024;
 			
-			newWindow.stage.align = StageAlign.TOP_LEFT;
-			newWindow.stage.scaleMode = StageScaleMode.NO_SCALE;
+			_newWindow.stage.align = StageAlign.TOP_LEFT;
+			_newWindow.stage.scaleMode = StageScaleMode.NO_SCALE;
 			
-			newWindow.activate();
+			_newWindow.activate();
 			
-			newWindow.startStarling();
+			_newWindow.startStarling();
 		}
 	}
 }

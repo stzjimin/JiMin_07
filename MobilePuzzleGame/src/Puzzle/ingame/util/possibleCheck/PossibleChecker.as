@@ -1,11 +1,13 @@
 package puzzle.ingame.util.possibleCheck
 {
 	import flash.utils.Dictionary;
+	import flash.utils.getTimer;
 	
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.cell.NeigborType;
 	import puzzle.ingame.cell.blocks.BlockType;
 	
+	import starling.core.Starling;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
 
@@ -240,8 +242,17 @@ package puzzle.ingame.util.possibleCheck
 			if(blocked)
 				return false;
 			
+			var time:Number = getTimer() / 1000;
+			
 			while(currentNode != destNode)
 			{
+				var current:Number = getTimer() / 1000;
+				if((current - time) > 0.016)
+				{
+					time = current;
+					Starling.current.nextFrame();
+				}
+				
 //				trace(currentNode.name);
 //				trace(curveCount);
 				var dest:int = checkDest(currentNode, destNode);

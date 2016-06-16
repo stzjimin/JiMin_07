@@ -455,8 +455,6 @@ package puzzle.ingame
 			}
 			blockData = null;
 			
-			_field.checkPossibleCell();
-			
 			_playJuggler = new Juggler();
 			_playJuggler.add(_field);
 			_playJuggler.add(_timer);
@@ -484,12 +482,14 @@ package puzzle.ingame
 			_goImage.x = _backGround.width / 2;
 			_goImage.y = _backGround.height / 2;
 			
+			this.scaleX *= (PuzzleGame.stageWidth / 576);
+			this.scaleY *= (PuzzleGame.stageHeight / 1024);
+			
+			_field.checkPossibleCell();
+			
 			readyTime();
 			
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			
-			this.scaleX *= (PuzzleGame.stageWidth / 576);
-			this.scaleY *= (PuzzleGame.stageHeight / 1024);
 		}
 		
 		private function onKeyDown(event:KeyboardEvent):void

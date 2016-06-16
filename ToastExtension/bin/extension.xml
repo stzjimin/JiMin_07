@@ -1,0 +1,13 @@
+<extension xmlns="http://ns.adobe.com/air/extension/3.1">
+      <id>com.lpesign.ToastExtension</id>
+      <versionNumber>1.0.0</versionNumber>
+      <platforms>
+        <platform name="Android-ARM">
+            <applicationDeployment>
+                <nativeLibrary>ToastExtension.jar</nativeLibrary>
+                <initializer>com.lpesign.ToastExtension</initializer>
+                <finalizer>com.lpesign.ToastExtension</finalizer>
+            </applicationDeployment>
+        </platform>
+       </platforms>
+</extension>

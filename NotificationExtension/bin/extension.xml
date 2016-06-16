@@ -1,0 +1,13 @@
+<extension xmlns="http://ns.adobe.com/air/extension/3.1">
+      <id>com.push.PushExtension</id>
+      <versionNumber>1.0.0</versionNumber>
+      <platforms>
+        <platform name="Android-ARM">
+            <applicationDeployment>
+                <nativeLibrary>NotificationExtension.jar</nativeLibrary>
+                <initializer>com.push.PushExtension</initializer>
+                <finalizer>com.push.PushExtension</finalizer>
+            </applicationDeployment>
+        </platform>
+       </platforms>
+</extension>

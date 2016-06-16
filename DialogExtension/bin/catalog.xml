@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding ="utf-8"?>
+<swc xmlns="http://www.adobe.com/flash/swccatalog/9">
+  <versions>
+    <swc version="1.2" />
+    <flex version="4.6.0" build="23201" minimumSupportedVersion="3.0.0" />
+  </versions>
+  <features>
+    <feature-script-deps />
+    <feature-files />
+  </features>
+  <libraries>
+    <library path="library.swf">
+      <script name="_342599dbb27d69fafd8b23aa8067fcbd4660239909c4b0b86db412fe95312540_flash_display_Sprite" mod="1463123709631" signatureChecksum="783317467" >
+        <def id="_342599dbb27d69fafd8b23aa8067fcbd4660239909c4b0b86db412fe95312540_flash_display_Sprite" /> 
+        <dep id="flash.system:Security" type="e" /> 
+        <dep id="AS3" type="n" /> 
+        <dep id="flash.display:Sprite" type="i" /> 
+      </script>
+      <script name="DialogExtension" mod="1461295350254" signatureChecksum="4009535585" >
+        <def id="DialogExtension" /> 
+        <dep id="trace" type="e" /> 
+        <dep id="flash.events:StatusEvent" type="e" /> 
+        <dep id="flash.external:ExtensionContext" type="e" /> 
+        <dep id="Error" type="e" /> 
+        <dep id="flash.events:IEventDispatcher" type="s" /> 
+        <dep id="flash.events:StatusEvent" type="s" /> 
+        <dep id="flash.external:ExtensionContext" type="s" /> 
+        <dep id="Error" type="s" /> 
+        <dep id="AS3" type="n" /> 
+        <dep id="flash.events:EventDispatcher" type="i" /> 
+      </script>
+      <digests>
+        <digest type="SHA-256" signed="false" value="2f9b4a515b8f07427d82b08fa9b680938f86ddcba93cd7f43f0f096a87ee3537"   />
+      </digests>
+    </library>
+  </libraries>
+  <files>
+  </files>
+</swc>

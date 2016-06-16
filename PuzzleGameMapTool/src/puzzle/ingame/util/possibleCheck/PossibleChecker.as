@@ -24,7 +24,7 @@ package puzzle.ingame.util.possibleCheck
 		
 		public function PossibleChecker()
 		{
-//			init();
+			init();
 		}
 		
 		public function init():void
@@ -35,7 +35,7 @@ package puzzle.ingame.util.possibleCheck
 				{
 //					trace(key.name);
 					for(var i:int = 0; i < _possibles[key].length; i++)
-						_possibles[key][i].distroy();
+						_possibles[key][i].destroy();
 					_possibles[key].splice(0, _possibles[key].length);
 					delete _possibles[key];
 				}
@@ -51,7 +51,7 @@ package puzzle.ingame.util.possibleCheck
 				{
 //					trace(key.name);
 					for(var i:int = 0; i < _possibles[key].length; i++)
-						_possibles[key][i].distroy();
+						_possibles[key][i].destroy();
 					_possibles[key].splice(0, _possibles[key].length);
 					delete _possibles[key];
 				}
@@ -126,10 +126,30 @@ package puzzle.ingame.util.possibleCheck
 					
 					if(cells[i].block.type == cells[j].block.type)
 					{
-//						trace("startNode = " + cells[i].name);
-//						trace("destNode = " + cells[j].name);
-						if(findPath(cells[i], cells[j]))
+						trace("startNode = " + cells[i].name);
+						trace("destNode = " + cells[j].name);
+						var isPossibled:Boolean = false;
+						if(_possibles[cells[i]] != null)
+						{
+							var possibleVector:Vector.<Possible> = _possibles[cells[i]];
+							for(var k:int = 0; k < possibleVector.length; k++)
+							{
+								if(possibleVector[k].destCell == cells[j])
+								{
+									isPossibled = true;
+									break;
+								}
+							}
+						}
+						if(isPossibled)
+						{
 							_possibleCount++;
+						}
+						else
+						{
+							if(findPath(cells[i], cells[j]))
+								_possibleCount++;
+						}
 					}
 				}
 			}
@@ -192,6 +212,22 @@ package puzzle.ingame.util.possibleCheck
 			
 			var states:Vector.<State> = new Vector.<State>();
 			
+			var blocked:Boolean = true;
+			for(var i:int = 0; i < _neigborTypes.length; i++)
+			{
+				if(destNode.neigbor[_neigborTypes[i]] != null && destNode.neigbor[_neigborTypes[i]].block == null)
+				{
+					blocked = false;
+				}
+				else
+				{
+					if(destNode.neigbor[_neigborTypes[i]] == startNode)
+						blocked = false;
+				}
+			}
+			if(blocked)
+				return false;
+			
 			while(currentNode != destNode)
 			{
 //				trace(currentNode.name);
@@ -251,12 +287,12 @@ package puzzle.ingame.util.possibleCheck
 					if(columDist > 0)
 					{
 						if(direction == NeigborType.RIGHT)
-							return 1;
+							return 2;
 					}
 					else
 					{
 						if(direction == NeigborType.LEFT)
-							return 1;
+							return 2;
 					}
 				}
 				
@@ -265,42 +301,50 @@ package puzzle.ingame.util.possibleCheck
 					if(rowDist > 0)
 					{
 						if(direction == NeigborType.BOTTOM)
-							return 1;
+							return 2;
 					}
 					else
 					{
 						if(direction == NeigborType.TOP)
-							return 1;
+							return 2;
 					}
 				}
 				
 				if(direction == NeigborType.RIGHT)
 				{
-					if(columDist >= 0)
-						return 0;
-					else
-						return -1;
+					//					if(columDist >= 0)
+					//						return 0;
+					//					else
+					//						return -1;
+					//					
+					return columDist >= 0 ? 0 : -1;
 				}
 				else if(direction == NeigborType.LEFT)
 				{
-					if(columDist <= 0)
-						return 0;
-					else
-						return -1;
+					//					if(columDist <= 0)
+					//						return 0;
+					//					else
+					//						return -1;
+					
+					return columDist <= 0 ? 0 : -1;
 				}
 				else if(direction == NeigborType.TOP)
 				{
-					if(rowDist <= 0)
-						return 0;
-					else
-						return -1;
+					//					if(rowDist <= 0)
+					//						return 0;
+					//					else
+					//						return -1;
+					
+					return rowDist <= 0 ? 0 : -1;
 				}
 				else if(direction == NeigborType.BOTTOM)
 				{
-					if(rowDist >= 0)
-						return 0;
-					else
-						return -1;
+					//					if(rowDist >= 0)
+					//						return 0;
+					//					else
+					//						return -1;
+					
+					return rowDist >= 0 ? 0 : -1;
 				}
 			}
 			
@@ -323,11 +367,15 @@ package puzzle.ingame.util.possibleCheck
 						if(prevNode.neigbor[_neigborTypes[i]] != node)
 						{
 							curve = curveCount+1;
+//							priority = -2;
 							if(curve != 1)
 								path.push(node);
 						}
 						else
+						{
 							curve = curveCount;
+//							priority = calculPriority(node, _neigborTypes[i]);
+						}
 						
 						if(curve >= 4)	//처음 한번 진행할 때 커브카운트가 1증가 하기때문에 커브 최대 횟수는 3이하로 계산
 							continue;
@@ -395,7 +443,7 @@ package puzzle.ingame.util.possibleCheck
 		{
 			var vector:Vector.<Possible> = _possibles[cell];
 			for(var i:int = 0; i < vector.length; i++)
-				vector[i].distroy();
+				vector[i].destroy();
 			vector.splice(0, vector.length);
 			
 			for(var key:Cell in _possibles)
@@ -405,7 +453,7 @@ package puzzle.ingame.util.possibleCheck
 				{
 					if(vector[i].destCell == cell)
 					{
-						vector[i].distroy();
+						vector[i].destroy();
 						vector.removeAt(i);
 					}
 				}

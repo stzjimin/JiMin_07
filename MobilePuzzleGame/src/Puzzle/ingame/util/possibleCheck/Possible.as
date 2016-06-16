@@ -12,7 +12,7 @@ package puzzle.ingame.util.possibleCheck
 		{
 		}
 		
-		public function distroy():void
+		public function destroy():void
 		{
 			_startCell = null;
 			_destCell = null;

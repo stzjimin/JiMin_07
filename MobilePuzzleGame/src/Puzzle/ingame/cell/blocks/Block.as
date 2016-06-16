@@ -129,7 +129,7 @@ package puzzle.ingame.cell.blocks
 				_clicked = !_clicked;
 				if(_clicked)
 				{
-					this.scale = 0.9;
+					this.scale = 0.8;
 					parent.dispatchEvent(new Event(PossibleCheckerEventType.ADD_PREV));
 				}
 				else

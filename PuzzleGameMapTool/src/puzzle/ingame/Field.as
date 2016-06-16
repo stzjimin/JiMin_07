@@ -226,7 +226,7 @@ package puzzle.ingame
 		 */		
 		public function checkPossibleCell():void
 		{
-			_possibleChecker.init();
+//			_possibleChecker.init();
 			var prevTime:Number = getTimer() / 1000;
 			_possibleChecker.checkPossibleCell(_cells);
 			var currentTime:Number = getTimer() / 1000;
@@ -234,7 +234,7 @@ package puzzle.ingame
 			trace(_possibleChecker.blockCount);
 			trace(_possibleChecker.possibleCount);
 			
-//			trace("경과시간 = " + (currentTime - prevTime));
+			trace("경과시간 = " + (currentTime - prevTime));
 			
 			if(_possibleChecker.blockCount > 0 && _possibleChecker.possibleCount == 0)
 				shuffle();
@@ -343,6 +343,8 @@ package puzzle.ingame
 					trace("게임 핵 못함");
 				}
 			}
+			else
+				dispatchEvent(new CheckEvent(CheckEvent.CHECKED_COMPLETE, _possibleChecker.blockCount, _possibleChecker.possibleCount));
 		}
 		
 		private function factorial(number:int):Number 
@@ -402,7 +404,7 @@ package puzzle.ingame
 			
 //			checkPossibleCell();
 			
-			possible.distroy();
+			possible.destroy();
 			
 			dispatchEvent(new Event(Field.PANG));
 			

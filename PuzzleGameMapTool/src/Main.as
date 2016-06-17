@@ -97,7 +97,7 @@ package
 //		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/resources/spriteSheet");
 //		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/resources/sound");
 //		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/resources/image");
-		private var _resources:Resources;
+		private var _resources:MapToolResources;
 		
 		private var _backGround:Image;
 		private var _cells:Vector.<MapToolCell>;
@@ -178,15 +178,15 @@ package
 		{
 			super();
 			
-			_resources = new Resources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
+			_resources = new MapToolResources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
 			
-//			_resources.addSpriteName("IngameSpriteSheet.png");
+			_resources.addSpriteName("IngameSpriteSheet.png");
 //			_resources.addSpriteName("StageSelectSceneSpriteSheet.png");
 //			_resources.addSpriteName("UserInfoSpriteSheet.png");
 //			_resources.addSpriteName("PausePopupSpriteSheet.png");
 //			_resources.addSpriteName("ResultSpriteSheet.png");
 //			_resources.addSpriteName("StagePopupSpriteSheet.png");
-//			_resources.addSpriteName("FieldSpriteSheet.png");
+			_resources.addSpriteName("FieldSpriteSheet.png");
 //			_resources.addSpriteName("ShopSpriteSheet.png");
 //			_resources.addSpriteName("RankingSpriteSheet.png");
 //			_resources.addSpriteName("readyClip.png");
@@ -198,26 +198,26 @@ package
 			_resources.addSoundName("searchSound.mp3");
 			_resources.addSoundName("shuffleSound2.mp3");
 			
-			_resources.addEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
-			_resources.addEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.addEventListener(MapToolLoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.addEventListener(MapToolLoadingEvent.FAILED, onFailedLoading);
 			_resources.loadResource();
 		}
 		
-		private function onFailedLoading(event:LoadingEvent):void
+		private function onFailedLoading(event:MapToolLoadingEvent):void
 		{
 			trace(event.data);
-			_resources.removeEventListener(LoadingEvent.COMPLETE, onCompleteLoading);
-			_resources.removeEventListener(LoadingEvent.FAILED, onFailedLoading);
+			_resources.removeEventListener(MapToolLoadingEvent.COMPLETE, onCompleteLoading);
+			_resources.removeEventListener(MapToolLoadingEvent .FAILED, onFailedLoading);
 			_resources.destroy();
 			NativeApplication.nativeApplication.exit();
 		}
 		
-		private function onCompleteLoading(event:LoadingEvent):void
+		private function onCompleteLoading(event:MapToolLoadingEvent):void
 		{
 			_countTime = 10;
 			NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			
-			_backGround = new Image(Texture.fromBitmap(new ingameBackGroundImage() as Bitmap));
+			_backGround = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "IngameBackGround"));
 			_backGround.width = 800;
 			_backGround.height = 1024;
 			_backGround.addEventListener(TouchEvent.TOUCH, onTouch);
@@ -229,7 +229,7 @@ package
 			var columnNum:int = 0;
 			for(var i:int = 0; i < COLUMN_NUM*ROW_NUM; i++)
 			{
-				var cell:MapToolCell = new MapToolCell(_emptyBlockTexture, Cell.WIDTH_SIZE, Cell.HEIGHT_SIZE);
+				var cell:MapToolCell = new MapToolCell(_resources.getSubTexture("FieldSpriteSheet.png", "backGround"), Cell.WIDTH_SIZE, Cell.HEIGHT_SIZE);
 				var rowNum:int = i%ROW_NUM;
 				_cells.push(cell);
 				//				cell.addEventListener(PossibleCheckerEventType.ADD_PREV, onAddPrev);
@@ -258,31 +258,31 @@ package
 					columnNum++;
 			}
 			
-			_blueTexture = Texture.fromBitmap(new blueImage() as Bitmap);
-			_blueCircleTexture = Texture.fromBitmap(new blueCircleImage() as Bitmap);
-			_blueLineTexture = Texture.fromBitmap(new blueLineImage() as Bitmap);
+			_blueTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.BLUE);
+			_blueCircleTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.BLUE_CIRCLE);
+			_blueLineTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.BLUE_LINE);
 				
-			_lucyTexture = Texture.fromBitmap(new lucyImage() as Bitmap);
-			_lucyCircleTexture = Texture.fromBitmap(new lucyCircleImage() as Bitmap);
-			_lucyLineTexture = Texture.fromBitmap(new lucyLineImage() as Bitmap);
+			_lucyTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.LUCY);
+			_lucyCircleTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.LUCY_CIRCLE);
+			_lucyLineTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.LUCY_LINE);
 			
-			_mickyTexture = Texture.fromBitmap(new mickyImage() as Bitmap);
-			_mickyCircleTexture = Texture.fromBitmap(new mickyCircleImage() as Bitmap);
-			_mickyLineTexture = Texture.fromBitmap(new mickyLineImage() as Bitmap);
+			_mickyTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.MICKY);
+			_mickyCircleTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.MICKY_CIRCLE);
+			_mickyLineTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.MICKY_LINE);
 			
-			_mongyiTexture = Texture.fromBitmap(new mongyiImage() as Bitmap);
-			_mongyiCircleTexture = Texture.fromBitmap(new mongyiCircleImage() as Bitmap);
-			_mongyiLineTexture = Texture.fromBitmap(new mongyiLineImage() as Bitmap);
+			_mongyiTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.MONGYI);
+			_mongyiCircleTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.MONGYI_CIRCLE);
+			_mongyiLineTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.MONGYI_LINE);
 			
-			_pinkyTexture = Texture.fromBitmap(new pinkyImage() as Bitmap);
-			_pinkyCircleTexture = Texture.fromBitmap(new pinkyCircleImage() as Bitmap);
-			_pinkyLineTexture = Texture.fromBitmap(new pinkyLineImage() as Bitmap);
+			_pinkyTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.PINKY);
+			_pinkyCircleTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.PINKY_CIRCLE);
+			_pinkyLineTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.PINKY_LINE);
 			
-			_ariTexture = Texture.fromBitmap(new ariImage() as Bitmap);
-			_ariCircleTexture = Texture.fromBitmap(new ariCircleImage() as Bitmap);
-			_ariLineTexture = Texture.fromBitmap(new ariLineImage() as Bitmap);
+			_ariTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.ARI);
+			_ariCircleTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.ARI_CIRCLE);
+			_ariLineTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.ARI_LINE);
 			
-			_wallTexture = Texture.fromBitmap(new wallImage() as Bitmap);
+			_wallTexture = _resources.getSubTexture("FieldSpriteSheet.png", BlockType.WALL);
 			
 			_blueBlock = new Button(_blueTexture, "Q");
 			_blueBlock.textFormat.bold = true;
@@ -531,6 +531,7 @@ package
 			addChild(_countUpButton);
 			
 			_countTimeText = new TextField(200, 50);
+			_countTimeText.border = true;
 			_countTimeText.text = "제한시간 : " + _countTime + "초";
 			_countTimeText.format.bold = true;
 			_countTimeText.format.size = 20;
@@ -605,7 +606,6 @@ package
 		
 		private function onKeyDown(event:KeyboardEvent):void
 		{
-			trace("aa");
 			switch(event.keyCode)
 			{
 				case Keyboard.Q :
@@ -734,36 +734,38 @@ package
 					index = (blockData[i].row*ROW_NUM) + (blockData[i].column);
 					
 					var type:String = blockData[i].type;
-					if(type == BlockType.PINKY)
-					{
-						_cells[index].setBackGroundTexture(_pinkyTexture);
-						_cells[index].name = BlockType.PINKY;
-					}
-					else if(type == BlockType.BLUE)
-					{
-						_cells[index].setBackGroundTexture(_blueTexture);
-						_cells[index].name = BlockType.BLUE;
-					}
-					else if(type == BlockType.MICKY)
-					{
-						_cells[index].setBackGroundTexture(_mickyTexture);
-						_cells[index].name = BlockType.MICKY;
-					}
-					else if(type == BlockType.LUCY)
-					{
-						_cells[index].setBackGroundTexture(_lucyTexture);
-						_cells[index].name = BlockType.LUCY;
-					}
-					else if(type == BlockType.MONGYI)
-					{
-						_cells[index].setBackGroundTexture(_mongyiTexture);
-						_cells[index].name = BlockType.MONGYI;
-					}
-					else if(type == BlockType.WALL)
-					{
-						_cells[index].setBackGroundTexture(_wallTexture);
-						_cells[index].name = BlockType.WALL;
-					}
+					_cells[index].setBackGroundTexture(_resources.getSubTexture("FieldSpriteSheet.png", type));
+					_cells[index].name = type;
+//					if(type == BlockType.PINKY)
+//					{
+//						_cells[index].setBackGroundTexture(_pinkyTexture);
+//						_cells[index].name = BlockType.PINKY;
+//					}
+//					else if(type == BlockType.BLUE)
+//					{
+//						_cells[index].setBackGroundTexture(_blueTexture);
+//						_cells[index].name = BlockType.BLUE;
+//					}
+//					else if(type == BlockType.MICKY)
+//					{
+//						_cells[index].setBackGroundTexture(_mickyTexture);
+//						_cells[index].name = BlockType.MICKY;
+//					}
+//					else if(type == BlockType.LUCY)
+//					{
+//						_cells[index].setBackGroundTexture(_lucyTexture);
+//						_cells[index].name = BlockType.LUCY;
+//					}
+//					else if(type == BlockType.MONGYI)
+//					{
+//						_cells[index].setBackGroundTexture(_mongyiTexture);
+//						_cells[index].name = BlockType.MONGYI;
+//					}
+//					else if(type == BlockType.WALL)
+//					{
+//						_cells[index].setBackGroundTexture(_wallTexture);
+//						_cells[index].name = BlockType.WALL;
+//					}
 				}
 			}
 		}

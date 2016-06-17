@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="UserInfoSpriteSheet.png">
+   <SubTexture name="fork" x="816" y="123" width="74" height="76" />
+   <SubTexture name="search" x="816" y="49" width="76" height="72" />
+   <SubTexture name="shuffle" x="816" y="201" width="72" height="72" />
+   <SubTexture name="mark" x="0" y="0" width="512" height="512" />
+   <SubTexture name="forkSelect" x="894" y="49" width="74" height="76" />
+   <SubTexture name="orangeCircle" x="514" y="49" width="300" height="300" />
+   <SubTexture name="PopupBackGround" x="0" y="514" width="490" height="421" />
+   <SubTexture name="popupTitle" x="514" y="0" width="450" height="47" />
+   <SubTexture name="heartImage" x="514" y="351" width="256" height="216" />
+</TextureAtlas>

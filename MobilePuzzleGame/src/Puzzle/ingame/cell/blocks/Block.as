@@ -48,44 +48,11 @@ package puzzle.ingame.cell.blocks
 		{
 			_clicked = false;
 			
-			var type:String = blockData.type;
-			if(type == BlockType.PINKY)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "pinky");
-				_type = BlockType.PINKY;
-				this.name = "pink";
-			}
-			else if(type == BlockType.BLUE)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue");
-				_type = BlockType.BLUE;
-				this.name = "blue";
-			}
-			else if(type == BlockType.MICKY)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky");
-				_type = BlockType.MICKY;
-				this.name = "micky";
-			}
-			else if(type == BlockType.LUCY)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy");
-				_type = BlockType.LUCY;
-				this.name = "lucy";
-			}
-			else if(type == BlockType.MONGYI)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi");
-				_type = BlockType.MONGYI;
-				this.name = "mongyi";
-			}
-			else if(type == BlockType.WALL)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "wall");
-				_type = BlockType.WALL;
-				this.name = BlockType.WALL;
+			_type = blockData.type;
+			this.name = blockData.type;
+			_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", _type);
+			if(_type == BlockType.WALL)
 				this.touchable = false;
-			}
 			
 			_blockImage = new Image(_blockTexture);
 			_blockImage.x = -Block.PADDING_SIZE;

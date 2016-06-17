@@ -40,6 +40,7 @@ package puzzle.ingame
 	import starling.events.Event;
 	import starling.text.TextField;
 	import starling.textures.TextureAtlas;
+	import starling.utils.Align;
 	import starling.utils.Color;
 	
 	public class InGameScene extends Scene
@@ -345,25 +346,33 @@ package puzzle.ingame
 			_backGround.height = 1024;
 			addChild(_backGround);
 			
-			_blockCount = new TextField(70, 30);
+			_blockCount = new TextField(100, 30);
+//			_blockCount.border = true;
+			_blockCount.format.horizontalAlign = Align.LEFT;
+			_blockCount.x = 10;
 			_blockCount.y = 10;
 			_blockCount.format.bold = true;
-			_blockCount.format.size = 20;
+			_blockCount.format.size = 15;
 			_blockCount.format.color = Color.AQUA;
 			addChild(_blockCount);
 			
-			_possibleCount = new TextField(70, 30);
+			_possibleCount = new TextField(100, 30);
+//			_possibleCount.border = true;
+			_possibleCount.format.horizontalAlign = Align.LEFT;
+			_possibleCount.x = 10;
 			_possibleCount.y = 50;
 			_possibleCount.format.bold = true;
-			_possibleCount.format.size = 20;
+			_possibleCount.format.size = 15;
 			_possibleCount.format.color = Color.AQUA;
 			addChild(_possibleCount);
 			
-			_scoreTextField = new TextField(70, 30);
+			_scoreTextField = new TextField(160, 30);
+			_scoreTextField.format.horizontalAlign = Align.LEFT;
+//			_scoreTextField.border = true;
 			_scoreTextField.alignPivot();
 			_scoreTextField.x = _backGround.width / 2;
 			_scoreTextField.y = 75;
-			_scoreTextField.text = "0";
+			_scoreTextField.text = "점수 : " + "0";
 			_scoreTextField.format.bold = true;
 			_scoreTextField.format.size = 20;
 			_scoreTextField.format.color = Color.RED;
@@ -552,7 +561,7 @@ package puzzle.ingame
 		
 		private function updateScore():void
 		{
-			_scoreTextField.text = _score.toString();
+			_scoreTextField.text = "점수 : " + _score.toString();
 		}
 		
 		private function onCombo():void

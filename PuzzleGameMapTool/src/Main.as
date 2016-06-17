@@ -42,15 +42,46 @@ package
 		private const ingameBackGroundImage:Class;
 		
 		[Embed(source="blue.png")]
-		private const block1Image:Class;
+		private const blueImage:Class;
+		[Embed(source="blue_circle.png")]
+		private const blueCircleImage:Class;
+		[Embed(source="blue_line.png")]
+		private const blueLineImage:Class;
+		
 		[Embed(source="lucy.png")]
-		private const block2Image:Class;
+		private const lucyImage:Class;
+		[Embed(source="lucy_circle.png")]
+		private const lucyCircleImage:Class;
+		[Embed(source="lucy_line.png")]
+		private const lucyLineImage:Class;
+		
 		[Embed(source="micky.png")]
-		private const block3Image:Class;
+		private const mickyImage:Class;
+		[Embed(source="micky_circle.png")]
+		private const mickyCircleImage:Class;
+		[Embed(source="micky_line.png")]
+		private const mickyLineImage:Class;
+		
 		[Embed(source="mongyi.png")]
-		private const block4Image:Class;
+		private const mongyiImage:Class;
+		[Embed(source="mongyi_circle.png")]
+		private const mongyiCircleImage:Class;
+		[Embed(source="mongyi_line.png")]
+		private const mongyiLineImage:Class;
+		
 		[Embed(source="pinky.png")]
-		private const block5Image:Class;
+		private const pinkyImage:Class;
+		[Embed(source="pinky_circle.png")]
+		private const pinkyCircleImage:Class;
+		[Embed(source="pinky_line.png")]
+		private const pinkyLineImage:Class;
+		
+		[Embed(source="ari.png")]
+		private const ariImage:Class;
+		[Embed(source="ari_circle.png")]
+		private const ariCircleImage:Class;
+		[Embed(source="ari_line.png")]
+		private const ariLineImage:Class;
 		
 		[Embed(source="upArrow.png")]
 		private const upArrowImage:Class;
@@ -75,19 +106,57 @@ package
 		
 		private var _blockTypes:Vector.<String>;
 		
-		private var _block1:Button;
-		private var _block2:Button;
-		private var _block3:Button;
-		private var _block4:Button;
-		private var _block5:Button;
+		private var _blueBlock:Button;
+		private var _blueCircleBlock:Button;
+		private var _blueLineBlock:Button;
+		
+		private var _lucyBlock:Button;
+		private var _lucyCircleBlock:Button;
+		private var _lucyLineBlock:Button;
+		
+		private var _mickyBlock:Button;
+		private var _mickyCircleBlock:Button;
+		private var _mickyLineBlock:Button;
+		
+		private var _mongyiBlock:Button;
+		private var _mongyiCircleBlock:Button;
+		private var _mongyiLineBlock:Button;
+		
+		private var _pinkyBlock:Button;
+		private var _pinkyCircleBlock:Button;
+		private var _pinkyLineBlock:Button;
+		
+		private var _ariBlock:Button;
+		private var _ariCircleBlock:Button;
+		private var _ariLineBlock:Button;
+		
 		private var _wall:Button;
 		private var _removeBlockButton:Button;
 		
 		private var _blueTexture:Texture;
+		private var _blueCircleTexture:Texture;
+		private var _blueLineTexture:Texture;
+		
 		private var _lucyTexture:Texture;
+		private var _lucyCircleTexture:Texture;
+		private var _lucyLineTexture:Texture;
+		
 		private var _mickyTexture:Texture;
-		private var _mogyiTexture:Texture;
+		private var _mickyCircleTexture:Texture;
+		private var _mickyLineTexture:Texture;
+		
+		private var _mongyiTexture:Texture;
+		private var _mongyiCircleTexture:Texture;
+		private var _mongyiLineTexture:Texture;
+		
 		private var _pinkyTexture:Texture;
+		private var _pinkyCircleTexture:Texture;
+		private var _pinkyLineTexture:Texture;
+		
+		private var _ariTexture:Texture;
+		private var _ariCircleTexture:Texture;
+		private var _ariLineTexture:Texture;
+		
 		private var _wallTexture:Texture;
 		private var _emptyBlockTexture:Texture;
 		
@@ -189,67 +258,247 @@ package
 					columnNum++;
 			}
 			
-			_blueTexture = Texture.fromBitmap(new block1Image() as Bitmap)
-			_lucyTexture = Texture.fromBitmap(new block2Image() as Bitmap)
-			_mickyTexture = Texture.fromBitmap(new block3Image() as Bitmap)
-			_mogyiTexture = Texture.fromBitmap(new block4Image() as Bitmap)
-			_pinkyTexture = Texture.fromBitmap(new block5Image() as Bitmap)
-			_wallTexture = Texture.fromBitmap(new wallImage() as Bitmap)
+			_blueTexture = Texture.fromBitmap(new blueImage() as Bitmap);
+			_blueCircleTexture = Texture.fromBitmap(new blueCircleImage() as Bitmap);
+			_blueLineTexture = Texture.fromBitmap(new blueLineImage() as Bitmap);
+				
+			_lucyTexture = Texture.fromBitmap(new lucyImage() as Bitmap);
+			_lucyCircleTexture = Texture.fromBitmap(new lucyCircleImage() as Bitmap);
+			_lucyLineTexture = Texture.fromBitmap(new lucyLineImage() as Bitmap);
 			
-			_block1 = new Button(_blueTexture, "Q");
-			_block1.textFormat.bold = true;
-			_block1.textFormat.size = 20;
-			_block1.name = BlockType.BLUE;
-			_block1.width = Cell.WIDTH_SIZE;
-			_block1.height = Cell.HEIGHT_SIZE;
-			_block1.x = Field.PADDING + (13 * Cell.WIDTH_SIZE);
-			_block1.y = Field.PADDING;
-			_block1.addEventListener(Event.TRIGGERED, onClickedBlock);
-			addChild(_block1);
+			_mickyTexture = Texture.fromBitmap(new mickyImage() as Bitmap);
+			_mickyCircleTexture = Texture.fromBitmap(new mickyCircleImage() as Bitmap);
+			_mickyLineTexture = Texture.fromBitmap(new mickyLineImage() as Bitmap);
 			
-			_block2 = new Button(_lucyTexture, "W");
-			_block2.textFormat.bold = true;
-			_block2.textFormat.size = 20;
-			_block2.name = BlockType.LUCY;
-			_block2.width = Cell.WIDTH_SIZE;
-			_block2.height = Cell.HEIGHT_SIZE;
-			_block2.x = _block1.x;
-			_block2.y = _block1.y + _block1.height + 10;
-			_block2.addEventListener(Event.TRIGGERED, onClickedBlock);
-			addChild(_block2);
+			_mongyiTexture = Texture.fromBitmap(new mongyiImage() as Bitmap);
+			_mongyiCircleTexture = Texture.fromBitmap(new mongyiCircleImage() as Bitmap);
+			_mongyiLineTexture = Texture.fromBitmap(new mongyiLineImage() as Bitmap);
 			
-			_block3 = new Button(_mickyTexture, "E");
-			_block3.textFormat.bold = true;
-			_block3.textFormat.size = 20;
-			_block3.name = BlockType.MICKY;
-			_block3.width = Cell.WIDTH_SIZE;
-			_block3.height = Cell.HEIGHT_SIZE;
-			_block3.x = _block2.x;
-			_block3.y = _block2.y + _block2.height + 10;
-			_block3.addEventListener(Event.TRIGGERED, onClickedBlock);
-			addChild(_block3);
+			_pinkyTexture = Texture.fromBitmap(new pinkyImage() as Bitmap);
+			_pinkyCircleTexture = Texture.fromBitmap(new pinkyCircleImage() as Bitmap);
+			_pinkyLineTexture = Texture.fromBitmap(new pinkyLineImage() as Bitmap);
 			
-			_block4 = new Button(_mogyiTexture, "R");
-			_block4.textFormat.bold = true;
-			_block4.textFormat.size = 20;
-			_block4.name = BlockType.MONGYI;
-			_block4.width = Cell.WIDTH_SIZE;
-			_block4.height = Cell.HEIGHT_SIZE;
-			_block4.x = _block3.x;
-			_block4.y = _block3.y + _block3.height + 10;
-			_block4.addEventListener(Event.TRIGGERED, onClickedBlock);
-			addChild(_block4);
+			_ariTexture = Texture.fromBitmap(new ariImage() as Bitmap);
+			_ariCircleTexture = Texture.fromBitmap(new ariCircleImage() as Bitmap);
+			_ariLineTexture = Texture.fromBitmap(new ariLineImage() as Bitmap);
 			
-			_block5 = new Button(_pinkyTexture, "T");
-			_block5.textFormat.bold = true;
-			_block5.textFormat.size = 20;
-			_block5.name = BlockType.PINKY;
-			_block5.width = Cell.WIDTH_SIZE;
-			_block5.height = Cell.HEIGHT_SIZE;
-			_block5.x = _block4.x;
-			_block5.y = _block4.y + _block4.height + 10;
-			_block5.addEventListener(Event.TRIGGERED, onClickedBlock);
-			addChild(_block5);
+			_wallTexture = Texture.fromBitmap(new wallImage() as Bitmap);
+			
+			_blueBlock = new Button(_blueTexture, "Q");
+			_blueBlock.textFormat.bold = true;
+			_blueBlock.textFormat.size = 20;
+			_blueBlock.textFormat.color = Color.RED;
+			_blueBlock.name = BlockType.BLUE;
+			_blueBlock.width = Cell.WIDTH_SIZE;
+			_blueBlock.height = Cell.HEIGHT_SIZE;
+			_blueBlock.x = Field.PADDING + (13 * Cell.WIDTH_SIZE);
+			_blueBlock.y = Field.PADDING;
+			_blueBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_blueBlock);
+			
+			_blueCircleBlock = new Button(_blueCircleTexture, "ctrl+Q");
+			_blueCircleBlock.textFormat.bold = true;
+			_blueCircleBlock.textFormat.size = 20;
+			_blueCircleBlock.textFormat.color = Color.RED;
+			_blueCircleBlock.name = BlockType.BLUE_CIRCLE;
+			_blueCircleBlock.width = Cell.WIDTH_SIZE;
+			_blueCircleBlock.height = Cell.HEIGHT_SIZE;
+			_blueCircleBlock.x = _blueBlock.x + _blueBlock.width + 10;
+			_blueCircleBlock.y = _blueBlock.y;
+			_blueCircleBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_blueCircleBlock);
+			
+			_blueLineBlock = new Button(_blueLineTexture, "alt+Q");
+			_blueLineBlock.textFormat.bold = true;
+			_blueLineBlock.textFormat.size = 20;
+			_blueLineBlock.textFormat.color = Color.RED;
+			_blueLineBlock.name = BlockType.BLUE_LINE;
+			_blueLineBlock.width = Cell.WIDTH_SIZE;
+			_blueLineBlock.height = Cell.HEIGHT_SIZE;
+			_blueLineBlock.x = _blueCircleBlock.x + _blueCircleBlock.width + 10;
+			_blueLineBlock.y = _blueCircleBlock.y;
+			_blueLineBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_blueLineBlock);
+			
+			_lucyBlock = new Button(_lucyTexture, "W");
+			_lucyBlock.textFormat.bold = true;
+			_lucyBlock.textFormat.size = 20;
+			_lucyBlock.textFormat.color = Color.RED;
+			_lucyBlock.name = BlockType.LUCY;
+			_lucyBlock.width = Cell.WIDTH_SIZE;
+			_lucyBlock.height = Cell.HEIGHT_SIZE;
+			_lucyBlock.x = _blueBlock.x;
+			_lucyBlock.y = _blueBlock.y + _blueBlock.height + 10;
+			_lucyBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_lucyBlock);
+			
+			_lucyCircleBlock = new Button(_lucyCircleTexture, "ctrl+W");
+			_lucyCircleBlock.textFormat.bold = true;
+			_lucyCircleBlock.textFormat.size = 20;
+			_lucyCircleBlock.textFormat.color = Color.RED;
+			_lucyCircleBlock.name = BlockType.LUCY_CIRCLE;
+			_lucyCircleBlock.width = Cell.WIDTH_SIZE;
+			_lucyCircleBlock.height = Cell.HEIGHT_SIZE;
+			_lucyCircleBlock.x = _lucyBlock.x + _lucyBlock.width + 10;
+			_lucyCircleBlock.y = _lucyBlock.y;
+			_lucyCircleBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_lucyCircleBlock);
+			
+			_lucyLineBlock = new Button(_lucyLineTexture, "alt+W");
+			_lucyLineBlock.textFormat.bold = true;
+			_lucyLineBlock.textFormat.size = 20;
+			_lucyLineBlock.textFormat.color = Color.RED;
+			_lucyLineBlock.name = BlockType.LUCY_LINE;
+			_lucyLineBlock.width = Cell.WIDTH_SIZE;
+			_lucyLineBlock.height = Cell.HEIGHT_SIZE;
+			_lucyLineBlock.x = _lucyCircleBlock.x + _lucyCircleBlock.width + 10;
+			_lucyLineBlock.y = _lucyCircleBlock.y;
+			_lucyLineBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_lucyLineBlock);
+			
+			_mickyBlock = new Button(_mickyTexture, "E");
+			_mickyBlock.textFormat.bold = true;
+			_mickyBlock.textFormat.size = 20;
+			_mickyBlock.textFormat.color = Color.RED;
+			_mickyBlock.name = BlockType.MICKY;
+			_mickyBlock.width = Cell.WIDTH_SIZE;
+			_mickyBlock.height = Cell.HEIGHT_SIZE;
+			_mickyBlock.x = _lucyBlock.x;
+			_mickyBlock.y = _lucyBlock.y + _lucyBlock.height + 10;
+			_mickyBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_mickyBlock);
+			
+			_mickyCircleBlock = new Button(_mickyCircleTexture, "ctrl+E");
+			_mickyCircleBlock.textFormat.bold = true;
+			_mickyCircleBlock.textFormat.size = 20;
+			_mickyCircleBlock.textFormat.color = Color.RED;
+			_mickyCircleBlock.name = BlockType.MICKY_CIRCLE;
+			_mickyCircleBlock.width = Cell.WIDTH_SIZE;
+			_mickyCircleBlock.height = Cell.HEIGHT_SIZE;
+			_mickyCircleBlock.x = _mickyBlock.x + _mickyBlock.width + 10;
+			_mickyCircleBlock.y = _mickyBlock.y;
+			_mickyCircleBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_mickyCircleBlock);
+			
+			_mickyLineBlock = new Button(_mickyLineTexture, "alt+E");
+			_mickyLineBlock.textFormat.bold = true;
+			_mickyLineBlock.textFormat.size = 20;
+			_mickyLineBlock.textFormat.color = Color.RED;
+			_mickyLineBlock.name = BlockType.MICKY_LINE;
+			_mickyLineBlock.width = Cell.WIDTH_SIZE;
+			_mickyLineBlock.height = Cell.HEIGHT_SIZE;
+			_mickyLineBlock.x = _mickyCircleBlock.x + _mickyCircleBlock.width + 10;
+			_mickyLineBlock.y = _mickyCircleBlock.y;
+			_mickyLineBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_mickyLineBlock);
+			
+			_mongyiBlock = new Button(_mongyiTexture, "R");
+			_mongyiBlock.textFormat.bold = true;
+			_mongyiBlock.textFormat.size = 20;
+			_mongyiBlock.textFormat.color = Color.RED;
+			_mongyiBlock.name = BlockType.MONGYI;
+			_mongyiBlock.width = Cell.WIDTH_SIZE;
+			_mongyiBlock.height = Cell.HEIGHT_SIZE;
+			_mongyiBlock.x = _mickyBlock.x;
+			_mongyiBlock.y = _mickyBlock.y + _mickyBlock.height + 10;
+			_mongyiBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_mongyiBlock);
+			
+			_mongyiCircleBlock = new Button(_mongyiCircleTexture, "ctrl+R");
+			_mongyiCircleBlock.textFormat.bold = true;
+			_mongyiCircleBlock.textFormat.size = 20;
+			_mongyiCircleBlock.textFormat.color = Color.RED;
+			_mongyiCircleBlock.name = BlockType.MONGYI_CIRCLE;
+			_mongyiCircleBlock.width = Cell.WIDTH_SIZE;
+			_mongyiCircleBlock.height = Cell.HEIGHT_SIZE;
+			_mongyiCircleBlock.x = _mongyiBlock.x + _mongyiBlock.width + 10;
+			_mongyiCircleBlock.y = _mongyiBlock.y;
+			_mongyiCircleBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_mongyiCircleBlock);
+			
+			_mongyiLineBlock = new Button(_mongyiLineTexture, "alt+R");
+			_mongyiLineBlock.textFormat.bold = true;
+			_mongyiLineBlock.textFormat.size = 20;
+			_mongyiLineBlock.textFormat.color = Color.RED;
+			_mongyiLineBlock.name = BlockType.MONGYI_LINE;
+			_mongyiLineBlock.width = Cell.WIDTH_SIZE;
+			_mongyiLineBlock.height = Cell.HEIGHT_SIZE;
+			_mongyiLineBlock.x = _mongyiCircleBlock.x + _mongyiCircleBlock.width + 10;
+			_mongyiLineBlock.y = _mongyiCircleBlock.y;
+			_mongyiLineBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_mongyiLineBlock);
+			
+			_pinkyBlock = new Button(_pinkyTexture, "T");
+			_pinkyBlock.textFormat.bold = true;
+			_pinkyBlock.textFormat.size = 20;
+			_pinkyBlock.textFormat.color = Color.RED;
+			_pinkyBlock.name = BlockType.PINKY;
+			_pinkyBlock.width = Cell.WIDTH_SIZE;
+			_pinkyBlock.height = Cell.HEIGHT_SIZE;
+			_pinkyBlock.x = _mongyiBlock.x;
+			_pinkyBlock.y = _mongyiBlock.y + _mongyiBlock.height + 10;
+			_pinkyBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_pinkyBlock);
+			
+			_pinkyCircleBlock = new Button(_pinkyCircleTexture, "atrl+T");
+			_pinkyCircleBlock.textFormat.bold = true;
+			_pinkyCircleBlock.textFormat.size = 20;
+			_pinkyCircleBlock.textFormat.color = Color.RED;
+			_pinkyCircleBlock.name = BlockType.PINKY_CIRCLE;
+			_pinkyCircleBlock.width = Cell.WIDTH_SIZE;
+			_pinkyCircleBlock.height = Cell.HEIGHT_SIZE;
+			_pinkyCircleBlock.x = _pinkyBlock.x + _pinkyBlock.width + 10;
+			_pinkyCircleBlock.y = _pinkyBlock.y;
+			_pinkyCircleBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_pinkyCircleBlock);
+			
+			_pinkyLineBlock = new Button(_pinkyLineTexture, "alt+T");
+			_pinkyLineBlock.textFormat.bold = true;
+			_pinkyLineBlock.textFormat.size = 20;
+			_pinkyLineBlock.textFormat.color = Color.RED;
+			_pinkyLineBlock.name = BlockType.PINKY_LINE;
+			_pinkyLineBlock.width = Cell.WIDTH_SIZE;
+			_pinkyLineBlock.height = Cell.HEIGHT_SIZE;
+			_pinkyLineBlock.x = _pinkyCircleBlock.x + _pinkyCircleBlock.width + 10;
+			_pinkyLineBlock.y = _pinkyCircleBlock.y;
+			_pinkyLineBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_pinkyLineBlock);
+			
+			_ariBlock = new Button(_ariTexture, "Y");
+			_ariBlock.textFormat.bold = true;
+			_ariBlock.textFormat.size = 20;
+			_ariBlock.textFormat.color = Color.RED;
+			_ariBlock.name = BlockType.ARI;
+			_ariBlock.width = Cell.WIDTH_SIZE;
+			_ariBlock.height = Cell.HEIGHT_SIZE;
+			_ariBlock.x = _pinkyBlock.x;
+			_ariBlock.y = _pinkyBlock.y + _pinkyBlock.height + 10;
+			_ariBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_ariBlock);
+			
+			_ariCircleBlock = new Button(_ariCircleTexture, "ctrl+Y");
+			_ariCircleBlock.textFormat.bold = true;
+			_ariCircleBlock.textFormat.size = 20;
+			_ariCircleBlock.textFormat.color = Color.RED;
+			_ariCircleBlock.name = BlockType.ARI_CIRCLE;
+			_ariCircleBlock.width = Cell.WIDTH_SIZE;
+			_ariCircleBlock.height = Cell.HEIGHT_SIZE;
+			_ariCircleBlock.x = _ariBlock.x + _ariBlock.width + 10;
+			_ariCircleBlock.y = _ariBlock.y;
+			_ariCircleBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_ariCircleBlock);
+			
+			_ariLineBlock = new Button(_ariLineTexture, "alt+Y");
+			_ariLineBlock.textFormat.bold = true;
+			_ariLineBlock.textFormat.size = 20;
+			_ariLineBlock.textFormat.color = Color.RED;
+			_ariLineBlock.name = BlockType.ARI_LINE;
+			_ariLineBlock.width = Cell.WIDTH_SIZE;
+			_ariLineBlock.height = Cell.HEIGHT_SIZE;
+			_ariLineBlock.x = _ariCircleBlock.x + _ariCircleBlock.width + 10;
+			_ariLineBlock.y = _ariCircleBlock.y;
+			_ariLineBlock.addEventListener(Event.TRIGGERED, onClickedBlock);
+			addChild(_ariLineBlock);
 			
 			_wall = new Button(_wallTexture, "A");
 			_wall.textFormat.bold = true;
@@ -257,8 +506,8 @@ package
 			_wall.name = BlockType.WALL;
 			_wall.width = Cell.WIDTH_SIZE;
 			_wall.height = Cell.HEIGHT_SIZE;
-			_wall.x = _block5.x;
-			_wall.y = _block5.y + _block5.height + 10;
+			_wall.x = _ariBlock.x;
+			_wall.y = _ariBlock.y + _ariBlock.height + 10;
 			_wall.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_wall);
 			
@@ -268,8 +517,8 @@ package
 			_removeBlockButton.name = Main.NONE;
 			_removeBlockButton.width = Cell.WIDTH_SIZE;
 			_removeBlockButton.height = Cell.HEIGHT_SIZE;
-			_removeBlockButton.x = _block1.x + _block1.width + 20;
-			_removeBlockButton.y = _block1.y;
+			_removeBlockButton.x = _ariCircleBlock.x;
+			_removeBlockButton.y = _ariCircleBlock.y + _ariCircleBlock.height + 10;
 			_removeBlockButton.addEventListener(Event.TRIGGERED, onClickedBlock);
 			addChild(_removeBlockButton);
 				
@@ -360,19 +609,52 @@ package
 			switch(event.keyCode)
 			{
 				case Keyboard.Q :
-					_block1.dispatchEvent(new Event(Event.TRIGGERED));
+					if(event.ctrlKey)
+						_blueCircleBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else if(event.altKey)
+						_blueLineBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else
+						_blueBlock.dispatchEvent(new Event(Event.TRIGGERED));
 					break;
 				case Keyboard.W :
-					_block2.dispatchEvent(new Event(Event.TRIGGERED));
+					if(event.ctrlKey)
+						_lucyCircleBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else if(event.altKey)
+						_lucyLineBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else
+						_lucyBlock.dispatchEvent(new Event(Event.TRIGGERED));
 					break;
 				case Keyboard.E :
-					_block3.dispatchEvent(new Event(Event.TRIGGERED));
+					if(event.ctrlKey)
+						_mickyCircleBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else if(event.altKey)
+						_mickyLineBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else
+						_mickyBlock.dispatchEvent(new Event(Event.TRIGGERED));
 					break;
 				case Keyboard.R :
-					_block4.dispatchEvent(new Event(Event.TRIGGERED));
+					if(event.ctrlKey)
+						_mongyiCircleBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else if(event.altKey)
+						_mongyiLineBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else
+						_mongyiBlock.dispatchEvent(new Event(Event.TRIGGERED));
 					break;
 				case Keyboard.T :
-					_block5.dispatchEvent(new Event(Event.TRIGGERED));
+					if(event.ctrlKey)
+						_pinkyCircleBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else if(event.altKey)
+						_pinkyLineBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else
+						_pinkyBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					break;
+				case Keyboard.Y :
+					if(event.ctrlKey)
+						_ariCircleBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else if(event.altKey)
+						_ariLineBlock.dispatchEvent(new Event(Event.TRIGGERED));
+					else
+						_ariBlock.dispatchEvent(new Event(Event.TRIGGERED));
 					break;
 				case Keyboard.A :
 					_wall.dispatchEvent(new Event(Event.TRIGGERED));
@@ -474,7 +756,7 @@ package
 					}
 					else if(type == BlockType.MONGYI)
 					{
-						_cells[index].setBackGroundTexture(_mogyiTexture);
+						_cells[index].setBackGroundTexture(_mongyiTexture);
 						_cells[index].name = BlockType.MONGYI;
 					}
 					else if(type == BlockType.WALL)

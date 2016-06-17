@@ -17,9 +17,6 @@ package puzzle.ingame.cell.blocks
 
 	public class Block extends DisplayObjectContainer implements IAnimatable
 	{	
-		[Embed(source="wall.png")]
-		private const wallImage:Class;
-		
 		public static const PADDING_SIZE:Number = 5;
 		
 		private var _resources:Resources;
@@ -51,44 +48,50 @@ package puzzle.ingame.cell.blocks
 		{
 			_clicked = false;
 			
-			var type:String = blockData.type;
-			if(type == BlockType.PINKY)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "pinky");
-				_type = BlockType.PINKY;
-				this.name = BlockType.PINKY;
-			}
-			else if(type == BlockType.BLUE)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue");
-				_type = BlockType.BLUE;
-				this.name = BlockType.BLUE;
-			}
-			else if(type == BlockType.MICKY)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky");
-				_type = BlockType.MICKY;
-				this.name = BlockType.MICKY;
-			}
-			else if(type == BlockType.LUCY)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy");
-				_type = BlockType.LUCY;
-				this.name = BlockType.LUCY;
-			}
-			else if(type == BlockType.MONGYI)
-			{
-				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi");
-				_type = BlockType.MONGYI;
-				this.name = BlockType.MONGYI;
-			}
-			else if(type == BlockType.WALL)
-			{
-				_blockTexture = Texture.fromBitmap(new wallImage() as Bitmap);
-				_type = BlockType.WALL;
-				this.name = BlockType.WALL;
+			_type = blockData.type;
+			this.name = blockData.type;
+			_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", _type);
+			if(_type == BlockType.WALL)
 				this.touchable = false;
-			}
+			
+//			var type:String = blockData.type;
+//			if(type == BlockType.PINKY)
+//			{
+//				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "pinky");
+//				_type = BlockType.PINKY;
+//				this.name = BlockType.PINKY;
+//			}
+//			else if(type == BlockType.BLUE)
+//			{
+//				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue");
+//				_type = BlockType.BLUE;
+//				this.name = BlockType.BLUE;
+//			}
+//			else if(type == BlockType.MICKY)
+//			{
+//				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky");
+//				_type = BlockType.MICKY;
+//				this.name = BlockType.MICKY;
+//			}
+//			else if(type == BlockType.LUCY)
+//			{
+//				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy");
+//				_type = BlockType.LUCY;
+//				this.name = BlockType.LUCY;
+//			}
+//			else if(type == BlockType.MONGYI)
+//			{
+//				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi");
+//				_type = BlockType.MONGYI;
+//				this.name = BlockType.MONGYI;
+//			}
+//			else if(type == BlockType.WALL)
+//			{
+//				_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "wall");
+//				_type = BlockType.WALL;
+//				this.name = BlockType.WALL;
+//				this.touchable = false;
+//			}
 			
 			_blockImage = new Image(_blockTexture);
 			_blockImage.x = -Block.PADDING_SIZE;
@@ -112,6 +115,86 @@ package puzzle.ingame.cell.blocks
 //			this.pivotY = this.height/2;
 //			this.x = this.width/2;
 //			this.y = this.height/2;
+		}
+		
+		public function destroy():void
+		{	
+			_blockImage.removeFromParent();
+			_blockImage.dispose();
+			
+			_blockRightPadding.removeFromParent();
+			_blockRightPadding.dispose();
+			
+			_blockBottomPadding.removeFromParent();
+			_blockBottomPadding.dispose();
+			
+			removeEventListener(TouchEvent.TOUCH, onTouch);
+			removeFromParent();
+			
+			removeChildren(0, this.numChildren);
+			
+			dispose();
+		}
+		
+		public function pullPrev():void
+		{
+			_clicked = false;
+			this.scale = 1.0;
+		}
+		
+		private function selectTexture(type:String):void
+		{
+			switch(type)
+			{
+				case BlockType.ARI :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "ari");
+					break;
+				case BlockType.ARI_CIRCLE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "ari_circle");
+					break;
+				case BlockType.ARI_LINE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "ari_line");
+					break;
+				case BlockType.BLUE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue");
+					break;
+				case BlockType.BLUE_CIRCLE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue_circle");
+					break;
+				case BlockType.BLUE_LINE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "blue_line");
+					break;
+				case BlockType.LUCY :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy");
+					break;
+				case BlockType.LUCY_CIRCLE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy_circle");
+					break;
+				case BlockType.LUCY_LINE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "lucy_line");
+					break;
+				case BlockType.MICKY :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky");
+					break;
+				case BlockType.MICKY_CIRCLE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky_circle");
+					break;
+				case BlockType.MICKY_LINE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "micky_line");
+					break;
+				case BlockType.MONGYI :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi");
+					break;
+				case BlockType.MONGYI_CIRCLE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi_circle");
+					break;
+				case BlockType.MONGYI_LINE :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "mongyi_line");
+					break;
+				case BlockType.PINKY :
+					_blockTexture = _resources.getSubTexture("FieldSpriteSheet.png", "pinky");
+					break;	
+			}
 		}
 		
 		private function onTouch(event:TouchEvent):void
@@ -156,31 +239,6 @@ package puzzle.ingame.cell.blocks
 //				parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
 //			}
 //		}
-		
-		public function pullPrev():void
-		{
-			_clicked = false;
-			this.scale = 1.0;
-		}
-		
-		public function destroy():void
-		{	
-			_blockImage.removeFromParent();
-			_blockImage.dispose();
-			
-			_blockRightPadding.removeFromParent();
-			_blockRightPadding.dispose();
-			
-			_blockBottomPadding.removeFromParent();
-			_blockBottomPadding.dispose();
-			
-			removeEventListener(TouchEvent.TOUCH, onTouch);
-			removeFromParent();
-			
-			removeChildren(0, this.numChildren);
-			
-			dispose();
-		}
 		
 		public function advanceTime(time:Number):void
 		{

@@ -1,18 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TextureAtlas imagePath="FieldSpriteSheet.png">
+   <SubTexture name="ari" x="642" y="130" width="70" height="70" />
+   <SubTexture name="ari_circle" x="751" y="54" width="70" height="70" />
+   <SubTexture name="ari_line" x="642" y="202" width="70" height="70" />
+   <SubTexture name="blue" x="714" y="130" width="70" height="70" />
+   <SubTexture name="blue_circle" x="858" y="0" width="70" height="70" />
+   <SubTexture name="blue_line" x="0" y="883" width="70" height="70" />
+   <SubTexture name="lucy" x="714" y="202" width="70" height="70" />
+   <SubTexture name="lucy_circle" x="786" y="126" width="70" height="70" />
+   <SubTexture name="lucy_line" x="642" y="274" width="70" height="70" />
+   <SubTexture name="micky" x="858" y="72" width="70" height="70" />
+   <SubTexture name="micky_circle" x="930" y="0" width="70" height="70" />
+   <SubTexture name="micky_line" x="72" y="883" width="70" height="70" />
+   <SubTexture name="mongyi" x="786" y="198" width="70" height="70" />
+   <SubTexture name="mongyi_circle" x="714" y="274" width="70" height="70" />
+   <SubTexture name="mongyi_line" x="642" y="346" width="70" height="70" />
+   <SubTexture name="pinky" x="930" y="72" width="70" height="70" />
+   <SubTexture name="pinky_circle" x="858" y="144" width="70" height="70" />
+   <SubTexture name="pinky_line" x="144" y="883" width="70" height="70" />
+   <SubTexture name="wall" x="786" y="270" width="64" height="64" />
    <SubTexture name="alert" x="674" y="54" width="75" height="74" />
    <SubTexture name="backGround" x="0" y="126" width="640" height="755" />
-   <SubTexture name="blockBottomPadding" x="751" y="54" width="47" height="10" />
-   <SubTexture name="blockRightPadding" x="0" y="883" width="9" height="57" />
-   <SubTexture name="blue" x="751" y="66" width="45" height="60" />
+   <SubTexture name="blockBottomPadding" x="0" y="955" width="47" height="10" />
+   <SubTexture name="blockRightPadding" x="823" y="54" width="9" height="57" />
    <SubTexture name="bottomPadding" x="0" y="54" width="672" height="35" />
-   <SubTexture name="columLine" x="642" y="130" width="52" height="856" />
-   <SubTexture name="leftPadding" x="905" y="0" width="32" height="790" />
-   <SubTexture name="lucy" x="696" y="130" width="45" height="60" />
-   <SubTexture name="micky" x="800" y="54" width="45" height="60" />
-   <SubTexture name="mongyi" x="858" y="0" width="45" height="60" />
-   <SubTexture name="pinky" x="743" y="130" width="45" height="60" />
-   <SubTexture name="rightPadding" x="696" y="192" width="34" height="790" />
+   <SubTexture name="columLine" x="930" y="144" width="52" height="856" />
+   <SubTexture name="leftPadding" x="894" y="216" width="32" height="790" />
+   <SubTexture name="rightPadding" x="858" y="216" width="34" height="790" />
    <SubTexture name="rowLine" x="0" y="0" width="856" height="52" />
    <SubTexture name="topPadding" x="0" y="91" width="672" height="33" />
 </TextureAtlas>

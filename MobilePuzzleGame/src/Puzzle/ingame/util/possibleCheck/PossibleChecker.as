@@ -250,7 +250,7 @@ package puzzle.ingame.util.possibleCheck
 				if((current - time) > 0.016)
 				{
 					time = current;
-					Starling.current.nextFrame();
+					Starling.current.nextFrame(); 
 				}
 				
 //				trace(currentNode.name);

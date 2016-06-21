@@ -1,7 +1,5 @@
 package puzzle.ingame.util.possibleCheck
-{
-	import com.lpesign.ToastExtension;
-	
+{	
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
@@ -29,8 +27,11 @@ package puzzle.ingame.util.possibleCheck
 		private var _checkQueue:Vector.<CheckElement>;
 		private var _checkFlag:Boolean;
 		
-		public function PossibleChecker()
+		private var _cells:Vector.<Cell>;
+		
+		public function PossibleChecker(cells:Vector.<Cell>)
 		{
+			_cells = cells;
 			init();
 			_checkQueue = new Vector.<CheckElement>();
 		}
@@ -93,8 +94,6 @@ package puzzle.ingame.util.possibleCheck
 				
 				if(_prevCell != cell)
 				{
-					var toastExtension:ToastExtension = new ToastExtension();
-					toastExtension.toast("_currentCell");
 					_currentCell = cell;
 					
 					if(_currentCell.block.type == _prevCell.block.type)
@@ -117,12 +116,12 @@ package puzzle.ingame.util.possibleCheck
 							}
 							if(result)
 							{
-//								if(_checkFlag)
-//								{
-//									var checkElement:CheckElement = new CheckElement(_prevCell, _currentCell, path);
-//									_checkQueue.push(checkElement);
-//								}
-//								else
+								if(_checkFlag)
+								{
+									var checkElement:CheckElement = new CheckElement(_prevCell, _currentCell, path);
+									_checkQueue.push(checkElement);
+								}
+								else
 								{
 									var possible:Possible = new Possible();
 									possible.startCell = _prevCell;
@@ -147,8 +146,6 @@ package puzzle.ingame.util.possibleCheck
 			}
 			else
 			{
-				var toastExtension:ToastExtension = new ToastExtension();
-				toastExtension.toast("_prevCell");
 				_prevCell = cell;
 			}
 		}
@@ -171,10 +168,14 @@ package puzzle.ingame.util.possibleCheck
 				
 				dispatchEvent(new Event(PossibleCheckerEventType.SAME, false, possible));
 			}
+			
+			checkPossibleCell(_cells);
 		}
 		
 		public function checkPossibleCell(cells:Vector.<Cell>):void
 		{
+			if(_checkFlag)
+				return;
 			_checkFlag = true;
 			_possibleCount = 0;
 			_blockCount = 0;
@@ -315,7 +316,7 @@ package puzzle.ingame.util.possibleCheck
 			while(currentNode != destNode)
 			{
 				var current:Number = getTimer() / 1000;
-				if((current - time) > 0.0167)
+				if((current - time) > 0.016)
 				{
 					time = current;
 					Starling.current.nextFrame(); 

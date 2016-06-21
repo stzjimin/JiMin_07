@@ -72,9 +72,6 @@ package puzzle.ingame
 		{	
 			_juggler = new Juggler();
 			
-			_possibleChecker = new PossibleChecker();
-			_possibleChecker.addEventListener(PossibleCheckerEventType.SAME, onSame);
-			
 			_shuffler = new Shuffler();
 			_shuffler.init();
 			_shuffler.addEventListener(Shuffler.COMPLETE, onCompleteShuffle);
@@ -96,6 +93,9 @@ package puzzle.ingame
 			addChild(_backGround);
 			
 			_cells = new Vector.<Cell>();
+			_possibleChecker = new PossibleChecker(_cells);
+			_possibleChecker.addEventListener(PossibleCheckerEventType.SAME, onSame);
+			
 			var columnNum:int = 0;
 			for(var i:int = 0; i < COLUMN_NUM*ROW_NUM; i++)
 			{

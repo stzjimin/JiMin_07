@@ -223,10 +223,10 @@ package puzzle.ingame
 		/**
 		 *_cells안에서 연결가능한 블록들을 찾아내는 함수 
 		 * 
-		 */		
+		 */
 		public function checkPossibleCell():void
 		{
-//			_possibleChecker.init();
+			_possibleChecker.init();
 			var prevTime:Number = getTimer() / 1000;
 			_possibleChecker.checkPossibleCell(_cells);
 			var currentTime:Number = getTimer() / 1000;
@@ -331,7 +331,7 @@ package puzzle.ingame
 		{
 			_possibleChecker.init();
 			_possibleChecker.checkPossibleCell(_cells);
-			//			checkPossibleCell();
+//						checkPossibleCell();
 			if(_possibleChecker.blockCount >= 2 && _possibleChecker.possibleCount == 0)
 			{
 				_shuffleCount++;

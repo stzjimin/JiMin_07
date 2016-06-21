@@ -6,6 +6,10 @@ package puzzle.attend
 	{	
 		private var _attendPresents:Array;
 		
+		/**
+		 *출석표에 들어갈 선물들을 지정하는 클래스입니다. 
+		 * 
+		 */		
 		public function AttendPresent()
 		{
 			_attendPresents = new Array();
@@ -15,6 +19,11 @@ package puzzle.attend
 			_attendPresents.push(Vector.<String>([ItemType.SEARCH, ItemType.FORK, ItemType.SHUFFLE]));
 		}
 		
+		/**
+		 * 선물목록을 json형태로 출력하는 함수입니다.
+		 * @return 
+		 * 
+		 */		
 		public function getPresents():Object
 		{
 			var presentsJson:Object = new Object();

@@ -16,8 +16,6 @@ package
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.cell.NeigborType;
 	import puzzle.ingame.cell.blocks.BlockType;
-	import puzzle.loading.LoadingEvent;
-	import puzzle.loading.Resources;
 	
 	import starlingOrigin.display.Button;
 	import starlingOrigin.display.DisplayObjectContainer;
@@ -41,48 +39,6 @@ package
 		[Embed(source="IngameBackGround.png")]
 		private const ingameBackGroundImage:Class;
 		
-		[Embed(source="blue.png")]
-		private const blueImage:Class;
-		[Embed(source="blue_circle.png")]
-		private const blueCircleImage:Class;
-		[Embed(source="blue_line.png")]
-		private const blueLineImage:Class;
-		
-		[Embed(source="lucy.png")]
-		private const lucyImage:Class;
-		[Embed(source="lucy_circle.png")]
-		private const lucyCircleImage:Class;
-		[Embed(source="lucy_line.png")]
-		private const lucyLineImage:Class;
-		
-		[Embed(source="micky.png")]
-		private const mickyImage:Class;
-		[Embed(source="micky_circle.png")]
-		private const mickyCircleImage:Class;
-		[Embed(source="micky_line.png")]
-		private const mickyLineImage:Class;
-		
-		[Embed(source="mongyi.png")]
-		private const mongyiImage:Class;
-		[Embed(source="mongyi_circle.png")]
-		private const mongyiCircleImage:Class;
-		[Embed(source="mongyi_line.png")]
-		private const mongyiLineImage:Class;
-		
-		[Embed(source="pinky.png")]
-		private const pinkyImage:Class;
-		[Embed(source="pinky_circle.png")]
-		private const pinkyCircleImage:Class;
-		[Embed(source="pinky_line.png")]
-		private const pinkyLineImage:Class;
-		
-		[Embed(source="ari.png")]
-		private const ariImage:Class;
-		[Embed(source="ari_circle.png")]
-		private const ariCircleImage:Class;
-		[Embed(source="ari_line.png")]
-		private const ariLineImage:Class;
-		
 		[Embed(source="upArrow.png")]
 		private const upArrowImage:Class;
 		[Embed(source="downArrow.png")]
@@ -94,9 +50,6 @@ package
 		
 		public static const NONE:String = "None";
 		
-//		private var _spirteDir:File = File.applicationDirectory.resolvePath("puzzle/resources/spriteSheet");
-//		private var _soundDir:File = File.applicationDirectory.resolvePath("puzzle/resources/sound");
-//		private var _imageDir:File = File.applicationDirectory.resolvePath("puzzle/resources/image");
 		private var _resources:MapToolResources;
 		
 		private var _backGround:Image;
@@ -178,7 +131,7 @@ package
 		{
 			super();
 			
-			_resources = new MapToolResources(Resources.SpriteDir, Resources.SoundDir, Resources.ImageDir);
+			_resources = new MapToolResources(MapToolResources.SpriteDir, MapToolResources.SoundDir, MapToolResources.ImageDir);
 			
 			_resources.addSpriteName("IngameSpriteSheet.png");
 //			_resources.addSpriteName("StageSelectSceneSpriteSheet.png");

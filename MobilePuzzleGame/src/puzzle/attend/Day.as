@@ -17,6 +17,12 @@ package puzzle.attend
 		
 		private var _present:Vector.<String>;
 		
+		/**
+		 * 출석표에 들어갈 날짜입니다.
+		 * @param width
+		 * @param height
+		 * 
+		 */		
 		public function Day(width:Number, height:Number)
 		{
 			_present = new Vector.<String>();
@@ -26,6 +32,10 @@ package puzzle.attend
 			addChild(_quad);
 		}
 		
+		/**
+		 * 날짜를 삭제하는 함수입니다. 
+		 * 
+		 */		
 		public function destroy():void
 		{
 			_quad.removeFromParent();
@@ -58,6 +68,11 @@ package puzzle.attend
 			_present = null;
 		}
 		
+		/**
+		 * 배경을 설정하는 함수입니다. 
+		 * @param texture
+		 * 
+		 */		
 		public function addBackGround(texture:Texture):void
 		{
 			_backGround = new Image(texture);
@@ -66,6 +81,13 @@ package puzzle.attend
 			addChild(_backGround);
 		}
 		
+		/**
+		 * 출석이 된 체크표시를 그리는 함수입니다.
+		 * @param texture
+		 * @param alpha
+		 * @param scale
+		 * 
+		 */		
 		public function addMark(texture:Texture, alpha:Number = 1.0, scale:Number = 1.0):void
 		{
 			_mark = new Image(texture);
@@ -79,6 +101,11 @@ package puzzle.attend
 			addChild(_mark);
 		}
 		
+		/**
+		 * 출석이되는 애니메이션을 보여주는 함수입니다.
+		 * @param texture
+		 * 
+		 */		
 		public function showMarking(texture:Texture):void
 		{
 			addMark(texture, 0.5, 3.0);
@@ -91,6 +118,11 @@ package puzzle.attend
 			Starling.juggler.add(tween);
 		}
 		
+		/**
+		 * 아이템 이미지를 추가하는 함수입니다. 
+		 * @param texture
+		 * 
+		 */		
 		public function addItemImage(texture:Texture):void
 		{
 			var itemImage:Image = new Image(texture);

@@ -379,13 +379,17 @@ package puzzle.ingame
 			addChild(_scoreTextField);
 			
 			_timer = new Timer(_resources);
-			_timer.init(70, 10, 450, 50);
+			_timer.init(450, 50);
+			_timer.x = 70;
+			_timer.y = 10;
 			_timer.startCount(_countTime);
 			_timer.addEventListener(Timer.TIME_OVER, onTimeOver);
 			addChild(_timer);
 			
 			_comboTimer = new ComboTimer(_resources);
-			_comboTimer.init(520, 65, 100, 30, 3);
+			_comboTimer.init(100, 30, 3);
+			_comboTimer.x = 520;
+			_comboTimer.y = 65;
 			addChild(_comboTimer);
 			
 			_items = new Items(_resources);
@@ -443,7 +447,6 @@ package puzzle.ingame
 			
 			_stagePopupFrame = new PopupFrame(576, 1024);
 			_stagePopupFrame.setContent(_stagePopup);
-			//			_stagePopupFrame.addEventListener(PopupFrame.COVER_CLICKED, onClickedCover);
 			addChild(_stagePopupFrame);
 			
 			_shopPopup = new Shop(_resources);
@@ -468,14 +471,6 @@ package puzzle.ingame
 			_playJuggler.add(_field);
 			_playJuggler.add(_timer);
 			_playJuggler.add(_comboTimer);
-			
-//			_readyTextures = _resources.getSpriteSheet("readyClip.png");
-//			_readyMovie = new MovieClip(_readyTextures.getTextures("ready_"), 10);
-//			_readyMovie.width = 300;
-//			_readyMovie.height = 500;
-//			_readyMovie.alignPivot();
-//			_readyMovie.x = _backGround.width / 2;
-//			_readyMovie.y = _backGround.height / 2;
 			
 			_readyImage = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "ready"));
 			_readyImage.width = 300;

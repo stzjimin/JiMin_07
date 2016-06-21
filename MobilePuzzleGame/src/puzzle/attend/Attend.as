@@ -1,7 +1,5 @@
 package puzzle.attend
 {
-	import flash.display.Bitmap;
-	
 	import puzzle.item.ItemType;
 	import puzzle.loading.Resources;
 	import puzzle.user.User;
@@ -9,11 +7,10 @@ package puzzle.attend
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
-	import starling.events.Touch;
+	import starling.events.Touch; 
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
 	import starling.text.TextField;
-	import starling.textures.Texture;
 	import starling.utils.Align;
 
 	public class Attend extends DisplayObjectContainer
@@ -27,6 +24,11 @@ package puzzle.attend
 		
 		private var _resources:Resources;
 		
+		/**
+		 * 출석표의 생성자
+		 * @param resources
+		 * 
+		 */		
 		public function Attend(resources:Resources)
 		{
 			_resources = resources;
@@ -38,6 +40,12 @@ package puzzle.attend
 			super();
 		}
 		
+		/**
+		 *출석표를 초기화하는 함수 길이와 높이를 정하면 그에따라 내부의 오브젝트들의 크기를 정합니다. 출석표는 바탕(backGround), 타이틀(title), 날짜(days)로 구성되어 있습니다.
+		 * @param width
+		 * @param height
+		 * 
+		 */		
 		public function init(width:Number, height:Number):void
 		{
 			_backGround = new Image(_resources.getSubTexture("AttendSpriteSheet.png", "PopupBackGround"));
@@ -109,7 +117,7 @@ package puzzle.attend
 					day.addItemImage(_resources.getSubTexture("AttendSpriteSheet.png", "giftBox"));
 				}
 				
-				if((i+1) <= User.getInstance().attendCount)
+				if((i+1) <= (User.getInstance().attendCount % 4))
 				{
 					day.addMark(_resources.getSubTexture("UserInfoSpriteSheet.png", "mark"));
 				}
@@ -119,6 +127,10 @@ package puzzle.attend
 			}
 		}
 		
+		/**
+		 * 출석표의 삭제함수입니다. 
+		 * 
+		 */		
 		public function destroy():void
 		{
 			removeEventListener(TouchEvent.TOUCH, onTouch);
@@ -146,6 +158,10 @@ package puzzle.attend
 			dispose();
 		}
 		
+		/**
+		 * 금일 출석을 하는 함수입니다. 출석하는 애니메이션을 보여주며  해당 날짜의 선물을 지급합니다.
+		 * 
+		 */		
 		public function attend():void
 		{
 			var attendDayIndex:int = User.getInstance().attendCount % 4;

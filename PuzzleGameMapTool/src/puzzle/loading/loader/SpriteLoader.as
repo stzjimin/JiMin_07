@@ -98,7 +98,7 @@ package puzzle.loading.loader
 			_failFunc("XML File unLoaded");
 		}
 		
-		/**
+		/** 
 		 *xml파일이 로드가됬을 때 호추되는 함수입니다.
 		 * xml파일까지 로드가 끝나면 파일의 이름, 비트맵, xml파일을 반환해줍니다. 
 		 * @param event

@@ -31,17 +31,28 @@ package puzzle.ingame.timer
 		
 		private var _fillBackOriginScaleX:Number;
 		
+		/**
+		 * 제한시간을 나타내는 클래스입니다.
+		 * @param resources
+		 * 
+		 */		
 		public function Timer(resources:Resources)
 		{
 			_resources = resources;
 		}
 		
-		public function init(x:Number = 0, y:Number = 0, width:Number = 0, height:Number = 0):void
+		/**
+		 * 길이와 높이를 받아와서 초기화시키는 함수입니다. timer는 bar, fillFront, fillBack으로 구성되어있습니다.
+		 * @param width
+		 * @param height
+		 * 
+		 */		
+		public function init(width:Number, height:Number):void
 		{
 			_juggler = new Juggler();
 			
-			this.x = x;
-			this.y = y;
+//			this.x = x;
+//			this.y = y;
 			
 			_bar = new Image(_resources.getSubTexture("IngameSpriteSheet.png", "timerFrame"));
 			_bar.width = width;
@@ -61,6 +72,34 @@ package puzzle.ingame.timer
 			addChild(_fillBack);
 		}
 		
+		/**
+		 * timer를 제거하고 할당된 메모리를 해제해주는 함수입니다. 
+		 * 
+		 */		
+		public function destroy():void
+		{
+			_juggler.purge();
+			
+			_bar.removeFromParent();
+			_bar.dispose();
+			_bar = null;
+			
+			_fillFront.removeFromParent();
+			_fillFront.dispose();
+			_fillFront = null;
+			
+			_fillBack.removeFromParent();
+			_fillBack.dispose();
+			_fillBack = null;
+			
+			dispose();
+		}
+		
+		/**
+		 * 제한시간의 카운트다운을 시작하는 함수입니다. 이 때 제한시간을 인자로 받아옵니다. 
+		 * @param countTime
+		 * 
+		 */		
 		public function startCount(countTime:Number):void
 		{
 			if(countTime < 0)
@@ -86,6 +125,11 @@ package puzzle.ingame.timer
 			}
 		}
 		
+		/**
+		 * 현재까지의 시간에서 추가적으로 제한시간을 늘려줄 때 사용하는 함수입니다. 
+		 * @param addTime
+		 * 
+		 */		
 		public function addTime(addTime:Number):void
 		{
 //			trace("_countTime : " + _countTime);
@@ -105,13 +149,6 @@ package puzzle.ingame.timer
 			_timerTween.reset(_fillBack, newTime);
 			_countTime = newTime;
 			_timerTween.scaleXTo(0);
-		}
-		
-		public function destroy():void
-		{
-			_juggler.purge();
-			
-			dispose();
 		}
 		
 		public function advanceTime(time:Number):void

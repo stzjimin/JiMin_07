@@ -27,17 +27,11 @@ package
 		{
 			var viewPort:Rectangle = RectangleUtil.fit(new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight), new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight), ScaleMode.SHOW_ALL); 
 			
-			// support autoOrients
-//			stage.align = StageAlign.TOP;
-//			stage.scaleMode = StageScaleMode.NO_SCALE;
-			
 			stageWidth = stage.fullScreenWidth;
 			stageHeight = stage.fullScreenHeight;
 			
-			Starling.multitouchEnabled = true;
+//			Starling.multitouchEnabled = true;
 			_starlingCore = new Starling(SceneManager, stage, viewPort);
-//			_starlingCore.stage.stageWidth  = WIDTH; 
-//			_starlingCore.stage.stageHeight = HEIGHT;
 			_starlingCore.addEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);
 			_starlingCore.showStats = true;
 			
@@ -45,6 +39,11 @@ package
 			trace(stageHeight);
 		}
 		
+		/**
+		 * 씬메니저가 만들어지면 호출되는 함수입니다.
+		 * @param event
+		 * 
+		 */		
 		private function onRootCreated(event:Event):void
 		{
 			_starlingCore.removeEventListener(starling.events.Event.ROOT_CREATED, onRootCreated);

@@ -1,5 +1,7 @@
 package puzzle.ingame.util.possibleCheck
 {
+	import com.lpesign.ToastExtension;
+	
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
@@ -24,9 +26,13 @@ package puzzle.ingame.util.possibleCheck
 		private var _possibleCount:uint;
 		private var _blockCount:uint;
 		
+		private var _checkQueue:Vector.<CheckElement>;
+		private var _checkFlag:Boolean;
+		
 		public function PossibleChecker()
 		{
 			init();
+			_checkQueue = new Vector.<CheckElement>();
 		}
 		
 		public function init():void
@@ -63,6 +69,13 @@ package puzzle.ingame.util.possibleCheck
 			if(_neigborTypes != null)
 				_neigborTypes.splice(0, _neigborTypes.length);
 			
+			if(_checkQueue != null)
+			{
+				for(i = 0; _checkQueue.length; i++)
+					_checkQueue[i].destroy();
+				_checkQueue.splice(0, _checkQueue.length);
+			}
+			
 			_prevCell = null;
 			_currentCell = null;
 		}
@@ -71,8 +84,17 @@ package puzzle.ingame.util.possibleCheck
 		{
 			if(_prevCell != null)
 			{
+				if(_prevCell.block == null)
+				{
+					outChecker(_prevCell);
+					_prevCell = cell;
+					return;
+				}
+				
 				if(_prevCell != cell)
 				{
+					var toastExtension:ToastExtension = new ToastExtension();
+					toastExtension.toast("_currentCell");
 					_currentCell = cell;
 					
 					if(_currentCell.block.type == _prevCell.block.type)
@@ -95,11 +117,25 @@ package puzzle.ingame.util.possibleCheck
 							}
 							if(result)
 							{
-								var possible:Possible = new Possible();
-								possible.startCell = _prevCell;
-								possible.destCell = _currentCell;
-								possible.path = path;
-								dispatchEvent(new Event(PossibleCheckerEventType.SAME, false, possible));
+//								if(_checkFlag)
+//								{
+//									var checkElement:CheckElement = new CheckElement(_prevCell, _currentCell, path);
+//									_checkQueue.push(checkElement);
+//								}
+//								else
+								{
+									var possible:Possible = new Possible();
+									possible.startCell = _prevCell;
+									possible.destCell = _currentCell;
+									possible.path = path;
+									
+									outChecker(_prevCell);
+									_prevCell = null;
+									outChecker(_currentCell);
+									_currentCell = null;
+									
+									dispatchEvent(new Event(PossibleCheckerEventType.SAME, false, possible));
+								}
 							}
 						}
 					}
@@ -110,11 +146,36 @@ package puzzle.ingame.util.possibleCheck
 				}
 			}
 			else
+			{
+				var toastExtension:ToastExtension = new ToastExtension();
+				toastExtension.toast("_prevCell");
 				_prevCell = cell;
+			}
+		}
+		
+		private function pullCheckQueue():void
+		{
+			if(_checkQueue.length == 0)
+				return;
+			
+			while(_checkQueue.length != 0)
+			{
+				var checkElement:CheckElement = _checkQueue.shift();
+				
+				var possible:Possible = new Possible();
+				possible.startCell = checkElement.startCell;
+				possible.destCell = checkElement.destCell;
+				possible.path = cloneVector(checkElement.path);
+				
+				checkElement.destroy();
+				
+				dispatchEvent(new Event(PossibleCheckerEventType.SAME, false, possible));
+			}
 		}
 		
 		public function checkPossibleCell(cells:Vector.<Cell>):void
 		{
+			_checkFlag = true;
 			_possibleCount = 0;
 			_blockCount = 0;
 //			var count:int = 0;
@@ -169,13 +230,20 @@ package puzzle.ingame.util.possibleCheck
 //			trace("newCount = " + newCount);
 			if(cells[i].block != null)
 				_blockCount++;
+			
+			if(_checkQueue != null)
+			{
+				pullCheckQueue();
+			}
+			_checkFlag = false;
 		}
 		
 		public function outChecker(cell:Cell):void
 		{
 			if(cell != null)
 			{
-				cell.dispatchEvent(new Event(PossibleCheckerEventType.PULL_PREV));
+//				cell.dispatchEvent(new Event(PossibleCheckerEventType.PULL_PREV));
+				cell.onPullPrev();
 				if(cell == _prevCell)
 					_prevCell = null;
 				if(cell == _currentCell)
@@ -247,7 +315,7 @@ package puzzle.ingame.util.possibleCheck
 			while(currentNode != destNode)
 			{
 				var current:Number = getTimer() / 1000;
-				if((current - time) > 0.016)
+				if((current - time) > 0.0167)
 				{
 					time = current;
 					Starling.current.nextFrame(); 

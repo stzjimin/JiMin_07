@@ -226,7 +226,7 @@ package puzzle.ingame
 		 */		
 		public function checkPossibleCell():void
 		{
-//			_possibleChecker.init();
+			_possibleChecker.init();
 			var prevTime:Number = getTimer() / 1000;
 			_possibleChecker.checkPossibleCell(_cells);
 			var currentTime:Number = getTimer() / 1000;

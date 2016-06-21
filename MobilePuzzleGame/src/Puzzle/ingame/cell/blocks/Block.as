@@ -1,12 +1,9 @@
 package puzzle.ingame.cell.blocks
 {	
-	import flash.display.Bitmap;
-	
 	import puzzle.ingame.cell.Cell;
 	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
 	import puzzle.loading.Resources;
 	
-	import starling.animation.IAnimatable;
 	import starling.display.DisplayObjectContainer;
 	import starling.display.Image;
 	import starling.events.Event;
@@ -15,7 +12,7 @@ package puzzle.ingame.cell.blocks
 	import starling.events.TouchPhase;
 	import starling.textures.Texture;
 
-	public class Block extends DisplayObjectContainer implements IAnimatable
+	public class Block extends DisplayObjectContainer
 	{	
 		public static const PADDING_SIZE:Number = 5;
 		
@@ -34,6 +31,11 @@ package puzzle.ingame.cell.blocks
 		private var _clicked:Boolean;
 		private var _originScale:Number;
 		
+		/**
+		 * 게임의 기본이 되는 블럭입니다. 
+		 * @param resources
+		 * 
+		 */		
 		public function Block(resources:Resources)
 		{	
 			super();
@@ -41,9 +43,13 @@ package puzzle.ingame.cell.blocks
 			_resources = resources;
 			
 			addEventListener(TouchEvent.TOUCH, onTouch);
-//			addEventListener(Event.TRIGGERED, onTriggered);
 		}
 		
+		/**
+		 * 인자로 받아온 블럭데이터를 이용하여 블럭을 초기화시키는 함수입니다.
+		 * @param blockData
+		 * 
+		 */		
 		public function init(blockData:BlockData):void
 		{
 			_clicked = false;
@@ -72,61 +78,12 @@ package puzzle.ingame.cell.blocks
 			_blockBottomPadding.width = Cell.WIDTH_SIZE;
 			_blockBottomPadding.height = Block.PADDING_SIZE;
 			addChild(_blockBottomPadding);
-//			this.pivotX = this.width/2;
-//			this.pivotY = this.height/2;
-//			this.x = this.width/2;
-//			this.y = this.height/2;
 		}
 		
-		private function onTouch(event:TouchEvent):void
-		{
-			var touch:Touch = event.getTouch(this);
-			if(touch == null)
-				return;
-			if(touch.phase == TouchPhase.BEGAN)
-			{
-				this.y -= 10;
-//				_originScale = this.scale;
-				this.scale = 1.2;
-			}
-			else if(touch.phase == TouchPhase.ENDED)
-			{
-				this.scale = 1.0;
-				this.y += 10;
-				_clicked = !_clicked;
-				if(_clicked)
-				{
-					this.scale = 0.8;
-					parent.dispatchEvent(new Event(PossibleCheckerEventType.ADD_PREV));
-				}
-				else
-				{
-					parent.dispatchEvent(new Event(PossibleCheckerEventType.OUT_CHECKER));
-				}
-			}
-		}
-		
-//		public function onTriggered():void
-//		{
-////			trace(Cell(Cell(parent).neigbor[NeigborType.TOP]).block.type);
-//			_clicked = !_clicked;
-//			if(_clicked)
-//			{
-//				this.scale = 0.9;
-//				parent.dispatchEvent(new Event(CheckEvent.ADD_PREV));
-//			}
-//			else
-//			{
-//				parent.dispatchEvent(new Event(CheckEvent.OUT_CHECKER));
-//			}
-//		}
-		
-		public function pullPrev():void
-		{
-			_clicked = false;
-			this.scale = 1.0;
-		}
-		
+		/**
+		 * 블럭을 제거하고 메모리를 반납하기위한 함수입니다. 
+		 * 
+		 */		
 		public function destroy():void
 		{	
 			_blockImage.removeFromParent();
@@ -146,9 +103,37 @@ package puzzle.ingame.cell.blocks
 			dispose();
 		}
 		
-		public function advanceTime(time:Number):void
+		private function onTouch(event:TouchEvent):void
 		{
-			
+			var touch:Touch = event.getTouch(this);
+			if(touch == null)
+				return;
+			if(touch.phase == TouchPhase.BEGAN)
+			{
+				this.y -= 10;
+				this.scale = 1.2;
+			}
+			else if(touch.phase == TouchPhase.ENDED)
+			{
+				this.scale = 1.0;
+				this.y += 10;
+				_clicked = !_clicked;
+				if(_clicked)
+				{
+					this.scale = 0.8;
+					parent.dispatchEvent(new Event(PossibleCheckerEventType.ADD_PREV));
+				}
+				else
+				{
+					parent.dispatchEvent(new Event(PossibleCheckerEventType.OUT_CHECKER));
+				}
+			}
+		}
+		
+		public function pullPrev():void
+		{
+			_clicked = false;
+			this.scale = 1.0;
 		}
 
 		public function get distroyed():Boolean

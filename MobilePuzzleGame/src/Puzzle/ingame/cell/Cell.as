@@ -2,7 +2,6 @@ package puzzle.ingame.cell
 {
 	import flash.utils.Dictionary;
 	
-	import puzzle.loading.Resources;
 	import puzzle.ingame.cell.blocks.Block;
 	import puzzle.ingame.util.possibleCheck.PossibleCheckerEventType;
 	
@@ -26,11 +25,19 @@ package puzzle.ingame.cell
 		
 		private var _color:Quad;
 		
+		/**
+		 * 블럭이 들어갈 수 있는 타일 또는 공간입니다. 
+		 * 
+		 */		
 		public function Cell()
 		{
-			addEventListener(PossibleCheckerEventType.PULL_PREV, onPullPrev);
+//			addEventListener(PossibleCheckerEventType.PULL_PREV, onPullPrev);
 		}
 		
+		/**
+		 * 클래스를 초기화하는 함수입니다. 이때 크기를 지정한 크기로 정하기위해 내부에 쿼드를 하나 추가시킵니다.
+		 * 
+		 */		
 		public function init():void
 		{
 			_neigbor = new Dictionary();
@@ -41,14 +48,27 @@ package puzzle.ingame.cell
 			addChild(_color);
 		}
 		
-		public function showColor():void
+		/**
+		 * 셀을 제거하고 할당된 메모리를 해제하는 함수입니다.
+		 * 
+		 */		
+		public function destroy():void
 		{
-			_color.visible = true;
-		}
-		
-		public function offColor():void
-		{
-			_color.visible = false;
+//			removeEventListener(PossibleCheckerEventType.PULL_PREV, onPullPrev);
+			
+			for(var key:String in _neigbor)
+				delete _neigbor[key];
+			
+			if(_block != null)
+			{
+				_block.destroy();
+				_block = null
+			}
+			
+			_color.removeFromParent();
+			_color.dispose();
+			
+			dispose();
 		}
 		
 //		public function createBlock(blockData:BlockData):void
@@ -64,6 +84,11 @@ package puzzle.ingame.cell
 ////			addChild(_block);
 //		}
 		
+		/**
+		 * 해당 영역에 인자로 받은 블럭을 추가시키는 함수입니다. 
+		 * @param block
+		 * 
+		 */		
 		public function addBlock(block:Block):void
 		{
 			if(_block != null)
@@ -77,30 +102,11 @@ package puzzle.ingame.cell
 			addChild(_block);
 		}
 		
-		private function onPullPrev(event:Event):void
+		public function onPullPrev():void
 		{
 			if(_block == null)
 				return;
 			_block.pullPrev();
-		}
-		
-		public function destroy():void
-		{
-			removeEventListener(PossibleCheckerEventType.PULL_PREV, onPullPrev);
-		
-			for(var key:String in _neigbor)
-				delete _neigbor[key];
-			
-			if(_block != null)
-			{
-				_block.destroy();
-				_block = null
-			}
-			
-			_color.removeFromParent();
-			_color.dispose();
-			
-			dispose();
 		}
 
 		public function get neigbor():Dictionary
